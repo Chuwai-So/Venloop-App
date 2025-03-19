@@ -21,7 +21,7 @@ __Proposed Solution: Treasure Hunt-Based Application__
 To meet the requirements, we propose a web-based application built around a Treasure Hunt system. Here are the key features of the solution:
 
 Team-Based Usage:
-The app should be operated by a "Gamemaster" per team, who manages navigation and enters results.
+The app should be operated by a "teamleader" per team, who manages navigation and enters results.
 Alternatively, multiple team members could access the app to input tasks.
 
 Diverse Routes and Checkpoints:

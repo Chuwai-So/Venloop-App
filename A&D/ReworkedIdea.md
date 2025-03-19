@@ -19,9 +19,9 @@ __Proposed Solution: Treasure Hunt-Based Application__
 To meet the requirements, we propose a web-based application built around a Treasure Hunt system. Here are the key features of the solution: <br>
 
 A) Team-Based Usage:
-The app should be operated by a „game-master" per team, who manages navigation and enters results. <br>
+The app should be operated by a „teamleader" per team, who manages navigation and enters results. <br>
 Alternatively, multiple team members could access the app to input task results, see the progress or access the tasks. <br>
-The „game-master“ is the only group member that can access the current task and input results for the team. - we suggest an adult or „Venloop“ team member <br>
+The „teamleader“ is the only group member that can access the current task and input results for the team. - we suggest an adult or „Venloop“ team member <br>
 
 B) Diverse Routes and Checkpoints:
 Teams will walk different routes on each of the four days to provide variety. <br>
@@ -34,7 +34,7 @@ Achievements and Rewards: Digital badges or small prizes can further motivate pa
 
 D) Easy Management for Organizers:
 Organizers can easily add and manage tasks and checkpoints. <br>
-Easy „game-master“ registration and team creation during the event. <br>
+Easy „teamleader“ registration and team creation during the event. <br>
 
 E) Optionals/Add-ons: <br>
 Time-Based Challenges: <br>
