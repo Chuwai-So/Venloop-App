@@ -1,8 +1,8 @@
-import index from './index.jsx'
+import Initial from './Initial.jsx'
 
 
 function App() {
-    return (<index/>)
+    return (<Initial/>)
 }
 
 export default App
