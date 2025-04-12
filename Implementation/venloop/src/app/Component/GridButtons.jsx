@@ -1,29 +1,29 @@
 "use client";
 
-
 export default function GridButtons() {
     return (
-        <main className="p-8 grid grid-cols-2 grid-rows-2 gap-6 h-[calc(100vh-72px)] font-[Nunito] font-black">
+        <main className="p-8 grid grid-cols-10 grid-rows-2 gap-6 h-[calc(100vh-72px)] font-[Nunito black] font-black">
 
-            <button className="bg-[#4CA6E5] text-white rounded-lg p-6 row-span-2 flex items-center justify-center text-xl">
+            {/* Top-left (70%) */}
+            <button className="bg-[#3C8DC3] text-white rounded-lg p-6 col-span-7 row-start-1 flex items-center justify-center text-xl">
                 Create Tasks
             </button>
 
-
-            <button className="bg-[#F25C05] text-white rounded-lg p-4 flex items-center justify-center text-lg">
+            {/* Top-right (30%) */}
+            <button className="bg-[#D86F27] text-white rounded-lg p-4 col-span-3 row-start-1 flex items-center justify-center text-lg">
                 Settings
             </button>
 
-
-            <button className="bg-[#F5C958] text-white rounded-lg p-4 flex items-center justify-center text-lg">
+            {/* Bottom-left (30%) */}
+            <button className="bg-[#D86F27] text-white rounded-lg p-4 col-span-3 row-start-2 flex items-center justify-center text-lg">
                 Help
             </button>
 
-
-            <button className="bg-[#332E1F] text-white rounded-lg p-6 row-span-2 flex items-center justify-center text-xl">
+            {/* Bottom-right (70%) */}
+            <button className="bg-[#3C8DC3] text-white rounded-lg p-6 col-span-7 row-start-2 flex items-center justify-center text-xl">
                 Create Teams
             </button>
+
         </main>
     );
 }
-
