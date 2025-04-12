@@ -6,22 +6,22 @@ export default function GridButtons() {
 
             {/* Top-left (70%) */}
             <button className="bg-[#3C8DC3] text-white rounded-lg p-6 col-span-7 row-start-1 flex items-center justify-center text-xl">
-                Create Tasks
+                Tasks
             </button>
 
             {/* Top-right (30%) */}
             <button className="bg-[#D86F27] text-white rounded-lg p-4 col-span-3 row-start-1 flex items-center justify-center text-lg">
-                Settings
+                Event Settings️
             </button>
 
             {/* Bottom-left (30%) */}
             <button className="bg-[#D86F27] text-white rounded-lg p-4 col-span-3 row-start-2 flex items-center justify-center text-lg">
-                Help
+                Leaderboard
             </button>
 
             {/* Bottom-right (70%) */}
             <button className="bg-[#3C8DC3] text-white rounded-lg p-6 col-span-7 row-start-2 flex items-center justify-center text-xl">
-                Create Teams
+                Teams
             </button>
 
         </main>
