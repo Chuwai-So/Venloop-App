@@ -1,6 +1,8 @@
 "use client";
-
 import { useState } from "react";
+import { router } from "next/navigation";
+
+
 
 export default function GridButtons() {
     const [openMenu, setOpenMenu] = useState(null); // 'tasks' | 'teams' | null
@@ -9,19 +11,28 @@ export default function GridButtons() {
         setOpenMenu(openMenu === menu ? null : menu);
     };
 
+    const closeMenu = () => {
+        setOpenMenu(null);
+    };
+
     return (
         <main className="p-8 grid grid-cols-10 grid-rows-2 gap-6 h-[calc(100vh-72px)] font-black">
 
             {/* Top-left (70%) - TASKS */}
             <div className="col-span-7 row-start-1">
                 {openMenu === "tasks" ? (
-                    <div className="bg-white border rounded-lg p-6 h-full flex flex-col justify-center items-center gap-4">
-                        <button className="bg-[#3C8DC3] text-white rounded px-4 py-2 w-full">
-                            Create Task
-                        </button>
-                        <button className="bg-[#3C8DC3] text-white rounded px-4 py-2 w-full">
-                            Edit Tasks
-                        </button>
+                    <div
+                        className="bg-white border rounded-lg p-6 h-full flex flex-col justify-center items-center gap-4"
+                        onClick={closeMenu}
+                    >
+                        <div onClick={(e) => e.stopPropagation()} className="w-full flex flex-col gap-4">
+                            <button className="bg-[#3C8DC3] text-white rounded px-4 py-2 w-full">
+                                Create Task
+                            </button>
+                            <button className="bg-[#3C8DC3] text-white rounded px-4 py-2 w-full">
+                                Edit Tasks
+                            </button>
+                        </div>
                     </div>
                 ) : (
                     <button
@@ -46,13 +57,18 @@ export default function GridButtons() {
             {/* Bottom-right (70%) - TEAMS */}
             <div className="col-span-7 row-start-2">
                 {openMenu === "teams" ? (
-                    <div className="bg-white border rounded-lg p-6 h-full flex flex-col justify-center items-center gap-4">
-                        <button className="bg-[#3C8DC3] text-white rounded px-4 py-2 w-full">
-                            Create Team
-                        </button>
-                        <button className="bg-[#3C8DC3] text-white rounded px-4 py-2 w-full">
-                            Edit Teams
-                        </button>
+                    <div
+                        className="bg-white border rounded-lg p-6 h-full flex flex-col justify-center items-center gap-4"
+                        onClick={closeMenu}
+                    >
+                        <div onClick={(e) => e.stopPropagation()} className="w-full flex flex-col gap-4">
+                            <button className="bg-[#3C8DC3] text-white rounded px-4 py-2 w-full">
+                                Create Team
+                            </button>
+                            <button className="bg-[#3C8DC3] text-white rounded px-4 py-2 w-full">
+                                Edit Teams
+                            </button>
+                        </div>
                     </div>
                 ) : (
                     <button
