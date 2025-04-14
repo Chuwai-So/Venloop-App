@@ -23,5 +23,5 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Nunito, Arial sans-serif;
+  font-family: Arial, Arial sans-serif;
 }
