@@ -22,16 +22,30 @@ export const TeamAdapter = {
             name: data.name,
             scoreHistory: {},
             completedTasks: {},
-            members: data.members || [],
-            captain: data.captain || null,
+            captain: data.captain || []
         };
 
         await set(newRef, team);
         return teamId;
     },
 
-    async get(teamId) {
+    async getTeam(teamId) {
         const snapshot = await get(ref(db, `${TEAM_PATH}/${teamId}`));
         return snapshot.exists() ? snapshot.val() : null;
+    },
+
+
+    async updateTeam(teamId, updates) {
+        const teamRef = ref(db, `${TEAM_PATH}/${teamId}`);
+        await update(teamRef, updates);
+    },
+
+    async deleteTeam(teamId) {
+        const teamRef = ref(db, `${TEAM_PATH}/${teamId}`);
+        await remove(teamRef);
     }
+
+
 }
+
+

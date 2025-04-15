@@ -1,14 +1,30 @@
-import { TeamAdapter } from './teamAdapter';
+import {TeamAdapter} from './teamAdapter';
 
- const TeamService = {
+const TeamService = {
 
     async createTeam(data) {
-        const teamId = await TeamAdapter.createTeam(data);
-        return teamId;
+        return await TeamAdapter.createTeam(data);
     },
 
     async getTeam(teamId) {
-       return TeamAdapter.get(teamId);
+       return TeamAdapter.getTeam(teamId);
+    },
+
+    async updateTeam(teamId, data) {
+        return TeamAdapter.updateTeam(teamId, data);
+    },
+
+     async updateCaptain(teamId, captains) {
+         return TeamAdapter.updateTeam(teamId, { captain: captains });
+     },
+
+     async updateTask(teamId, taskId, taskData) {
+         const field = `completedTasks/${taskId}`;
+         return TeamAdapter.updateTeam(teamId, { [field]: taskData });
+     },
+
+    async deleteTeam(teamId) {
+        return TeamAdapter.deleteTeam(teamId);
     }
 }
 
