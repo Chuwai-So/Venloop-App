@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
-import { router } from "next/navigation";
+import { useRouter } from "next/navigation";
+
 
 
 
@@ -14,6 +15,8 @@ export default function GridButtons() {
     const closeMenu = () => {
         setOpenMenu(null);
     };
+
+    const router = useRouter();
 
     return (
         <main className="p-8 grid grid-cols-10 grid-rows-2 gap-6 h-[calc(100vh-72px)] font-black">
@@ -62,7 +65,9 @@ export default function GridButtons() {
                         onClick={closeMenu}
                     >
                         <div onClick={(e) => e.stopPropagation()} className="w-full flex flex-col gap-4">
-                            <button className="bg-[#3C8DC3] text-white rounded px-4 py-2 w-full">
+                            <button
+                                className="bg-[#3C8DC3] text-white rounded px-4 py-2 w-full"
+                                onClick={() => (router.push("/team-creation"))}>
                                 Create Team
                             </button>
                             <button className="bg-[#3C8DC3] text-white rounded px-4 py-2 w-full">
