@@ -14,5 +14,43 @@ describe('TeamService', () => {
 
         const created = await TeamService.getTeam(teamId);
         expect(created.name).toBe('test');
-    })
+    });
+
+    it('Should update the captain of the team', async () => {
+        // Create team first
+        const data = {
+            name: 'Captain Update Squad',
+            captain: 'Old Captain',
+            members: ['Tom', 'Jerry']
+        };
+
+        const teamId = await TeamService.createTeam(data);
+        expect(teamId).toBeDefined();
+        let capArray = ['New Captain1', 'New Captain2'];
+
+        // 🔄 Update captain
+        await TeamService.updateCaptain(teamId, capArray);
+
+        // ✅ Check updated value
+        const updated = await TeamService.getTeam(teamId);
+        expect(updated.captain).toStrictEqual(capArray);
+    });
+
+    it('Should delete a team', async () => {
+        const data = {
+            name: 'Delete Me',
+            captain: 'Captain Gone',
+            members: ['Ghost 1', 'Ghost 2']
+        };
+
+        const teamId = await TeamService.createTeam(data);
+        expect(teamId).toBeDefined();
+
+        // ✅ Delete it
+        await TeamService.deleteTeam(teamId);
+
+        // ❌ Should be gone
+        const deleted = await TeamService.getTeam(teamId);
+        expect(deleted).toBeNull();
+    });
 })
