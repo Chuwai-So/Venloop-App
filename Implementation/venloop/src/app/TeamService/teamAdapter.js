@@ -47,8 +47,9 @@ export const TeamAdapter = {
 
     async getAllTeams() {
        try {
-           const teaRef = await get(ref(db, TEAM_PATH));
-           return snapshot.exists() ? snapshot.val() : {};
+           const snapshot = await get(ref(db, TEAM_PATH));
+           const data = snapshot.exists() ? snapshot.val() : {};
+           return Object.entries(data).map(([id, team]) => ({id, ...team}));
        } catch (err) {
            console.error("Firebase error getAllTeams ", err)
            throw err;
