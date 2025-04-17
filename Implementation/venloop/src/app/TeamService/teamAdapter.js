@@ -43,7 +43,19 @@ export const TeamAdapter = {
     async deleteTeam(teamId) {
         const teamRef = ref(db, `${TEAM_PATH}/${teamId}`);
         await remove(teamRef);
+    },
+
+    async getAllTeams() {
+       try {
+           const teaRef = await get(ref(db, TEAM_PATH));
+           return snapshot.exists() ? snapshot.val() : {};
+       } catch (err) {
+           console.error("Firebase error getAllTeams ", err)
+           throw err;
+       }
     }
+
+
 
 
 }

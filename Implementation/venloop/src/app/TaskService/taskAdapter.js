@@ -13,7 +13,8 @@ const TASK_PATH = 'tasks';
 export const TaskAdapter = {
 
      async createTask(data) {
-         try {const newRef = push(ref(db, TASK_PATH)); //creates reference to the "teams" node in db
+         try {
+             const newRef = push(ref(db, TASK_PATH)); //creates reference to the "teams" node in db
              const taskId = newRef.key; //auto generated id
              const taskURL = `https://venloop-ee862.web.app/tasks/${taskId}`;
 
