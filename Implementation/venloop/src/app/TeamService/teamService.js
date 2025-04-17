@@ -25,6 +25,15 @@ const TeamService = {
 
     async deleteTeam(teamId) {
         return TeamAdapter.deleteTeam(teamId);
+    },
+
+    async getAllTeams() {
+        try {
+            return TeamAdapter.getAllTeams();
+        } catch (err) {
+            console.error("Error when getAllTeams ", err);
+            return null;
+        }
     }
 }
 
