@@ -9,7 +9,7 @@ export default function TeamMenu() {
     const [teams, setTeams] = useState([]);
     const [expanded, setExpanded] = useState(null);
 
-    useEffect(() => {
+    const fetchTeams = () => {
         TeamService.getAllTeams()
             .then(data => {
                 if (Array.isArray(data)) {
@@ -22,6 +22,10 @@ export default function TeamMenu() {
                 console.error("Error loading teams:", err);
                 setTeams([]);
             });
+    };
+
+    useEffect(() => {
+        fetchTeams();
     }, []);
 
     return (
@@ -33,11 +37,11 @@ export default function TeamMenu() {
                         key={team.id}
                         team={team}
                         isExpanded={expanded === team.id}
-                        onToggle={() =>
-                            setExpanded(expanded === team.id ? null : team.id)}
+                        onToggle={() => setExpanded(expanded === team.id ? null : team.id)}
+                        refreshTeams={fetchTeams} // Pass it down
                     />
                 ))}
             </div>
         </div>
-    )
+    );
 }
