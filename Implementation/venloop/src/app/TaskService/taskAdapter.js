@@ -22,6 +22,12 @@ export const TaskAdapter = {
                  id: taskId,
                  name: data.name,
                  description: data.description,
+
+                 type: data.type, //'text', 'choice', 'image'
+
+                 choices:data.choices || [], // for 'choice'
+                 answer: data.answer || null,
+
                  qrURL: taskURL
 
              };

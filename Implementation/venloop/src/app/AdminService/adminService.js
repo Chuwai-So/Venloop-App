@@ -1,10 +1,6 @@
-import {AdminAdapter} from "@/app/AdminService/adminAdapter";
+import {AdminAdapter} from "./adminAdapter";
 import crypto from 'crypto';
 import bcrypt from 'bcryptjs'
-
-function randomPassword() {
-    return crypto.randomBytes(12).toString('base64').slice(0, 12);
-}
 
 const AdminService = {
 
@@ -29,12 +25,31 @@ const AdminService = {
 
     async approveAdmin(adminId) {
         try {
-            const password = randomPassword();
-            const hashed = await bcrypt.hash(password, 10)
-            return await AdminAdapter.updateAdmin(adminId, { verified: true, password: hashed});
+            return await AdminAdapter.updateAdmin(adminId, { verified: true});
         } catch (err) {
             console.error("Error approving Admin: ", err);
             return null;
         }
+    },
+
+    async setPassword(adminId, password) {
+        try {
+            const hashed = await bcrypt.hash(password, 10);
+            return await AdminAdapter.updateAdmin(adminId, {password: hashed});
+        } catch (err) {
+            console.error("Error setting Password")
+            return null;
+        }
+    },
+
+    async deleteAdmin(adminId) {
+        try {
+            return await AdminAdapter.deleteAdmin(adminId);
+        } catch (err) {
+            console.error("Error deleteing Admin")
+            return null;
+        }
     }
 }
+
+export default AdminService;
