@@ -1,31 +1,79 @@
-import {TeamAdapter} from './teamAdapter';
+import { TeamAdapter } from './teamAdapter';
 
 const TeamService = {
-
     async createTeam(data) {
-        return await TeamAdapter.createTeam(data);
+        try {
+            return await TeamAdapter.createTeam(data);
+        } catch (err) {
+            console.error("Error creating team:", err);
+            return null;
+        }
     },
 
     async getTeam(teamId) {
-       return TeamAdapter.getTeam(teamId);
+        try {
+            return await TeamAdapter.getTeam(teamId);
+        } catch (err) {
+            console.error("Error fetching team:", err);
+            return null;
+        }
     },
 
     async updateTeam(teamId, data) {
-        return TeamAdapter.updateTeam(teamId, data);
+        try {
+            return await TeamAdapter.updateTeam(teamId, data);
+        } catch (err) {
+            console.error("Error updating team:", err);
+            return null;
+        }
     },
 
-     async updateCaptain(teamId, captains) {
-         return TeamAdapter.updateTeam(teamId, { captain: captains });
-     },
+    async getTeamQR(teamId) {
+        try {
+            const team = await TeamAdapter.getTeam(teamId);
+            return team?.qrURL || null;
+        } catch (err) {
+            console.error("Error getting team QR code: ", err);
+            return null;
+        }
+    },
 
-     async updateTask(teamId, taskId, taskData) {
-         const field = `completedTasks/${taskId}`;
-         return TeamAdapter.updateTeam(teamId, { [field]: taskData });
-     },
+    async updateCaptain(teamId, captains) {
+        try {
+            return await TeamAdapter.updateTeam(teamId, { captain: captains });
+        } catch (err) {
+            console.error("Error updating captain:", err);
+            return null;
+        }
+    },
+
+    async updateTask(teamId, taskId, taskData) {
+        try {
+            const field = `completedTasks/${taskId}`;
+            return await TeamAdapter.updateTeam(teamId, { [field]: taskData });
+        } catch (err) {
+            console.error("Error updating task progress:", err);
+            return null;
+        }
+    },
 
     async deleteTeam(teamId) {
-        return TeamAdapter.deleteTeam(teamId);
+        try {
+            return await TeamAdapter.deleteTeam(teamId);
+        } catch (err) {
+            console.error("Error deleting team:", err);
+            return null;
+        }
+    },
+
+    async getAllTeams() {
+        try {
+            return await TeamAdapter.getAllTeams();
+        } catch (err) {
+            console.error("Error retrieving all teams:", err);
+            return null;
+        }
     }
-}
+};
 
 export default TeamService;
