@@ -1,0 +1,19 @@
+p-... padding
+grid -> grid
+grid-cols-10 -> 10 columns
+grid-rows-2 -> two rows
+gap-6 -> gap between grid 1.5rem
+col-span-3 -> 3 out of 10 columns
+row-start-1 / 2 -> places button in row 1 or 2
+h-[calc(100vh-72px)] -> dynamic height
+font-black -> font color
+bg-[#...] background colour
+text-... -> text colour
+rounded-lg -> large border for rounded corners
+p-6 -> padding 1.5rem
+w-full -> width fill
+h-full -> height full
+flex items-center justify-center -> centering
+text-xl -> font size
+hover:scale -> zoom
+cursor-pointer -> custom cursor
