@@ -1,10 +1,15 @@
- 'use client';
-import { useState, useEffect } from "react";
+'use client';
+import { useState } from "react";
 import TaskFeatureDescription from "../Component/TaskFeatureDescription";
 import TaskFeatureTimer from "../Component/TaskFeatureTimer";
 import TaskFeaturePicture from "../Component/TaskFeaturePicture";
 import TaskFeatureInput from "../Component/TaskFeatureInput";
+import TaskFeatureChoice from "../Component/TaskFeatureChoice";
 import TaskService from "@/app/TaskService/taskService";
+import QRCodeComponent from "@/app/Component/QRCode";
+
+
+
 
 export default function TaskCreation() {
     const [features, setFeatures] = useState({
@@ -12,6 +17,7 @@ export default function TaskCreation() {
         timer: false,
         picture: false,
         input: false,
+        choice: false,
     });
 
     const [taskData, setTaskData] = useState({
@@ -20,15 +26,19 @@ export default function TaskCreation() {
         timer: "30",
         picture: null,
         input: "",
+        choice: [],
         score: 0,
     });
+
+    //qr constant
+    const [qrUrl, setQrUrl] = useState(null);
 
     const handleToggleFeature = (feat) => {
         setFeatures((prev) => ({ ...prev, [feat]: !prev[feat] }));
         if (features[feat]) {
             setTaskData((prev) => ({
                 ...prev,
-                [feat]: feat === "picture" ? null : "",
+                [feat]: feat === "picture" ? null : feat === "choice" ? [] : "",
             }));
         }
     };
@@ -37,30 +47,43 @@ export default function TaskCreation() {
         setTaskData((prev) => ({ ...prev, [field]: value }));
     };
 
-
     const handleSubmitTask = async () => {
+        let type = "text";
+        if (features.choice) {
+            type = "choice";
+        } else if (features.picture && !features.input) {
+            type = "image";
+        }
+
         const taskPayload = {
             name: taskData.name,
             description: features.description ? taskData.description : null,
-            timer: features.timer ? taskData.timer : null,
             picture: features.picture ? taskData.picture : null,
-            input: features.input ? taskData.input : null,
-            features: {
-                description: features.description,
-                timer: features.timer,
-                picture: features.picture,
-                input: features.input,
-            },
+            timer: features.timer ? taskData.timer : null,
+            choices: features.choice ? taskData.choice : [],
+            answer: taskData.input || null,
+            type,
+            features: { ...features }
         };
+
 
         try {
             const taskId = await TaskService.createTask(taskPayload);
-            alert(`Task created! ID: ${taskId}`);
-            // Optional: Reset form or navigate
+            const createdTask = await TaskService.getTask(taskId);
+            console.log("🚀 Created task:", createdTask);
+
+            if (createdTask?.qrURL) {
+                setQrUrl(createdTask.qrURL); // show it after submit
+                alert("Task created successfully!");
+            } else {
+                alert("Task created, but no QR code was generated.");
+            }
         } catch (err) {
+            console.error("Failed to create task:", err);
             alert("Failed to create task.");
         }
     };
+
 
 
     return (
@@ -69,7 +92,7 @@ export default function TaskCreation() {
             <div className="w-1/2 bg-blue-50 p-6 border-r">
                 <h2 className="text-xl font-bold mb-4">Task Creation</h2>
 
-                {["description", "timer", "input", "picture"].map((feat) => (
+                {["description", "timer", "input", "picture", "choice"].map((feat) => (
                     <div key={feat} className="flex justify-between mb-3 items-center">
                         <span className="capitalize">{feat}</span>
                         <button
@@ -148,6 +171,18 @@ export default function TaskCreation() {
                             </div>
                         )}
 
+                        {features.choice && (
+                            <div className="bg-white border rounded p-2 shadow w-full">
+                                <TaskFeatureChoice
+                                    value={taskData.choice}
+                                    onChange={(choices, selectedAnswer) => {
+                                        handleDataChange("choice", choices);
+                                        handleDataChange("input", selectedAnswer); // store the selected answer
+                                    }}
+                                />
+                            </div>
+                        )}
+
                         <button
                             onClick={handleSubmitTask}
                             className="mt-4 bg-green-500 text-white p-2 w-full rounded hover:bg-green-600"
@@ -157,6 +192,21 @@ export default function TaskCreation() {
                     </div>
                 </div>
             </div>
+            {/*{qrUrl && (*/}
+            {/*    <div className="mt-6 flex justify-center">*/}
+            {/*        <QRCodeComponent value={qrUrl} size={180} label="Scan to open task" />*/}
+            {/*        {qrUrl && (*/}
+            {/*            <button*/}
+            {/*                onClick={() => setQrUrl(null)}*/}
+            {/*                className="mt-2 text-sm text-blue-500 hover:underline"*/}
+            {/*            >*/}
+            {/*                Hide QR Code*/}
+            {/*            </button>*/}
+            {/*        )}*/}
+
+            {/*    </div>*/}
+            {/*)}*/}
+
         </div>
     );
 }
