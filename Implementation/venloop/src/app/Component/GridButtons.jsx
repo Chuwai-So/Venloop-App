@@ -1,8 +1,6 @@
 "use client";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-
-
+import {useState} from "react";
+import {useRouter} from "next/navigation";
 
 
 export default function GridButtons() {
@@ -29,7 +27,9 @@ export default function GridButtons() {
                         onClick={closeMenu}
                     >
                         <div onClick={(e) => e.stopPropagation()} className="w-full flex flex-col gap-4">
-                            <button className="bg-[#3C8DC3] text-white rounded px-4 py-2 w-full">
+                            <button
+                                className="bg-[#3C8DC3] text-white rounded px-4 py-2 w-full"
+                                onClick={() => (router.push("/task-creation"))}>
                                 Create Task
                             </button>
                             <button className="bg-[#3C8DC3] text-white rounded px-4 py-2 w-full">
@@ -48,12 +48,14 @@ export default function GridButtons() {
             </div>
 
             {/* Top-right (30%) - STATIC */}
-            <button className="bg-[#D86F27] text-white rounded-lg p-4 col-span-3 row-start-1 flex items-center justify-center text-lg hover:scale-102 cursor-pointer">
+            <button
+                className="bg-[#D86F27] text-white rounded-lg p-4 col-span-3 row-start-1 flex items-center justify-center text-lg hover:scale-102 cursor-pointer">
                 Event Settings️
             </button>
 
             {/* Bottom-left (30%) - STATIC */}
-            <button className="bg-[#D86F27] text-white rounded-lg p-4 col-span-3 row-start-2 flex items-center justify-center text-lg hover:scale-102 cursor-pointer">
+            <button
+                className="bg-[#D86F27] text-white rounded-lg p-4 col-span-3 row-start-2 flex items-center justify-center text-lg hover:scale-102 cursor-pointer">
                 Leaderboard
             </button>
 
