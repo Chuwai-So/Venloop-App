@@ -6,7 +6,11 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "export": "next build",
+    "preview": "firebase serve",
+    "deploy": "npm run build && firebase deploy",
+    "test": "vitest"
   },
   "dependencies": {
     "canvas-confetti": "^1.9.3",
