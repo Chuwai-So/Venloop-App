@@ -99,6 +99,7 @@ export default function CreateTeamsPage() {
                                 </label>
                                 <input
                                     type="text"
+                                    placeholder="Enter team name..."
                                     value={teamNames[index] || ""}
                                     onChange={(e) => handleInputChange(index, e.target.value)}
                                     className="p-2 border rounded w-full text-[#1F2A60]"
