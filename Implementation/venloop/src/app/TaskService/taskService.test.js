@@ -28,6 +28,7 @@ describe('TaskService', () => {
         console.log(url);
 
         await TaskService.deleteTask(id);
-    })
+    });
+
 
 });

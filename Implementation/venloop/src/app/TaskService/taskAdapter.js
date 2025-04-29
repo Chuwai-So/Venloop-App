@@ -22,9 +22,17 @@ export const TaskAdapter = {
                  id: taskId,
                  name: data.name,
                  description: data.description,
+                 type: data.type,
+                 choices: data.choices || [],
+                 answer: data.answer || null,
+                 timer: data.timer || null,
+                 picture: data.picture || null,
+
+                 features: data.features || {}, // true or false depending they were added to the the task template
                  qrURL: taskURL
 
              };
+
              await set(newRef, task);
              return taskId;
          } catch (err) {
