@@ -6,6 +6,7 @@ export default function TeamBar({team, isExpanded, onToggle, refreshTeams}) {
     const [isEditing, setIsEditing] = useState(false);
     const [newName, setNewName] = useState(team.name);
     const [isSaving, setIsSaving] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false);
 
     const handleSave = async () => {
         setIsSaving(true);
@@ -13,8 +14,10 @@ export default function TeamBar({team, isExpanded, onToggle, refreshTeams}) {
             await TeamService.updateTeam(team.id, {name: newName});
             setIsEditing(false);
             refreshTeams(); // <-- Refresh parent data
+            alert("Successfully updated team");
         } catch (err) {
             console.error("Failed to update team name", err);
+            alert("Failed to update team. Please try again.");
         }
         setIsSaving(false);
     };
@@ -22,6 +25,22 @@ export default function TeamBar({team, isExpanded, onToggle, refreshTeams}) {
     const completedTaskList
         = team.tasks ?
         Object.keys(team.tasks) : [];
+
+    const handleDelete = async () => {
+        const confirmed = confirm("Are you sure you want to delete this team?");
+        if (!confirmed) return;
+
+        setIsDeleting(true);
+        try {
+            await TeamService.deleteTeam(team.id);
+            refreshTeams();
+            alert("Successfully deleted team");
+        } catch (err) {
+            console.error("Failed to delete team", err);
+            alert("Failed to delete team. Please try again.");
+        }
+        setIsDeleting(false);
+    }
 
     return (
         <div
@@ -45,16 +64,16 @@ export default function TeamBar({team, isExpanded, onToggle, refreshTeams}) {
             </div>
 
             {isExpanded && (
-
-                <>  {completedTaskList.length > 0 ? (
-                    <ul className="mt-4 mb-4 list-disc list-inside text-gray-700 text-sm">
-                        {completedTaskList.map((taskId) => (
-                            <li key={taskId}>{taskId}</li>
-                        ))}
-                    </ul>
-                ) : (
-                    <p className="mt-4 mb-4 text-gray-400 text-sm italic">No completed tasks</p>
-                )}
+                <>
+                    {completedTaskList.length > 0 ? (
+                        <ul className="mt-4 mb-4 list-disc list-inside text-gray-700 text-sm">
+                            {completedTaskList.map((taskId) => (
+                                <li key={taskId}>{taskId}</li>
+                            ))}
+                        </ul>
+                    ) : (
+                        <p className="mt-4 mb-4 text-gray-400 text-sm italic">No completed tasks</p>
+                    )}
 
                     <div className="mt-4 flex gap-4 justify-center">
                         {isEditing ? (
@@ -81,21 +100,28 @@ export default function TeamBar({team, isExpanded, onToggle, refreshTeams}) {
                         )}
                         <button
                             className={`px-4 py-2 rounded-lg shadow transition ${
-                                isEditing ? "bg-gray-300 text-gray-500 cursor-not-allowed" : "bg-[#3C8DC3] text-white hover:bg-[#1F2A60]"
+                                isEditing || isSaving || isDeleting
+                                    ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                                    : "bg-[#3C8DC3] text-white hover:bg-[#1F2A60]"
                             }`}
-                            disabled={isEditing}
+                            disabled={isEditing || isSaving || isDeleting}
                             onClick={(e) => e.stopPropagation()}
                         >
                             QR-Code
                         </button>
                         <button
                             className={`px-4 py-2 rounded-lg shadow transition ${
-                                isEditing ? "bg-gray-300 text-gray-500 cursor-not-allowed" : "bg-[#D86F27] text-white hover:bg-red-700"
+                                isEditing || isDeleting
+                                    ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                                    : "bg-[#D86F27] text-white hover:bg-red-700"
                             }`}
-                            disabled={isEditing}
-                            onClick={(e) => e.stopPropagation()}
+                            disabled={isEditing || isDeleting}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                handleDelete();
+                            }}
                         >
-                            Delete
+                            {isDeleting ? "Deleting..." : "Delete"}
                         </button>
                     </div>
                 </>
