@@ -16,7 +16,7 @@ export const TeamAdapter = {
         try {
             const newRef = push(ref(db, TEAM_PATH));
             const teamId = newRef.key;
-            const teamURL = `https://venloop-ee862.web.app/teams/activate/${teamId}`;
+            const teamURL = `https://venloop-ee862.web.app/teams/${teamId}`;
 
             const team = {
                 id: teamId,
