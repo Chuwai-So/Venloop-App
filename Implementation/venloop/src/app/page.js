@@ -6,6 +6,6 @@ import AdminLandingPage from "@/app/admin-landing/page";
 
 export default function Home() {
   return (
-     <AdminLandingPage />
+     <LoginPage />
   );
 }

@@ -62,7 +62,7 @@ describe("TeamMenu", () => {
 
         const toggleButtons = await screen.findAllByRole("button", { name: /expand/i });
         expect(toggleButtons).toHaveLength(2);
-
+        
         fireEvent.click(toggleButtons[0]);
 
         const collapseButton = await screen.findByRole("button", { name: /collapse/i });
