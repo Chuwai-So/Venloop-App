@@ -1,3 +1,4 @@
+import { getAuth } from "firebase/auth";
 import { db } from '../firebase';
 import {
     ref,
@@ -11,30 +12,38 @@ import {
 const ADMIN_PATH = 'admins';
 
 export const AdminAdapter = {
+    requireAuth() {
+        const auth = getAuth();
+        const user = auth.currentUser;
+        if (!user) throw new Error("User is not authenticated");
+        return user;
+    },
 
     async createAdmin(data) {
+        this.requireAuth();
         try {
-            const newRef = push(ref(db, ADMIN_PATH)); //creates reference to the "teams" node in db
-            const adminId = newRef.key; //auto generated id
+            const newRef = push(ref(db, ADMIN_PATH));
+            const adminId = newRef.key;
 
             const admin = {
                 id: adminId,
                 name: data.name,
                 email: data.email,
                 verified: false,
-                isSuper: false,  //Access to grant admin privilege
+                isSuper: false,
                 password: null
             };
 
             await set(newRef, admin);
             return adminId;
         } catch (err) {
-            console.error("Firebase error in create Admin: ", err);
+            console.error("Firebase error in createAdmin: ", err);
             throw err;
         }
     },
 
     async getAdmin(adminId) {
+        this.requireAuth();
         try {
             const snapshot = await get(ref(db, `${ADMIN_PATH}/${adminId}`));
             if (!snapshot.exists()) return null;
@@ -46,6 +55,7 @@ export const AdminAdapter = {
     },
 
     async updateAdmin(adminId, updates) {
+        this.requireAuth();
         try {
             const adminRef = ref(db, `${ADMIN_PATH}/${adminId}`);
             await update(adminRef, updates);
@@ -56,6 +66,7 @@ export const AdminAdapter = {
     },
 
     async deleteAdmin(adminId) {
+        this.requireAuth();
         try {
             const adminRef = ref(db, `${ADMIN_PATH}/${adminId}`);
             await remove(adminRef);
@@ -64,5 +75,4 @@ export const AdminAdapter = {
             throw err;
         }
     }
-
 }
