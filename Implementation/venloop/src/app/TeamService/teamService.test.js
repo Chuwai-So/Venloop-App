@@ -1,6 +1,6 @@
 import TeamService from './teamService';
 import {describe, it, expect, afterAll} from 'vitest';
-import AdminService from "@/app/AdminService/adminService";
+
 
 describe('TeamService', () => {
     it('Should create a new team and return its ID', async () => {
@@ -55,6 +55,38 @@ describe('TeamService', () => {
         // ❌ Should be gone
         const deleted = await TeamService.getTeam(teamId);
         expect(deleted).toBeNull();
+        await TeamService.deleteTeam(teamId);
+    });
+
+    it('Should update a completed task for the team', async () => {
+        const teamData = {
+            name: 'Task Team',
+            captain: 'Task Master',
+            members: ['Tasker 1', 'Tasker 2']
+        };
+
+        const taskId = 'test-task-123'; // Simulate a task that exists globally
+        const taskUpdate = {
+            status: 'completed',
+            answer: 'blue'
+        };
+
+        // 🏗️ Create team first
+        const teamId = await TeamService.createTeam(teamData);
+        expect(teamId).toBeDefined();
+
+        // 🛠️ Update completed task
+        await TeamService.updateTask(teamId, taskId, taskUpdate);
+
+        // ✅ Verify completed task was added
+        const updatedTeam = await TeamService.getTeam(teamId);
+        expect(updatedTeam.completedTasks).toBeDefined();
+        expect(updatedTeam.completedTasks[taskId]).toMatchObject({
+            status: 'completed',
+            answer: 'blue'
+        });
+
+        // 🧹 Clean up
         await TeamService.deleteTeam(teamId);
     });
 

@@ -47,15 +47,26 @@ const TeamService = {
         }
     },
 
-    async updateTask(teamId, taskId, taskData) {
+    async updateTask(teamId, taskId, data) {
+        const team = await TeamAdapter.getTeam(teamId);
+        if (team?.completedTasks?.[taskId]) {
+            console.warn(`Task ${taskId} already completed`);
+            return false;
+        }
         try {
-            const field = `completedTasks/${taskId}`;
-            return await TeamAdapter.updateTeam(teamId, { [field]: taskData });
+            const updates = {
+                [`completedTasks/${taskId}`]: {
+                    ...data,
+                    completedAt: new Date().toISOString()
+                }
+            };
+            return TeamAdapter.updateTeam(teamId, updates);
         } catch (err) {
             console.error("Error updating task progress:", err);
             return null;
         }
     },
+
 
     async deleteTeam(teamId) {
         try {
