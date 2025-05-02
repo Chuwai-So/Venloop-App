@@ -1,5 +1,5 @@
-import { getAuth } from "firebase/auth";
-import { db } from '../firebase';
+import {db} from '../firebase';
+import {requireAuth} from "@/app/contexts/authContext/requireAuth";
 import {
     ref,
     push,
@@ -12,15 +12,10 @@ import {
 const ADMIN_PATH = 'admins';
 
 export const AdminAdapter = {
-    requireAuth() {
-        const auth = getAuth();
-        const user = auth.currentUser;
-        if (!user) throw new Error("User is not authenticated");
-        return user;
-    },
+
 
     async createAdmin(data) {
-        this.requireAuth();
+        requireAuth();
         try {
             const newRef = push(ref(db, ADMIN_PATH));
             const adminId = newRef.key;
@@ -43,7 +38,7 @@ export const AdminAdapter = {
     },
 
     async getAdmin(adminId) {
-        this.requireAuth();
+        requireAuth();
         try {
             const snapshot = await get(ref(db, `${ADMIN_PATH}/${adminId}`));
             if (!snapshot.exists()) return null;
@@ -55,7 +50,7 @@ export const AdminAdapter = {
     },
 
     async updateAdmin(adminId, updates) {
-        this.requireAuth();
+        requireAuth();
         try {
             const adminRef = ref(db, `${ADMIN_PATH}/${adminId}`);
             await update(adminRef, updates);
@@ -66,7 +61,7 @@ export const AdminAdapter = {
     },
 
     async deleteAdmin(adminId) {
-        this.requireAuth();
+        requireAuth();
         try {
             const adminRef = ref(db, `${ADMIN_PATH}/${adminId}`);
             await remove(adminRef);

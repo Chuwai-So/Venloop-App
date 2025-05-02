@@ -1,19 +1,14 @@
 import {AdminAdapter} from "./adminAdapter";
 import crypto from 'crypto';
 import bcrypt from 'bcryptjs'
-import {getAuth} from "firebase/auth";
+import {requireAuth} from "@/app/contexts/authContext/requireAuth";
 
 const AdminService = {
-    requireAuth() {
-        const auth = getAuth();
-        const user = auth.currentUser;
-        if (!user) throw new Error("User is not authenticated");
-        return user;
-    },
+
 
     async createAdmin(data) {
         try {
-            this.requireAuth()
+            requireAuth()
             return await AdminAdapter.createAdmin(data);
         } catch (err) {
             console.error("Error creating admin: ", err);
@@ -24,7 +19,7 @@ const AdminService = {
 
     async getAdmin(adminId) {
         try {
-            this.requireAuth()
+            requireAuth()
             return await AdminAdapter.getAdmin(adminId);
         } catch (err) {
             console.error("Error getting admin back: ", err);
@@ -34,7 +29,7 @@ const AdminService = {
 
     async approveAdmin(adminId) {
         try {
-            this.requireAuth()
+            requireAuth()
             return await AdminAdapter.updateAdmin(adminId, { verified: true});
         } catch (err) {
             console.error("Error approving Admin: ", err);
@@ -44,7 +39,7 @@ const AdminService = {
 
     async setPassword(adminId, password) {
         try {
-            this.requireAuth()
+            requireAuth()
             const hashed = await bcrypt.hash(password, 10);
             return await AdminAdapter.updateAdmin(adminId, {password: hashed});
         } catch (err) {
@@ -55,7 +50,7 @@ const AdminService = {
 
     async deleteAdmin(adminId) {
         try {
-            this.requireAuth()
+            requireAuth()
             return await AdminAdapter.deleteAdmin(adminId);
         } catch (err) {
             console.error("Error deleteing Admin")
