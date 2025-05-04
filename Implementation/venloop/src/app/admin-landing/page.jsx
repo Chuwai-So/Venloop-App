@@ -1,16 +1,18 @@
 "use client";
 
-import { useState } from 'react';
-import NavBar from "@/app/Component/NavBar";
+
+import LogOutNavBar from "@/app/Component/NavBars/LogOutNavBar";
 import GridButtons from "@/app/Component/GridButtons";
-import Link from 'next/link';
+import ProtectedRoute from "@/app/ProtectedRoute";
 
 
 export default function AdminLandingPage() {
     return (
-        <div className="min-h-screen bg-gray-50 relative overflow-hidden">
-            <NavBar/>
-            <GridButtons/>
-        </div>
+        <ProtectedRoute>
+            <div className="min-h-screen bg-gray-50 relative overflow-hidden">
+                <LogOutNavBar/>
+                <GridButtons/>
+            </div>
+        </ProtectedRoute>
     );
 }

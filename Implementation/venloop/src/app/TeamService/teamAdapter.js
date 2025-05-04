@@ -1,4 +1,5 @@
 import { db } from '../firebase';
+import {requireAuth} from "@/app/contexts/authContext/requireAuth";
 import {
     ref,
     push,
@@ -12,8 +13,10 @@ const TEAM_PATH = 'teams';
 
 export const TeamAdapter = {
 
+
     async createTeam(data) {
         try {
+            requireAuth()
             const newRef = push(ref(db, TEAM_PATH));
             const teamId = newRef.key;
             const teamURL = `https://venloop-ee862.web.app/teams/${teamId}`;
@@ -38,6 +41,7 @@ export const TeamAdapter = {
 
     async getTeam(teamId) {
         try {
+            requireAuth()
             const snapshot = await get(ref(db, `${TEAM_PATH}/${teamId}`));
             return snapshot.exists() ? snapshot.val() : null;
         } catch (err) {
@@ -48,6 +52,7 @@ export const TeamAdapter = {
 
     async updateTeam(teamId, updates) {
         try {
+            requireAuth()
             const teamRef = ref(db, `${TEAM_PATH}/${teamId}`);
             await update(teamRef, updates);
         } catch (err) {
@@ -58,6 +63,7 @@ export const TeamAdapter = {
 
     async deleteTeam(teamId) {
         try {
+            requireAuth()
             const teamRef = ref(db, `${TEAM_PATH}/${teamId}`);
             await remove(teamRef);
         } catch (err) {
@@ -68,6 +74,7 @@ export const TeamAdapter = {
 
     async getAllTeams() {
        try {
+           requireAuth()
            const snapshot = await get(ref(db, TEAM_PATH));
            const data = snapshot.exists() ? snapshot.val() : {};
            return Object.entries(data).map(([id, team]) => ({id, ...team}));

@@ -1,19 +1,31 @@
 "use client";
-import {useState} from "react";
+import { useState, useEffect, useRef } from "react";
 import TeamService from "@/app/TeamService/teamService";
+import { db } from "@/app/firebase";
+import { ref, push, serverTimestamp } from "firebase/database";
+import QRCode from "@/app/Component/QRCode";
 
-export default function TeamBar({team, isExpanded, onToggle, refreshTeams}) {
+export default function TeamBar({ team, isExpanded, onToggle, refreshTeams }) {
     const [isEditing, setIsEditing] = useState(false);
     const [newName, setNewName] = useState(team.name);
     const [isSaving, setIsSaving] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
+    const [qrToken, setQrToken] = useState(null);
+    const [showQR, setShowQR] = useState(false);
+    const qrRef = useRef();
+
+    useEffect(() => {
+        if (!isExpanded) {
+            setShowQR(false);
+        }
+    }, [isExpanded]);
 
     const handleSave = async () => {
         setIsSaving(true);
         try {
-            await TeamService.updateTeam(team.id, {name: newName});
+            await TeamService.updateTeam(team.id, { name: newName });
             setIsEditing(false);
-            refreshTeams(); // <-- Refresh parent data
+            refreshTeams();
             alert("Successfully updated team");
         } catch (err) {
             console.error("Failed to update team name", err);
@@ -22,9 +34,26 @@ export default function TeamBar({team, isExpanded, onToggle, refreshTeams}) {
         setIsSaving(false);
     };
 
-    const completedTaskList
-        = team.tasks ?
-        Object.keys(team.tasks) : [];
+    const handleGenerateQR = async () => {
+        try {
+            const qrRef = ref(db, "qr_tokens");
+            const newTokenRef = await push(qrRef, {
+                teamId: team.id,
+                createdAt: serverTimestamp(),
+            });
+            setQrToken(newTokenRef.key);
+            setShowQR(true);
+        } catch (err) {
+            console.error("Error generating QR token:", err);
+            alert("Failed to generate QR code. Please try again.");
+        }
+    };
+
+    const handleDownloadQR = () => {
+        //TODO
+    };
+
+    const completedTaskList = team.tasks ? Object.keys(team.tasks) : [];
 
     const handleDelete = async () => {
         const confirmed = confirm("Are you sure you want to delete this team?");
@@ -40,7 +69,7 @@ export default function TeamBar({team, isExpanded, onToggle, refreshTeams}) {
             alert("Failed to delete team. Please try again.");
         }
         setIsDeleting(false);
-    }
+    };
 
     return (
         <div
@@ -105,7 +134,10 @@ export default function TeamBar({team, isExpanded, onToggle, refreshTeams}) {
                                     : "bg-[#3C8DC3] text-white hover:bg-[#1F2A60]"
                             }`}
                             disabled={isEditing || isSaving || isDeleting}
-                            onClick={(e) => e.stopPropagation()}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                handleGenerateQR();
+                            }}
                         >
                             QR-Code
                         </button>
@@ -124,6 +156,18 @@ export default function TeamBar({team, isExpanded, onToggle, refreshTeams}) {
                             {isDeleting ? "Deleting..." : "Delete"}
                         </button>
                     </div>
+
+                    {showQR && qrToken && (
+                        <div className="mt-4 flex flex-col items-center gap-2" ref={qrRef} onClick={(e) => e.stopPropagation()}>
+                            <QRCode value={`https://yourdomain.com/teams/view/${qrToken}`} />
+                            <button
+                                onClick={handleDownloadQR}
+                                className="mt-2 px-4 py-1 bg-[#3C8DC3] text-white text-sm rounded shadow hover:bg-[#1F2A60]"
+                            >
+                                Download QR Code
+                            </button>
+                        </div>
+                    )}
                 </>
             )}
         </div>

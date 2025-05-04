@@ -1,4 +1,5 @@
 import { db } from '../firebase';
+import {requireAuth} from "@/app/contexts/authContext/requireAuth";
 import {
     ref,
     push,
@@ -14,6 +15,7 @@ export const TaskAdapter = {
 
      async createTask(data) {
          try {
+             requireAuth();
              const newRef = push(ref(db, TASK_PATH)); //creates reference to the "teams" node in db
              const taskId = newRef.key; //auto generated id
              const taskURL = `https://venloop-ee862.web.app/tasks/${taskId}`;
@@ -44,6 +46,7 @@ export const TaskAdapter = {
 
     async getTask(taskId) {
          try {
+             requireAuth();
              const snapshot = await get(ref(db, `${TASK_PATH}/${taskId}`));
              if (!snapshot.exists()) return null;
              return snapshot.val();
@@ -55,6 +58,7 @@ export const TaskAdapter = {
 
     async deleteTask(taskId) {
          try {
+             requireAuth();
              const taskRef = ref(db, `${TASK_PATH}/${taskId}`);
              await remove(taskRef);
          } catch (err) {
