@@ -61,5 +61,28 @@ export const TaskAdapter = {
              console.error("Firebase error in deleteTask: ", err);
              throw err;
          }
+    },
+
+    async getAllTasks() {
+        try {
+            const snapshot = await get(ref(db, TASK_PATH));
+            if (!snapshot.exists()) return null;
+            return snapshot.val();
+        } catch (err) {
+            console.error("Firebase error in getAllTasks: ", err);
+            throw err;
+        }
+    },
+
+    // In taskAdapter.js
+    async updateTask(taskId, data) {
+        try {
+            const taskRef = ref(db, `tasks/${taskId}`);
+            await update(taskRef, data);
+        } catch (err) {
+            console.error("Firebase error in updateTask: ", err);
+            throw err;
+        }
     }
+
 }

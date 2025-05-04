@@ -32,7 +32,8 @@ export default function GridButtons() {
                                 onClick={() => (router.push("/task-creation"))}>
                                 Create Task
                             </button>
-                            <button className="bg-[#3C8DC3] text-white rounded px-4 py-2 w-full">
+                            <button className="bg-[#3C8DC3] text-white rounded px-4 py-2 w-full"
+                                onClick={() => (router.push("/admin/tasks"))}>
                                 Edit Tasks
                             </button>
                         </div>
