@@ -1,4 +1,5 @@
 import { TeamAdapter } from './teamAdapter';
+import {requireAuth} from "@/app/contexts/authContext/requireAuth";
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'
 import TaskService from "../TaskService/taskService";
 import {update} from "firebase/database";
@@ -8,6 +9,7 @@ import {storage} from "../firebase";
 const TeamService = {
     async createTeam(data) {
         try {
+            requireAuth();
             return await TeamAdapter.createTeam(data);
         } catch (err) {
             console.error("Error creating team:", err);
@@ -17,6 +19,7 @@ const TeamService = {
 
     async getTeam(teamId) {
         try {
+            requireAuth();
             return await TeamAdapter.getTeam(teamId);
         } catch (err) {
             console.error("Error fetching team:", err);
@@ -26,6 +29,7 @@ const TeamService = {
 
     async updateTeam(teamId, data) {
         try {
+            requireAuth();
             return await TeamAdapter.updateTeam(teamId, data);
         } catch (err) {
             console.error("Error updating team:", err);
@@ -35,6 +39,7 @@ const TeamService = {
 
     async getTeamQR(teamId) {
         try {
+            requireAuth();
             const team = await TeamAdapter.getTeam(teamId);
             return team?.qrURL || null;
         } catch (err) {
@@ -45,6 +50,7 @@ const TeamService = {
 
     async updateCaptain(teamId, captains) {
         try {
+            requireAuth();
             return await TeamAdapter.updateTeam(teamId, { captain: captains });
         } catch (err) {
             console.error("Error updating captain:", err);
@@ -64,6 +70,7 @@ const TeamService = {
 
     async addPendingTask(teamId, taskId, file) {
         try {
+            requireAuth();
             const imageURL = await this.fileToBase64(file)
             const updates = {
                 [`pendingTasks/${taskId}`]: {
@@ -115,6 +122,7 @@ const TeamService = {
 
     async deleteTeam(teamId) {
         try {
+            requireAuth();
             return await TeamAdapter.deleteTeam(teamId);
         } catch (err) {
             console.error("Error deleting team:", err);
@@ -124,6 +132,7 @@ const TeamService = {
 
     async getAllTeams() {
         try {
+            requireAuth();
             return await TeamAdapter.getAllTeams();
         } catch (err) {
             console.error("Error retrieving all teams:", err);

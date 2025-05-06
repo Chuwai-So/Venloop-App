@@ -1,9 +1,11 @@
 import {TaskAdapter} from "./taskAdapter";
+import {requireAuth} from "@/app/contexts/authContext/requireAuth";
 
  const TaskService = {
 
      async createTask(data) {
          try {
+             requireAuth();
              return await TaskAdapter.createTask(data);
          } catch (err) {
              console.error("Error creating task: ", err);
@@ -13,6 +15,7 @@ import {TaskAdapter} from "./taskAdapter";
 
      async getTask(taskId) {
          try {
+             requireAuth();
              return await TaskAdapter.getTask(taskId);
          } catch (err) {
              console.error("Error getting task object back: ", err);
@@ -22,6 +25,7 @@ import {TaskAdapter} from "./taskAdapter";
 
      async getTaskQR(taskId) {
          try {
+             requireAuth();
              const task = await TaskAdapter.getTask(taskId);
              return task?.qrURL || null;
          } catch (err) {
@@ -32,6 +36,7 @@ import {TaskAdapter} from "./taskAdapter";
 
      async deleteTask(taskId) {
          try {
+             requireAuth();
              return TaskAdapter.deleteTask(taskId);
          } catch (err) {
              console.error("Error deleting task: ", err);

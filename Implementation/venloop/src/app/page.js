@@ -8,6 +8,6 @@ import TeamWrapper from "@/app/teams/page";
 
 export default function Home() {
   return (
-     <AdminLandingPage />
+     <LoginPage />
   );
 }

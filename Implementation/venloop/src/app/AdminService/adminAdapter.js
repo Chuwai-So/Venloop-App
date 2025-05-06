@@ -1,4 +1,5 @@
-import { db } from '../firebase';
+import {db} from '../firebase';
+import {requireAuth} from "@/app/contexts/authContext/requireAuth";
 import {
     ref,
     push,
@@ -12,29 +13,32 @@ const ADMIN_PATH = 'admins';
 
 export const AdminAdapter = {
 
+
     async createAdmin(data) {
+        requireAuth();
         try {
-            const newRef = push(ref(db, ADMIN_PATH)); //creates reference to the "teams" node in db
-            const adminId = newRef.key; //auto generated id
+            const newRef = push(ref(db, ADMIN_PATH));
+            const adminId = newRef.key;
 
             const admin = {
                 id: adminId,
                 name: data.name,
                 email: data.email,
                 verified: false,
-                isSuper: false,  //Access to grant admin privilege
+                isSuper: false,
                 password: null
             };
 
             await set(newRef, admin);
             return adminId;
         } catch (err) {
-            console.error("Firebase error in create Admin: ", err);
+            console.error("Firebase error in createAdmin: ", err);
             throw err;
         }
     },
 
     async getAdmin(adminId) {
+        requireAuth();
         try {
             const snapshot = await get(ref(db, `${ADMIN_PATH}/${adminId}`));
             if (!snapshot.exists()) return null;
@@ -46,6 +50,7 @@ export const AdminAdapter = {
     },
 
     async updateAdmin(adminId, updates) {
+        requireAuth();
         try {
             const adminRef = ref(db, `${ADMIN_PATH}/${adminId}`);
             await update(adminRef, updates);
@@ -56,6 +61,7 @@ export const AdminAdapter = {
     },
 
     async deleteAdmin(adminId) {
+        requireAuth();
         try {
             const adminRef = ref(db, `${ADMIN_PATH}/${adminId}`);
             await remove(adminRef);
@@ -64,5 +70,4 @@ export const AdminAdapter = {
             throw err;
         }
     }
-
 }
