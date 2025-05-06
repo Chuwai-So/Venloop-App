@@ -8,6 +8,10 @@
     ],
     "rewrites": [
       {
+        "source": "/teams/view",
+        "destination": "/teams/view.html"
+      },
+      {
         "source": "**",
         "destination": "/index.html"
       }
