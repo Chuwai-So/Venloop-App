@@ -45,7 +45,7 @@ export default function LoginPage() {
 
     return (
         <div className="min-h-screen bg-gray-50">
-            <CleanNavBar />
+            <CleanNavBar/>
 
             <div className="flex items-center justify-center h-[calc(100vh-72px)]">
                 <form
@@ -93,7 +93,9 @@ export default function LoginPage() {
 
                     <p className="text-sm text-center text-gray-500">
                         Don't have an account?{" "}
-                        <span className="text-[#D86F27] hover:underline cursor-pointer">Sign Up</span>
+                        <button className="text-[#D86F27] hover:underline cursor-pointer"
+                                onClick={() => (router.push("/admin-signup"))}>Sign Up
+                        </button>
                     </p>
                 </form>
             </div>

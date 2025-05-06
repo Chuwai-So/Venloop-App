@@ -5,7 +5,6 @@ import TeamService from "@/app/TeamService/teamService";
 import { useSearchParams } from "next/navigation";
 import CleanNavBar from "@/app/Component/NavBars/CleanNavBar";
 import QRScannerButton from "@/app/Component/Scanner";
-import TestUploadButton from "@/app/Component/TestUploadBtn";
 
 
 export default function TeamDetail() {
