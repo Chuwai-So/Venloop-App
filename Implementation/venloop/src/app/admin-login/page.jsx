@@ -7,7 +7,7 @@ import {doSignInWithEmailAndPassword} from "@/app/auth";
 import {useAuth} from "@/app/contexts/authContext";
 
 export default function LoginPage() {
-    const {userLoggedIn} = useAuth();
+
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -23,6 +23,7 @@ export default function LoginPage() {
             setErrorMessage("");
             try {
                 await doSignInWithEmailAndPassword(email, password);
+                router.replace("/admin-landing");
             } catch (err) {
                 const message = err.message || String(err);
                 setErrorMessage(message);
@@ -33,14 +34,6 @@ export default function LoginPage() {
         }
     };
 
-
-    useEffect(() => {
-        if (userLoggedIn) {
-            console.log("logged in");
-            console.log("Redirecting to /admin-landing");
-            router.replace("/admin-landing");
-        }
-    }, [userLoggedIn, router]);
 
 
     return (

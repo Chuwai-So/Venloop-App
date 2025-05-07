@@ -1,5 +1,7 @@
-import {db} from '../firebase';
+import {db, auth} from '../firebase';
 import {requireAuth} from "@/app/contexts/authContext/requireAuth";
+import {doCreateUserWithEmailAndPassword} from "@/app/auth";
+
 import {
     ref,
     push,
@@ -15,13 +17,17 @@ export const AdminAdapter = {
 
 
     async createAdmin(data) {
-        requireAuth();
         try {
+            const userCred = await doCreateUserWithEmailAndPassword(data.email, data.password);
+            const firebaseUser = userCred.user;
+
+
             const newRef = push(ref(db, ADMIN_PATH));
             const adminId = newRef.key;
 
             const admin = {
                 id: adminId,
+                firebaseUid: firebaseUser.uid,
                 name: data.name,
                 email: data.email,
                 verified: false,
@@ -86,6 +92,47 @@ export const AdminAdapter = {
             console.error("Firebase error in getAllAdmins: ", err);
             throw err;
         }
+    },
+
+    async getUnverifiedAdmins() {
+        requireAuth();
+        try {
+            const snapshot = await get(ref(db, ADMIN_PATH));
+            if (!snapshot.exists()) return [];
+
+            const data = snapshot.val();
+            return Object.entries(data)
+                .filter(([, admin]) => admin.verified === false)
+                .map(([id, admin]) => ({
+                    id,
+                    ...admin
+                }));
+        } catch (err) {
+            console.error("Firebase error in getUnverifiedAdmins: ", err);
+            throw err;
+        }
+    },
+
+    async getAdminByFirebaseUid(firebaseUid) {
+        try {
+            const snapshot = await get(ref(db, ADMIN_PATH));
+            if (!snapshot.exists()) return null;
+
+            const data = snapshot.val();
+
+            for (const [id, admin] of Object.entries(data)) {
+                if (admin.firebaseUid === firebaseUid) {
+                    return { id, ...admin };
+                }
+            }
+
+            return null;
+        } catch (err) {
+            console.error("Firebase error in getAdminByFirebaseUid: ", err);
+            throw err;
+        }
     }
+
+
 
 }

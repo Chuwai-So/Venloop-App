@@ -3,9 +3,11 @@
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { deleteUser, getAuth } from "firebase/auth";
+import AdminService from "@/app/AdminService/adminService";
 
 export default function AccountDropdown() {
     const [menuOpen, setMenuOpen] = useState(false);
+    const [isSuperAdmin, setIsSuperAdmin] = useState(false);
     const menuRef = useRef(null);
     const router = useRouter();
     const auth = getAuth();
@@ -23,6 +25,25 @@ export default function AccountDropdown() {
         };
     }, []);
 
+
+    useEffect(() => {
+        const fetchAdmin = async () => {
+            const user = auth.currentUser;
+            if (!user) return;
+
+            try {
+                const admin = await AdminService.getAdminByFirebaseUid(user.uid);
+                if (admin?.isSuper) {
+                    setIsSuperAdmin(true);
+                }
+            } catch (err) {
+                console.error("Failed to fetch admin data:", err);
+            }
+        };
+
+        fetchAdmin();
+    }, [auth.currentUser]);
+
     const handleDelete = async () => {
         const confirmDelete = window.confirm("Are you sure you want to delete your account? This cannot be undone.");
         if (!confirmDelete) return;
@@ -35,9 +56,6 @@ export default function AccountDropdown() {
             alert("Failed to delete account. You may need to log in again.");
         }
     };
-
-    const isSuperAdmin = auth.currentUser?.email === "test@v.com";
-    // TODO: Move to DB ?
 
     return (
         <div className="relative" ref={menuRef}>
