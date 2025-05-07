@@ -1,8 +1,10 @@
 import { TeamAdapter } from './teamAdapter';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'
 import TaskService from "../TaskService/taskService";
-import {update} from "firebase/database";
+import { ref as dbRef, get, update } from 'firebase/database'
+
 import {storage} from "../firebase";
+import { db } from "@/app/firebase";
 
 
 const TeamService = {
@@ -12,6 +14,16 @@ const TeamService = {
         } catch (err) {
             console.error("Error creating team:", err);
             return null;
+        }
+    },
+
+    async verifyTokenAndGetTeamId(token) {
+        const snapshot = await get(dbRef(db, `teamTokens/${token}`));
+        if (snapshot.exists()) {
+            const { teamId } = snapshot.val();
+            return teamId;
+        } else {
+            throw new Error("Invalid token.");
         }
     },
 
@@ -53,11 +65,16 @@ const TeamService = {
     },
 
     async fileToBase64(file) {
+        if (!(file instanceof Blob)) {
+            console.error("Invalid file input:", file);
+            throw new Error("Provided input is not a Blob or File.");
+        }
+
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
-            reader.onloadend = () => resolve(reader.result); // Base64 string
+            reader.onloadend = () => resolve(reader.result);
             reader.onerror = reject;
-            reader.readAsDataURL(file); // Includes the data MIME header
+            reader.readAsDataURL(file);
         });
     },
 
@@ -87,7 +104,14 @@ const TeamService = {
             return false;
         }
         try {
-            const imageURL = await this.fileToBase64(file)
+            if (!(file instanceof File)) {
+                console.warn("Provided file is not a valid File object");
+            }
+            if (!(file instanceof Blob)) {
+                console.warn("Submitted file is not a Blob or File");
+            }
+            console.log("File object:", file);
+            const imageURL = await this.fileToBase64(file);
             const updates = {
                 [`completedTasks/${taskId}`]: {
                     picture: imageURL,

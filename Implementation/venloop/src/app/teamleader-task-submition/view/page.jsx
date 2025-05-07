@@ -10,6 +10,7 @@ import TaskFeaturePicture from "@/app/Component/TaskFeaturePicture";
 import TaskFeatureInput from "@/app/Component/TaskFeatureInput";
 import TaskFeatureChoice from "@/app/Component/TaskFeatureChoice";
 import CleanNavBar from "@/app/Component/NavBars/CleanNavBar";
+import {TaskAdapter} from "@/app/TaskService/taskAdapter";
 
 export default function Page() {
 
@@ -24,7 +25,6 @@ export default function Page() {
     useEffect(() => {
         const fetchTask = async () => {
             if (!taskId) return;
-
             const data = await TaskService.getTask(taskId);
             if (data?.isTemplate) {
                 setTask(data);
@@ -39,6 +39,7 @@ export default function Page() {
 
     const handleSubmit = async () => {
         const teamToken = localStorage.getItem("teamAccessToken");
+        console.log("Team token from localStorage:", teamToken);
         if (!teamToken) {
             alert("Team not authenticated.");
             return;
@@ -51,10 +52,20 @@ export default function Page() {
             userPicture: picture || null,
             submittedAt: Date.now(),
         };
+        console.log("Picture at submit time:", picture);
+        if (picture) {
+            console.log("Picture type:", picture.constructor.name);
+            console.log("Is File?", picture instanceof File);
+            console.log("Is Blob?", picture instanceof Blob);
+        }
 
         try {
             const teamId = await TeamService.verifyTokenAndGetTeamId(teamToken);
-            await TeamService.completeTask(teamId, taskId, submission);
+            if ((submission.userPicture) != null) {
+                await TeamService.approvePictureTaskDemo(teamId, taskId, submission.userPicture)
+            } else {
+                await TeamService.completeTask(teamId, taskId, submission);
+            }
             alert("Task submitted!");
         } catch (err) {
             console.error(err);
