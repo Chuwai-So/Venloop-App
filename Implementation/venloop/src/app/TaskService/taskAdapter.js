@@ -14,9 +14,11 @@ const TASK_PATH = 'tasks';
 export const TaskAdapter = {
     async createTask(data) {
         try {
+
             const newRef = push(ref(db, TASK_PATH));
             const taskId = newRef.key;
-            const taskURL = `https://venloop-ee862.web.app/tasks/${taskId}`;
+            const taskURL = `https://venloop-ee862.web.app/teamleader-task-submition/view${taskId}`;
+
 
             const task = {
                 id: taskId,
