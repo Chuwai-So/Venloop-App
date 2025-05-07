@@ -10,6 +10,6 @@ import TeamLeaderCreateTaskPage from "@/app/teamleader-task-submition/page";
 
 export default function Home() {
   return (
-     <LoginPage/>
+     <LoginPage />
   );
 }
