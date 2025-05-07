@@ -76,7 +76,7 @@ describe('TeamService', () => {
         expect(teamId).toBeDefined();
 
         // 🛠️ Update completed task
-        await TeamService.updateTask(teamId, taskId, taskUpdate);
+        await TeamService.completeTask(teamId, taskId, taskUpdate);
 
         // ✅ Verify completed task was added
         const updatedTeam = await TeamService.getTeam(teamId);
@@ -90,5 +90,24 @@ describe('TeamService', () => {
         await TeamService.deleteTeam(teamId);
     });
 
+    it('should upload an image and store metadata in pendingTasks', async () => {
+        const teamId = '-OP4yImpm78haTDmZOjF';
+        const taskId = 'mock-task-file-upload';
+
+        // Create a mock file (1x1 pixel PNG)
+        const byteArray = new Uint8Array([137, 80, 78, 71, /*...*/]); // PNG header bytes
+        const mockFile = new File([byteArray], 'test.png', { type: 'image/png' });
+
+        const success = await TeamService.addPendingTask(teamId, taskId, mockFile);
+        expect(success).toBe(true);
+
+        const team = await TeamAdapter.getTeam(teamId);
+        const pending = team.pendingTasks?.[taskId];
+
+        expect(pending).toBeDefined();
+        expect(pending.picture).toContain('https://');
+        expect(pending.status).toBe('pending');
+        expect(pending.uploadedAt).toBeDefined();
+    });
 
 })

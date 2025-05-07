@@ -1,7 +1,9 @@
 import {AdminAdapter} from "./adminAdapter";
-import crypto from 'crypto';
 import bcrypt from 'bcryptjs'
+import { promisify } from 'util'
 import {requireAuth} from "@/app/contexts/authContext/requireAuth";
+
+
 
 const AdminService = {
 
@@ -40,7 +42,8 @@ const AdminService = {
     async setPassword(adminId, password) {
         try {
             requireAuth()
-            const hashed = await bcrypt.hash(password, 10);
+            const saltRounds = 10;
+            const hashed = await bcrypt.hash(password, saltRounds);
             return await AdminAdapter.updateAdmin(adminId, {password: hashed});
         } catch (err) {
             console.error("Error setting Password")

@@ -1,9 +1,11 @@
 'use client';
-
+import { Html5Qrcode } from 'html5-qrcode';
 import { useEffect, useState } from "react";
 import TeamService from "@/app/TeamService/teamService";
 import { useSearchParams } from "next/navigation";
 import CleanNavBar from "@/app/Component/NavBars/CleanNavBar";
+import QRScannerButton from "@/app/Component/Scanner";
+
 
 export default function TeamDetail() {
     const colors = {
@@ -14,6 +16,32 @@ export default function TeamDetail() {
         black: '#000000',
     };
     console.log("Should have a team id")
+    const startScan = () => {
+        const qrRegionId = "qr-reader";
+        const html5QrCode = new Html5Qrcode(qrRegionId);
+
+        Html5Qrcode.getCameras().then(devices => {
+            if (devices && devices.length) {
+                const cameraId = devices[0].id;
+                html5QrCode.start(
+                    cameraId,
+                    {
+                        fps: 10,
+                        qrbox: { width: 250, height: 250 }
+                    },
+                    (decodedText) => {
+                        alert(`Scanned: ${decodedText}`);
+                        html5QrCode.stop();
+                    },
+                    (errorMessage) => {
+                        console.warn(errorMessage);
+                    }
+                );
+            }
+        }).catch(err => {
+            console.error("Camera error: ", err);
+        });
+    };
 
     const searchParams = useSearchParams();
     const teamId = searchParams.get("id");
@@ -41,43 +69,61 @@ export default function TeamDetail() {
 
             <main className="p-4 flex flex-col gap-6">
                 <header className="text-center border-b border-white pb-2">
-                    <h1 className="text-2xl font-bold">{team.name}</h1>
+                    <h1 className="text-5xl font-bold pb-2">{team.name}</h1>
+
                 </header>
 
-                <section style={{ backgroundColor: colors.white, color: colors.black }} className="rounded-lg p-4 shadow">
-                    <h2 style={{ color: colors.orange }} className="text-lg font-semibold mb-2">Captain</h2>
+                <section style={{backgroundColor: colors.white, color: colors.black}} className="rounded-lg p-4 shadow">
+                    <h2 style={{color: colors.orange}} className="text-lg font-semibold mb-2">Captain</h2>
                     <p>{team.captain || "Not assigned yet"}</p>
                 </section>
 
-                <section style={{ backgroundColor: colors.white, color: colors.black }} className="rounded-lg p-4 shadow">
-                    <h2 style={{ color: colors.orange }} className="text-lg font-semibold mb-2">Completed Tasks</h2>
+                <section style={{backgroundColor: colors.white, color: colors.black}} className="rounded-lg p-4 shadow">
+                    <h2
+                        style={{color: colors.orange}}
+                        className="text-lg font-semibold mb-4"
+                    >
+                        Completed Tasks
+                    </h2>
+
                     {team.completedTasks && Object.keys(team.completedTasks).length > 0 ? (
-                        <ul className="list-disc list-inside">
-                            {Object.entries(team.completedTasks).map(([taskId, task]) => (
-                                <li key={taskId}>
-                                    {task.name || taskId} — {task.status || "completed"}
-                                </li>
-                            ))}
-                        </ul>
+                        <div className="flex flex-col gap-3">
+                            {Object.entries(team.completedTasks).map(([taskId, task]) => {
+                                console.log("bitch bitch bitch")
+                                console.log("Rendered Task:", task);
+                                const borderColor = task.result === "correct"
+                                    ? "border-l-green-500"
+                                    : task.result === "incorrect"
+                                        ? "border-l-red-500"
+                                        : "border-l-gray-300"; // fallback for null or pending
+
+                                return (
+                                    <div
+                                        key={taskId}
+                                        className={`border border-gray-300 border-l-8 rounded-lg p-3 shadow-sm bg-gray-50 ${borderColor}`}
+                                    >
+                                        <h3 className="font-semibold text-base mb-1">
+                                            {task.name || taskId}
+                                        </h3>
+                                        <p className="text-sm text-gray-700">
+                                            Your answer: {task.userAnswer || "Completed"}
+                                        </p>
+                                        {task.result && (
+                                            <p className="text-sm text-gray-700">
+                                                Result: {task.result}
+                                            </p>
+                                        )}
+                                    </div>
+                                );
+                            })}
+                        </div>
                     ) : (
                         <p>No tasks completed yet.</p>
                     )}
                 </section>
-
-                <section style={{ backgroundColor: colors.white, color: colors.black }} className="rounded-lg p-4 shadow">
-                    <h2 style={{ color: colors.orange }} className="text-lg font-semibold mb-2">Score History</h2>
-                    {team.scoreHistory && Object.keys(team.scoreHistory).length > 0 ? (
-                        <ul className="text-sm">
-                            {Object.entries(team.scoreHistory).map(([date, score]) => (
-                                <li key={date}>
-                                    {date}: {score}
-                                </li>
-                            ))}
-                        </ul>
-                    ) : (
-                        <p>No score history yet.</p>
-                    )}
-                </section>
+                <div className="fixed bottom-0 left-0 w-full bg-blue-500 text-white text-center py-4 z-50 shadow-inner">
+                    <QRScannerButton />
+                </div>
             </main>
         </div>
     );
