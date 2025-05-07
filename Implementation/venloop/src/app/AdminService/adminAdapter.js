@@ -69,5 +69,23 @@ export const AdminAdapter = {
             console.error("Firebase error in deleteAdmin: ", err);
             throw err;
         }
+    },
+
+    async getAllAdmins() {
+        requireAuth();
+        try {
+            const snapshot = await get(ref(db, ADMIN_PATH));
+            if (!snapshot.exists()) return [];
+
+            const data = snapshot.val();
+            return Object.entries(data).map(([id, admin]) => ({
+                id,
+                ...admin
+            }));
+        } catch (err) {
+            console.error("Firebase error in getAllAdmins: ", err);
+            throw err;
+        }
     }
+
 }

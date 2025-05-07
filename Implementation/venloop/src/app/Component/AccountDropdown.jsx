@@ -57,7 +57,7 @@ export default function AccountDropdown() {
                     <div className="mt-4">
                         {isSuperAdmin ? (
                             <button
-                                onClick={() => router.push("/admin")}
+                                onClick={() => router.push("/admin-pending")}
                                 className="w-full bg-[#3C8DC3] text-white py-2 px-4 rounded hover:bg-[#1F2A60]"
                             >
                                 Go to Admin Page
