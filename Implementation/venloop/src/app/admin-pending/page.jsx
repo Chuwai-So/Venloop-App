@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import AdminService from "@/app/AdminService/adminService";
-import AdminApplicationBar from "@/app/Component/AdminApplicationBar"; // Adjust path if needed
+import AdminApplicationBar from "@/app/Component/AdminApplicationBar";
 import NavBar from "@/app/Component/NavBars/NavBar";
 import ProtectedRoute from "@/app/ProtectedRoute";
 
@@ -11,8 +11,7 @@ export default function AdminApprovalMenu() {
 
     const fetchAdmins = async () => {
         try {
-            const allAdmins = await AdminService.getAllAdmins();
-            const pendingAdmins = allAdmins.filter((admin) => !admin.verified);
+            const pendingAdmins = await AdminService.getUnverifiedAdmins();
             setAdmins(pendingAdmins);
         } catch (err) {
             console.error("Failed to fetch admins:", err);
@@ -29,7 +28,7 @@ export default function AdminApprovalMenu() {
             <div className="min-h-screen bg-gray-50">
                 <NavBar backTo="/admin-landing" />
                 <div className="p-4">
-                    <h1 className="text-2xl font-bold mb-4">Admin Applications</h1>
+                    <h1 className="text-black text-2xl font-bold mb-4">Admin Applications</h1>
                     {admins.length > 0 ? (
                         admins.map((admin) => (
                             <AdminApplicationBar

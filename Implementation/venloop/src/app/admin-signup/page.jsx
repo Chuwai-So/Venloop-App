@@ -67,7 +67,7 @@ export default function SignUpPage() {
                     </button>
 
                     <p className="text-sm text-center text-gray-500">
-                        All sign up request will be verified by admin. Thank you for your patience!
+                        All sign up request will be verified by an admin. Thank you for your patience!
                     </p>
                 </form>
             </div>
