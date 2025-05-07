@@ -2,13 +2,14 @@
 
 import {useRouter} from "next/navigation";
 import {doSignOut} from "@/app/auth";
+import AccountDropdown from "@/app/Component/AccountDropdown";
 
-export default function NavBar() {
+export default function LogOutNavBar() {
     const router = useRouter();
 
     const handleSignOut = async () => {
         await doSignOut();
-       // router.push("/admin-login");
+        router.push("/admin-login");
     }
 
     return (
@@ -18,7 +19,7 @@ export default function NavBar() {
                 Sign Out
             </button>
             <img src="/Avond4daagse_diapositief.png" alt="Logo" className="h-7"/>
-            <span className="text-white-700 hover:text-blue-600 cursor-pointer">Account</span>
+            <AccountDropdown/>
         </header>
     );
 }
