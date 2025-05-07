@@ -12,7 +12,7 @@ const AdminService = {
             return await AdminAdapter.createAdmin(data);
         } catch (err) {
             console.error("Error creating admin: ", err);
-            return null;
+            throw err;
         }
     },
 
