@@ -80,6 +80,31 @@ const TeamService = {
         }
     },
 
+    async approvePictureTaskDemo(teamId, taskId, file) {
+        const team = await TeamAdapter.getTeam(teamId);
+        if (team?.completedTasks?.[taskId]) {
+            console.warn(`Task ${taskId} already completed`);
+            return false;
+        }
+        try {
+            const imageURL = await this.fileToBase64(file)
+            const updates = {
+                [`completedTasks/${taskId}`]: {
+                    picture: imageURL,
+                    uploadedAt: new Date().toISOString(),
+                    status: 'pending'
+                }
+            };
+            await TeamAdapter.updateTeam(teamId, updates);
+            return true;
+        } catch (err) {
+            console.error("Error adding pending task:", err);
+            return false
+        }
+    },
+
+
+
     async completeTask(teamId, taskId, input) {
         const team = await TeamAdapter.getTeam(teamId);
         if (team?.completedTasks?.[taskId]) {
@@ -111,6 +136,7 @@ const TeamService = {
             return null;
         }
     },
+
 
 
     async deleteTeam(teamId) {
