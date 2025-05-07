@@ -1,6 +1,5 @@
 // File: app/TaskService/taskAdapter.js
 import { db } from '../firebase';
-import { requireAuth } from "@/app/contexts/authContext/requireAuth";
 import {
     ref,
     push,
@@ -13,7 +12,6 @@ import {
 const TASK_PATH = 'tasks';
 
 export const TaskAdapter = {
-
     async createTask(data) {
         try {
             const newRef = push(ref(db, TASK_PATH));
@@ -26,11 +24,12 @@ export const TaskAdapter = {
                 description: data.description,
                 type: data.type,
                 choices: data.choices || [],
-                answer: data.answer || null,
+                answer: data.answer || null, // ← will now be a string from either input or selected choice
                 timer: data.timer || null,
                 picture: data.picture || null,
                 features: data.features || {},
-                qrURL: taskURL
+                qrURL: taskURL,
+                isTemplate: data.isTemplate || false
             };
 
             await set(newRef, task);

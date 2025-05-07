@@ -16,8 +16,8 @@
         "destination": "/index.html"
       },
       {
-        "source": "admin-edit-task-template/view",
-        "destination": "admin-edit-task-template/view.html"
+        "source": "admin-edit-task-template/view/",
+        "destination": "admin-edit-task-template/view/index.html"
       }
     ]
   }

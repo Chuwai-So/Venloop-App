@@ -30,6 +30,7 @@ export default function TaskCreation() {
         score: 0,
     });
 
+    const [isTemplate, setIsTemplate] = useState(false);
     const [qrUrl, setQrUrl] = useState(null);
 
     const handleToggleFeature = (feat) => {
@@ -60,6 +61,7 @@ export default function TaskCreation() {
             answer: taskData.input || null,
             type,
             features: { ...features },
+            isTemplate, // ✅ add flag to distinguish template vs task
         };
 
         try {
@@ -84,7 +86,7 @@ export default function TaskCreation() {
 
                 <div className="flex flex-col md:flex-row h-full">
                     <div className="w-full md:w-1/2 p-4 bg-white md:bg-[#3CA9E2] flex justify-center items-start md:items-center">
-                        <div className="relative w-[360px] h-[640px] bg-gray-50 rounded-[40px] shadow-[0_4px_30px_rgba(255,255,255,0.4)] border border-white p-4 pr-1 overflow-y-auto scroll-smooth scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent transition-all duration-300">
+                        <div className="relative w-[360px] h-[640px] bg-gray-50 rounded-[40px] shadow border border-white p-4 pr-1 overflow-y-auto">
                             <div className="relative">
                                 <div className="hidden md:block absolute top-4 left-1/2 -translate-x-1/2 w-24 h-7 bg-black rounded-full z-10 shadow-inner"></div>
                                 <div className="absolute top-[53px] right-3 text-sm font-bold bg-white px-2 py-1 rounded shadow z-20">
@@ -120,10 +122,7 @@ export default function TaskCreation() {
                                             <div className="w-1/2 bg-white border rounded p-2 shadow flex items-center min-h-[120px]">
                                                 <TaskFeatureChoice
                                                     value={taskData.choice}
-                                                    onChange={(choices, selectedAnswer) => {
-                                                        handleDataChange("choice", choices);
-                                                        handleDataChange("input", selectedAnswer);
-                                                    }}
+                                                    onChange={(choices) => handleDataChange("choice", choices)} // ⛔ remove selectedAnswer handling
                                                 />
                                             </div>
                                         )}
@@ -148,9 +147,21 @@ export default function TaskCreation() {
                                     </div>
                                 )}
 
+                                <div className="mt-4 flex items-center gap-2">
+                                    <input
+                                        type="checkbox"
+                                        id="isTemplate"
+                                        checked={isTemplate}
+                                        onChange={() => setIsTemplate(prev => !prev)}
+                                    />
+                                    <label htmlFor="isTemplate" className="text-sm">
+                                        Save as Task Template
+                                    </label>
+                                </div>
+
                                 <button
                                     onClick={handleSubmitTask}
-                                    className="mt-6 bg-[#D86F27] text-white p-2 w-full rounded hover:scale-105 transition-transform ml-[-6.2px]"
+                                    className="mt-6 bg-[#D86F27] text-white p-2 w-full rounded hover:scale-105 transition-transform"
                                 >
                                     Submit Task
                                 </button>

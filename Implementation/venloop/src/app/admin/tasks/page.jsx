@@ -68,7 +68,7 @@ function AdminTaskListContent() {
                                         </button>
                                         <button
                                             className="bg-[#3CA9E2] text-white px-4 py-2 rounded hover:scale-105 transition-transform"
-                                            onClick={() => router.push(`/admin-edit-task-template/${task.id}`)}
+                                            onClick={() => router.push(`/admin-edit-task-template/view?id=${task.id}`)}
                                         >
                                             Edit
                                         </button>

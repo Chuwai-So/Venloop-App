@@ -3,29 +3,28 @@ import { useEffect, useState } from 'react';
 
 export default function TaskFeatureChoice({ value = [], onChange, readOnly = false }) {
     const [options, setOptions] = useState(value);
-    const [selectedAnswer, setSelectedAnswer] = useState(null);
+    const [selectedIndex, setSelectedIndex] = useState(null);
 
     useEffect(() => {
-        if (!readOnly && onChange) {
-            onChange(options, selectedAnswer !== null ? options[selectedAnswer] : null);
+        const selectedValue = selectedIndex !== null ? options[selectedIndex] : "";
+        if (onChange) {
+            onChange(options, selectedValue);
         }
-    }, [options, selectedAnswer]);
+    }, [options, selectedIndex]);
 
     const updateOption = (index, newVal) => {
         const updated = [...options];
         updated[index] = newVal;
         setOptions(updated);
-        if (selectedAnswer === index && onChange) {
-            onChange(updated, newVal);
-        }
     };
 
-    const addOption = () => setOptions((prev) => [...prev, '']);
+    const addOption = () => setOptions(prev => [...prev, '']);
+
     const removeOption = (index) => {
         const updated = options.filter((_, i) => i !== index);
         setOptions(updated);
-        if (selectedAnswer === index) setSelectedAnswer(null);
-        else if (selectedAnswer > index) setSelectedAnswer((prev) => prev - 1);
+        if (selectedIndex === index) setSelectedIndex(null);
+        else if (selectedIndex > index) setSelectedIndex(selectedIndex - 1);
     };
 
     return (
@@ -36,9 +35,8 @@ export default function TaskFeatureChoice({ value = [], onChange, readOnly = fal
                     <input
                         type="radio"
                         name="correctAnswer"
-                        checked={selectedAnswer === index}
-                        onChange={() => setSelectedAnswer(index)}
-                        disabled={readOnly}
+                        checked={selectedIndex === index}
+                        onChange={() => setSelectedIndex(index)}
                         className="accent-[#3CA9E2] w-4 h-4"
                     />
                     <input
@@ -46,7 +44,7 @@ export default function TaskFeatureChoice({ value = [], onChange, readOnly = fal
                         value={opt}
                         onChange={(e) => updateOption(index, e.target.value)}
                         placeholder={`Option ${index + 1}`}
-                        className="p-1 border rounded text-sm w-full"
+                        className="p-1 border rounded text-sm w-full bg-white"
                         disabled={readOnly}
                     />
                     {!readOnly && (
