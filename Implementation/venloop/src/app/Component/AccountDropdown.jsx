@@ -7,7 +7,7 @@ import AdminService from "@/app/AdminService/adminService";
 
 export default function AccountDropdown() {
     const [menuOpen, setMenuOpen] = useState(false);
-    const [isSuperAdmin, setIsSuperAdmin] = useState(false);
+    const [admin, setAdmin] = useState(null);
     const menuRef = useRef(null);
     const router = useRouter();
     const auth = getAuth();
@@ -25,17 +25,14 @@ export default function AccountDropdown() {
         };
     }, []);
 
-
     useEffect(() => {
         const fetchAdmin = async () => {
             const user = auth.currentUser;
             if (!user) return;
 
             try {
-                const admin = await AdminService.getAdminByFirebaseUid(user.uid);
-                if (admin?.isSuper) {
-                    setIsSuperAdmin(true);
-                }
+                const fetchedAdmin = await AdminService.getAdminByFirebaseUid(user.uid);
+                setAdmin(fetchedAdmin);
             } catch (err) {
                 console.error("Failed to fetch admin data:", err);
             }
@@ -69,11 +66,11 @@ export default function AccountDropdown() {
             {menuOpen && auth.currentUser && (
                 <div className="absolute right-0 mt-2 w-75 bg-white text-black rounded-lg shadow-lg p-4 z-40">
                     <p className="font-semibold">
-                        {auth.currentUser.displayName || "Unnamed User"}
+                        {admin?.name || "Unnamed User"}
                     </p>
                     <p className="text-sm text-gray-600">{auth.currentUser.email}</p>
                     <div className="mt-4">
-                        {isSuperAdmin ? (
+                        {admin?.isSuper ? (
                             <button
                                 onClick={() => router.push("/admin-pending")}
                                 className="w-full bg-[#3C8DC3] text-white py-2 px-4 rounded hover:bg-[#1F2A60]"
