@@ -5,9 +5,11 @@ import LoginPage from "./admin-login/page";
 import AdminLandingPage from "@/app/admin-landing/page";
 import PageWrapper from "@/app/teams/page";
 import TeamWrapper from "@/app/teams/page";
+import TaskCreation from "@/app/task-creation/page";
+import TeamLeaderCreateTaskPage from "@/app/teamleader-task-submition/page";
 
 export default function Home() {
   return (
-     <LoginPage />
+     <LoginPage/>
   );
 }

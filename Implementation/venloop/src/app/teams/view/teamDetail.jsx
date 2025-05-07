@@ -5,6 +5,7 @@ import TeamService from "@/app/TeamService/teamService";
 import { useSearchParams } from "next/navigation";
 import CleanNavBar from "@/app/Component/NavBars/CleanNavBar";
 import QRScannerButton from "@/app/Component/Scanner";
+import { generateTeamToken } from "@/app/util/teamToken";
 
 
 export default function TeamDetail() {
@@ -16,37 +17,50 @@ export default function TeamDetail() {
         black: '#000000',
     };
     console.log("Should have a team id")
-    const startScan = () => {
-        const qrRegionId = "qr-reader";
-        const html5QrCode = new Html5Qrcode(qrRegionId);
-
-        Html5Qrcode.getCameras().then(devices => {
-            if (devices && devices.length) {
-                const cameraId = devices[0].id;
-                html5QrCode.start(
-                    cameraId,
-                    {
-                        fps: 10,
-                        qrbox: { width: 250, height: 250 }
-                    },
-                    (decodedText) => {
-                        alert(`Scanned: ${decodedText}`);
-                        html5QrCode.stop();
-                    },
-                    (errorMessage) => {
-                        console.warn(errorMessage);
-                    }
-                );
-            }
-        }).catch(err => {
-            console.error("Camera error: ", err);
-        });
-    };
+    // const startScan = () => {
+    //     const qrRegionId = "qr-reader";
+    //     const html5QrCode = new Html5Qrcode(qrRegionId);
+    //
+    //     Html5Qrcode.getCameras().then(devices => {
+    //         if (devices && devices.length) {
+    //             const cameraId = devices[0].id;
+    //             html5QrCode.start(
+    //                 cameraId,
+    //                 {
+    //                     fps: 10,
+    //                     qrbox: { width: 250, height: 250 }
+    //                 },
+    //                 (decodedText) => {
+    //                     alert(`Scanned: ${decodedText}`);
+    //                     html5QrCode.stop();
+    //                 },
+    //                 (errorMessage) => {
+    //                     console.warn(errorMessage);
+    //                 }
+    //             );
+    //         }
+    //     }).catch(err => {
+    //         console.error("Camera error: ", err);
+    //     });
+    // };
 
     const searchParams = useSearchParams();
     const teamId = searchParams.get("id");
     console.log(`Here is the id: ${teamId}`)
     const [team, setTeam] = useState(null);
+
+    useEffect(() => {
+        const localToken = localStorage.getItem("teamAccessToken");
+        if (!localToken && teamId) {
+            console.log("⏳ No token found, issuing new one for:", teamId);
+            generateTeamToken(teamId).then((token) => {
+                localStorage.setItem("teamAccessToken", token);
+                console.log("✅ Token saved to localStorage:", token);
+            });
+        } else {
+            console.log("Token already exists:", localToken);
+        }
+    }, [teamId]);
 
     useEffect(() => {
         const fetchTeam = async () => {
