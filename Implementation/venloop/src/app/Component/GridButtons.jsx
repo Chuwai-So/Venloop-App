@@ -76,7 +76,7 @@ export default function GridButtons() {
                             <button
                                 className="bg-[#3C8DC3] text-white rounded px-4 py-2 w-full"
                                 onClick={() => (router.push("/team-edit"))}>
-                                Edit Teams
+                                Team Menu
                             </button>
                         </div>
                     </div>

@@ -9,11 +9,10 @@ const AdminService = {
 
     async createAdmin(data) {
         try {
-            requireAuth()
             return await AdminAdapter.createAdmin(data);
         } catch (err) {
             console.error("Error creating admin: ", err);
-            return null;
+            throw err;
         }
     },
 
@@ -66,6 +65,25 @@ const AdminService = {
             return await AdminAdapter.getAllAdmins();
         } catch (err) {
             console.error("Error getting all admins:", err);
+            return [];
+        }
+    },
+
+    async getUnverifiedAdmins() {
+        try {
+            requireAuth();
+            return await AdminAdapter.getUnverifiedAdmins();
+        } catch (err) {
+            console.error("Error getting unverified admins:", err);
+            return [];
+        }
+    },
+
+    async getAdminByFirebaseUid(firebaseUid){
+        try {
+            return await AdminAdapter.getAdminByFirebaseUid(firebaseUid);
+        } catch (err) {
+            console.error("Error getting adminByFirebaseUid:", err);
             return [];
         }
     }

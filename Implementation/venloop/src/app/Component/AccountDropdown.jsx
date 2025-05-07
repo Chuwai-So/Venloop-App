@@ -3,9 +3,11 @@
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { deleteUser, getAuth } from "firebase/auth";
+import AdminService from "@/app/AdminService/adminService";
 
 export default function AccountDropdown() {
     const [menuOpen, setMenuOpen] = useState(false);
+    const [admin, setAdmin] = useState(null);
     const menuRef = useRef(null);
     const router = useRouter();
     const auth = getAuth();
@@ -23,6 +25,22 @@ export default function AccountDropdown() {
         };
     }, []);
 
+    useEffect(() => {
+        const fetchAdmin = async () => {
+            const user = auth.currentUser;
+            if (!user) return;
+
+            try {
+                const fetchedAdmin = await AdminService.getAdminByFirebaseUid(user.uid);
+                setAdmin(fetchedAdmin);
+            } catch (err) {
+                console.error("Failed to fetch admin data:", err);
+            }
+        };
+
+        fetchAdmin();
+    }, [auth.currentUser]);
+
     const handleDelete = async () => {
         const confirmDelete = window.confirm("Are you sure you want to delete your account? This cannot be undone.");
         if (!confirmDelete) return;
@@ -36,9 +54,6 @@ export default function AccountDropdown() {
         }
     };
 
-    const isSuperAdmin = auth.currentUser?.email === "test@v.com";
-    // TODO: Move to DB ?
-
     return (
         <div className="relative" ref={menuRef}>
             <span
@@ -51,11 +66,11 @@ export default function AccountDropdown() {
             {menuOpen && auth.currentUser && (
                 <div className="absolute right-0 mt-2 w-75 bg-white text-black rounded-lg shadow-lg p-4 z-40">
                     <p className="font-semibold">
-                        {auth.currentUser.displayName || "Unnamed User"}
+                        {admin?.name || "Unnamed User"}
                     </p>
                     <p className="text-sm text-gray-600">{auth.currentUser.email}</p>
                     <div className="mt-4">
-                        {isSuperAdmin ? (
+                        {admin?.isSuper ? (
                             <button
                                 onClick={() => router.push("/admin-pending")}
                                 className="w-full bg-[#3C8DC3] text-white py-2 px-4 rounded hover:bg-[#1F2A60]"
