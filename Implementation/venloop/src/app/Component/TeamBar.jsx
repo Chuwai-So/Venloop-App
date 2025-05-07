@@ -159,7 +159,7 @@ export default function TeamBar({ team, isExpanded, onToggle, refreshTeams }) {
 
                     {showQR && qrToken && (
                         <div className="mt-4 flex flex-col items-center gap-2" ref={qrRef} onClick={(e) => e.stopPropagation()}>
-                            <QRCode value={`https://yourdomain.com/teams/view/${qrToken}`} />
+                            <QRCode value={`https://venloop-ee862.web.app/teams/view?id=${team.id}`} />
                             <button
                                 onClick={handleDownloadQR}
                                 className="mt-2 px-4 py-1 bg-[#3C8DC3] text-white text-sm rounded shadow hover:bg-[#1F2A60]"
