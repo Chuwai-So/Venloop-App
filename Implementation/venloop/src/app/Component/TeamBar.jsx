@@ -1,11 +1,11 @@
 "use client";
-import { useState, useEffect, useRef } from "react";
+import {useState, useEffect, useRef} from "react";
 import TeamService from "@/app/TeamService/teamService";
-import { db } from "@/app/firebase";
-import { ref, push, serverTimestamp } from "firebase/database";
+import {db} from "@/app/firebase";
+import {ref, push, serverTimestamp} from "firebase/database";
 import QRCode from "@/app/Component/QRCode";
 
-export default function TeamBar({ team, isExpanded, onToggle, refreshTeams }) {
+export default function TeamBar({team, isExpanded, onToggle, refreshTeams}) {
     const [isEditing, setIsEditing] = useState(false);
     const [newName, setNewName] = useState(team.name);
     const [isSaving, setIsSaving] = useState(false);
@@ -23,7 +23,7 @@ export default function TeamBar({ team, isExpanded, onToggle, refreshTeams }) {
     const handleSave = async () => {
         setIsSaving(true);
         try {
-            await TeamService.updateTeam(team.id, { name: newName });
+            await TeamService.updateTeam(team.id, {name: newName});
             setIsEditing(false);
             refreshTeams();
             alert("Successfully updated team");
@@ -50,10 +50,33 @@ export default function TeamBar({ team, isExpanded, onToggle, refreshTeams }) {
     };
 
     const handleDownloadQR = () => {
-        //TODO
+        const svg = document.querySelector(`#qr-wrapper-${team.id} svg`);
+
+        if (!svg) {
+            alert("QR code not found.");
+            return;
+        }
+
+        try {
+            const svgData = new XMLSerializer().serializeToString(svg);
+            const blob = new Blob([svgData], {type: "image/svg+xml;charset=utf-8"});
+            const url = URL.createObjectURL(blob);
+
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = `team-${team.id}-qr.svg`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        } catch (err) {
+            console.error("Error downloading QR code:", err);
+            alert("Failed to download QR code.");
+        }
     };
 
-    const completedTaskList = team.tasks ? Object.keys(team.tasks) : [];
+
+    const completedTaskList = team.completedTasks ? Object.keys(team.completedTasks) : [];
 
     const handleDelete = async () => {
         const confirmed = confirm("Are you sure you want to delete this team?");
@@ -97,7 +120,9 @@ export default function TeamBar({ team, isExpanded, onToggle, refreshTeams }) {
                     {completedTaskList.length > 0 ? (
                         <ul className="mt-4 mb-4 list-disc list-inside text-gray-700 text-sm">
                             {completedTaskList.map((taskId) => (
-                                <li key={taskId}>{taskId}</li>
+                                <li key={taskId}>
+                                    {team.completedTasks[taskId]?.name || taskId}
+                                </li>
                             ))}
                         </ul>
                     ) : (
@@ -158,8 +183,14 @@ export default function TeamBar({ team, isExpanded, onToggle, refreshTeams }) {
                     </div>
 
                     {showQR && qrToken && (
-                        <div className="mt-4 flex flex-col items-center gap-2" ref={qrRef} onClick={(e) => e.stopPropagation()}>
-                            <QRCode value={`https://venloop-ee862.web.app/teams/view?id=${team.id}`} />
+                        <div className="mt-4 flex flex-col items-center gap-2"
+                             id={`qr-wrapper-${team.id}`}
+                             ref={qrRef}
+                             onClick={(e) => e.stopPropagation()}>
+                            <QRCode
+                                id={`qr-${team.id}`}
+                                value={`https://venloop-ee862.web.app/teams/view?id=${team.id}`}
+                            />
                             <button
                                 onClick={handleDownloadQR}
                                 className="mt-2 px-4 py-1 bg-[#3C8DC3] text-white text-sm rounded shadow hover:bg-[#1F2A60]"
