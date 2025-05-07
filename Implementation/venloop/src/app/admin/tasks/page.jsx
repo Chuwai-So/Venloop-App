@@ -1,4 +1,3 @@
-// Directory: app/admin/tasks/page.jsx
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -6,18 +5,23 @@ import { useRouter } from 'next/navigation';
 import { TaskAdapter } from '@/app/TaskService/taskAdapter';
 import QRCodeComponent from '@/app/Component/QRCode';
 import { ChevronDown, ChevronUp } from 'lucide-react';
-import NavBar from '@/app/Component/NavBar';
+import NavBar from '@/app/Component/NavBars/NavBar';
+import ProtectedRoute from '@/app/ProtectedRoute';
 
-export default function AdminTaskList() {
+function AdminTaskListContent() {
     const [tasks, setTasks] = useState([]);
     const [expanded, setExpanded] = useState({});
     const router = useRouter();
 
     useEffect(() => {
         const fetchTasks = async () => {
-            const snapshot = await TaskAdapter.getAllTasks();
-            const data = Object.values(snapshot || {});
-            setTasks(data);
+            try {
+                const snapshot = await TaskAdapter.getAllTasks();
+                const data = Object.values(snapshot || {});
+                setTasks(data);
+            } catch (err) {
+                console.error("Failed to fetch tasks:", err);
+            }
         };
         fetchTasks();
     }, []);
@@ -76,5 +80,13 @@ export default function AdminTaskList() {
                 </div>
             </div>
         </div>
+    );
+}
+
+export default function AdminTaskList() {
+    return (
+        <ProtectedRoute>
+            <AdminTaskListContent />
+        </ProtectedRoute>
     );
 }

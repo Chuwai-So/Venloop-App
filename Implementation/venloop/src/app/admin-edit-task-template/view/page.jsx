@@ -1,23 +1,26 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { TaskAdapter } from '@/app/TaskService/taskAdapter';
-import TaskFeatureDescription from '@/app/Component/task_creation_preview/TaskFeatureDescription';
-import TaskFeatureTimer from '@/app/Component/task_creation_preview/TaskFeatureTimer';
-import TaskFeaturePicture from '@/app/Component/task_creation_preview/TaskFeaturePicture';
-import TaskFeatureInput from '@/app/Component/task_creation_preview/TaskFeatureInput';
-import TaskFeatureChoice from '@/app/Component/task_creation_preview/TaskFeatureChoice';
-import NavBar from '@/app/Component/NavBar';
+import TaskFeatureDescription from '@/app/Component/TaskFeatureDescription';
+import TaskFeatureTimer from '@/app/Component/TaskFeatureTimer';
+import TaskFeaturePicture from '@/app/Component/TaskFeaturePicture';
+import TaskFeatureInput from '@/app/Component/TaskFeatureInput';
+import TaskFeatureChoice from '@/app/Component/TaskFeatureChoice';
+import NavBar from '@/app/Component/NavBars/NavBar';
 
 export default function EditTaskPage() {
-    const { id } = useParams();
+    const searchParams = useSearchParams();
+    const id = searchParams.get('id');
+
     const [task, setTask] = useState(null);
     const [featuresDraft, setFeaturesDraft] = useState({});
     const [editedData, setEditedData] = useState({});
 
     useEffect(() => {
         const fetchTask = async () => {
+            if (!id) return;
             const fetched = await TaskAdapter.getTask(id);
             if (fetched) {
                 setTask(fetched);
@@ -48,6 +51,7 @@ export default function EditTaskPage() {
         alert("Changes saved!");
     };
 
+    if (!id) return <div className="p-8">No task ID provided.</div>;
     if (!task) return <div className="p-8">Loading task...</div>;
 
     const { name, picture, answer, choices, score = 0 } = task;
@@ -56,10 +60,8 @@ export default function EditTaskPage() {
     return (
         <div className="font-sans md:bg-[#3CA9E2] min-h-screen">
             <NavBar backTo="/admin-landing" />
-
             <div className="flex flex-col items-center py-6 px-4">
                 <h2 className="text-xl font-bold mb-4 text-[#1F2A60]">Editing: {name}</h2>
-
                 <div className="relative w-[360px] h-[640px] bg-gray-50 rounded-[40px] shadow-[0_4px_30px_rgba(255,255,255,0.4)] border border-white p-4 pr-1 overflow-y-auto">
                     <div className="relative">
                         <div className="hidden md:block absolute top-4 left-1/2 -translate-x-1/2 w-24 h-7 bg-black rounded-full z-10 shadow-inner"></div>
@@ -67,7 +69,6 @@ export default function EditTaskPage() {
                             Score: {score}
                         </div>
                     </div>
-
                     <div className="pt-[60px] px-4 space-y-3 flex flex-col">
                         <p className="text-lg font-semibold mb-2 mt-4 text-center">
                             Task: {name || 'Task Name'}

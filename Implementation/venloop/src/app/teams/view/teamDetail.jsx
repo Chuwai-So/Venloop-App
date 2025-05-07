@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import TeamService from "@/app/TeamService/teamService";
 import { useSearchParams } from "next/navigation";
-import CleanNavBar from "@/app/Component/CleanNavBar";
+import CleanNavBar from "@/app/Component/NavBars/CleanNavBar";
 
 export default function TeamDetail() {
     const colors = {

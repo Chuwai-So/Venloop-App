@@ -2,7 +2,7 @@
 
 import {useState} from "react";
 import {useRouter} from "next/navigation";
-import CleanNavBar from "@/app/Component/CleanNavBar";
+import CleanNavBar from "@/app/Component/NavBars/CleanNavBar";
 import AdminService from "@/app/AdminService/adminService"
 
 export default function SignUpPage() {
