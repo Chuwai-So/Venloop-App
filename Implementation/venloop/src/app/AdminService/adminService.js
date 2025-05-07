@@ -1,6 +1,5 @@
 import {AdminAdapter} from "./adminAdapter";
 import bcrypt from 'bcryptjs'
-import { promisify } from 'util'
 import {requireAuth} from "@/app/contexts/authContext/requireAuth";
 
 
@@ -56,10 +55,21 @@ const AdminService = {
             requireAuth()
             return await AdminAdapter.deleteAdmin(adminId);
         } catch (err) {
-            console.error("Error deleteing Admin")
+            console.error("Error deleting Admin")
             return null;
         }
+    },
+
+    async getAllAdmins() {
+        try {
+            requireAuth();
+            return await AdminAdapter.getAllAdmins();
+        } catch (err) {
+            console.error("Error getting all admins:", err);
+            return [];
+        }
     }
+
 }
 
 export default AdminService;
