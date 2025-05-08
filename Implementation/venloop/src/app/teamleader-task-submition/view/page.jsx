@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import TaskService from "@/app/TaskService/taskService";
-import { TaskAdapter } from "@/app/TaskService/taskAdapter";
+import TeamService from "@/app/TeamService/teamService";
 import TaskFeatureDescription from "@/app/Component/TaskFeatureDescription";
 import TaskFeatureTimer from "@/app/Component/TaskFeatureTimer";
 import TaskFeaturePicture from "@/app/Component/TaskFeaturePicture";
@@ -37,17 +37,31 @@ export default function Page() {
     const handleSubmit = async () => {
         setIsSubmitting(true);
 
-        const finalAnswer = selectedChoice || answer || "";
+        const teamToken = localStorage.getItem("teamAccessToken");
+        if (!teamToken) {
+            alert("Team not authenticated.");
+            setIsSubmitting(false);
+            return;
+        }
 
         try {
-            await TaskAdapter.updateTask(taskId, {
-                answer: finalAnswer,
-                userPicture: picture || null,
-            });
-            alert("Task updated with answer!");
+            const teamId = await TeamService.verifyTokenAndGetTeamId(teamToken);
+            const finalAnswer = selectedChoice || answer || "";
+
+            // Submit input-based or multiple choice tasks
+            if (task.features.input || task.features.choice) {
+                await TeamService.completeTask(teamId, taskId, finalAnswer);
+            }
+
+            // Handle picture task separately
+            if (task.features.picture && picture) {
+                await TeamService.approvePictureTaskDemo(teamId, taskId, picture);
+            }
+
+            alert("Task submitted!");
         } catch (err) {
-            console.error("Update failed:", err);
-            alert("Failed to save answer.");
+            console.error("Submission failed:", err);
+            alert("Failed to submit task.");
         }
 
         setIsSubmitting(false);
@@ -78,15 +92,15 @@ export default function Page() {
                         <TaskFeatureChoice
                             value={task.choices}
                             selected={selectedChoice}
-                            onSelect={(val) => setSelectedChoice(val)}
-                            readOnly={true}
+                            onSelect={setSelectedChoice}
+                            readOnly={true} // disables adding/removing options
                         />
                     </div>
                 )}
 
                 {task.features.picture && (
                     <div className="border p-3 rounded bg-gray-50">
-                        <TaskFeaturePicture file={picture} onChange={(f) => setPicture(f)} />
+                        <TaskFeaturePicture file={picture} onChange={setPicture} />
                     </div>
                 )}
 
