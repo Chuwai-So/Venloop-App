@@ -7,7 +7,7 @@ import TaskFeatureDescription from '@/app/Component/TaskFeatureDescription';
 import TaskFeatureTimer from '@/app/Component/TaskFeatureTimer';
 import TaskFeaturePicture from '@/app/Component/TaskFeaturePicture';
 import TaskFeatureInput from '@/app/Component/TaskFeatureInput';
-import TaskFeatureChoice from '@/app/Component/TaskFeatureChoice';
+import TaskFeatureChoiceEditor from '@/app/Component/TaskFeatureChoiceEditor';
 import NavBar from '@/app/Component/NavBars/NavBar';
 
 export default function EditTaskPage() {
@@ -28,6 +28,8 @@ export default function EditTaskPage() {
                 setEditedData({
                     description: fetched.description || '',
                     timer: fetched.timer || '30',
+                    choice: fetched.choices || [],
+                    answer: fetched.answer || '',
                 });
             }
         };
@@ -38,23 +40,34 @@ export default function EditTaskPage() {
         setFeaturesDraft(prev => ({ ...prev, [featureKey]: enabled }));
     };
 
-    const handleDataChange = (key, value) => {
-        setEditedData(prev => ({ ...prev, [key]: value }));
+    const handleDataChange = (key, value, extra = null) => {
+        setEditedData(prev => ({
+            ...prev,
+            [key]: value,
+            ...(extra !== null && { answer: extra })
+        }));
     };
 
     const confirmChanges = async () => {
-        await TaskAdapter.updateTask(id, {
-            features: featuresDraft,
-            description: editedData.description,
-            timer: editedData.timer
-        });
-        alert("Changes saved!");
+        try {
+            await TaskAdapter.updateTask(id, {
+                features: featuresDraft,
+                description: editedData.description,
+                timer: editedData.timer,
+                choices: editedData.choice,
+                answer: editedData.answer,
+            });
+            alert("Changes saved!");
+        } catch (error) {
+            console.error("Error saving changes:", error);
+            alert("Failed to save changes.");
+        }
     };
 
     if (!id) return <div className="p-8">No task ID provided.</div>;
     if (!task) return <div className="p-8">Loading task...</div>;
 
-    const { name, picture, answer, choices, score = 0 } = task;
+    const { name, picture, score = 0 } = task;
     const features = featuresDraft;
 
     return (
@@ -112,7 +125,11 @@ export default function EditTaskPage() {
                                             className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-5 h-5 text-xs z-30 shadow"
                                         >✕</button>
                                         <div className="bg-white border rounded p-2 shadow max-h-[160px] overflow-y-auto">
-                                            <TaskFeatureChoice value={choices} readOnly />
+                                            <TaskFeatureChoiceEditor
+                                                value={editedData.choice}
+                                                correctAnswer={editedData.answer}
+                                                onChange={(choices, correct) => handleDataChange("choice", choices, correct)}
+                                            />
                                         </div>
                                     </div>
                                 )}
@@ -138,7 +155,7 @@ export default function EditTaskPage() {
                                     className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-5 h-5 text-xs z-30 shadow"
                                 >✕</button>
                                 <div className="bg-white border rounded p-2 shadow w-full">
-                                    <TaskFeatureInput value={answer} readOnly />
+                                    <TaskFeatureInput value={task.answer} readOnly />
                                 </div>
                             </div>
                         )}
