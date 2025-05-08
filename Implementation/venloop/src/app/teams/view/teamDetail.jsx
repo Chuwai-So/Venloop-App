@@ -136,7 +136,9 @@ export default function TeamDetail() {
                     )}
                 </section>
                 <div className="fixed bottom-0 left-0 w-full bg-blue-500 text-white text-center py-4 z-50 shadow-inner">
-                    <QRScannerButton />
+                    <h3 className="text-lg font-semibold">
+                        Use your camera to scan the task QR code
+                    </h3>
                 </div>
             </main>
         </div>

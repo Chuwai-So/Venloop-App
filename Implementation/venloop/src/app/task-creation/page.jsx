@@ -61,23 +61,25 @@ export default function TaskCreation() {
             answer: taskData.input || null,
             type,
             features: { ...features },
-            isTemplate, // ✅ add flag to distinguish template vs task
+            isTemplate,
         };
 
         try {
             const taskId = await TaskService.createTask(taskPayload);
-            const createdTask = await TaskService.getTask(taskId);
-            if (createdTask?.qrURL) {
-                setQrUrl(createdTask.qrURL);
-                alert("Task created successfully!");
-            } else {
-                alert("Task created, but no QR code was generated.");
-            }
+
+            // 🔥 Build the correct static URL for the QR code
+            const qrLink = `https://venloop-ee862.web.app/teamleader-task-submition/view?id=${taskId}`;
+
+
+            setQrUrl(qrLink); // 🔐 show QR immediately
+
+            alert("Task created successfully!");
         } catch (err) {
             console.error("Failed to create task:", err);
             alert("Failed to create task.");
         }
     };
+
 
     return (
         <ProtectedRoute>

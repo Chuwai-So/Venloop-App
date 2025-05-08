@@ -9,7 +9,10 @@ export default function TaskFeaturePicture({ file, onChange }) {
 
     const handleFileChange = (e) => {
         const selected = e.target.files[0];
-        if (selected) onChange(selected);
+        if (selected) {
+            console.log("File selected:", selected.constructor.name); // Should be "File"
+            onChange(selected);
+        }
     };
 
     return (

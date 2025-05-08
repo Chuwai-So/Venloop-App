@@ -8,6 +8,10 @@
     ],
     "rewrites": [
       {
+        "source": "/teamleader-task-submition/view",
+        "destination": "/teamleader-task-submition/view.html"
+      },
+      {
         "source": "/teams/view",
         "destination": "/teams/view.html"
       },
@@ -16,9 +20,10 @@
         "destination": "/index.html"
       },
       {
-        "source": "admin-edit-task-template/view/",
+        "source": "admin-edit-task-template/view",
         "destination": "admin-edit-task-template/view/index.html"
       }
+
     ]
   }
 }
