@@ -103,13 +103,12 @@ export default function TeamDetail() {
                     {team.completedTasks && Object.keys(team.completedTasks).length > 0 ? (
                         <div className="flex flex-col gap-3">
                             {Object.entries(team.completedTasks).map(([taskId, task]) => {
-                                console.log("bitch bitch bitch")
-                                console.log("Rendered Task:", task);
-                                const borderColor = task.result === "correct"
-                                    ? "border-l-green-500"
-                                    : task.result === "incorrect"
-                                        ? "border-l-red-500"
-                                        : "border-l-gray-300"; // fallback for null or pending
+                                const borderColor =
+                                    task.result === "correct"
+                                        ? "border-l-green-500"
+                                        : task.result === "incorrect"
+                                            ? "border-l-red-500"
+                                            : "border-l-gray-300"; // fallback for null or pending
 
                                 return (
                                     <div
@@ -119,23 +118,38 @@ export default function TeamDetail() {
                                         <h3 className="font-semibold text-base mb-1">
                                             {task.name || taskId}
                                         </h3>
-                                        <p className="text-sm text-gray-700">
-                                            Your answer: {task.userAnswer || "Completed"}
-                                        </p>
-                                        {task.result && (
-                                            <p className="text-sm text-gray-700">
-                                                Result: {task.result}
-                                            </p>
+
+                                        {task.status === 'pending' && task.picture ? (
+                                            <div className="mt-2">
+                                                <img
+                                                    src={task.picture}
+                                                    alt="Submitted task image"
+                                                    className="w-full max-w-xs rounded shadow"
+                                                />
+                                                <p className="text-sm text-gray-600 mt-1">Status: Pending</p>
+                                            </div>
+                                        ) : (
+                                            <>
+                                                <p className="text-sm text-gray-700">
+                                                    Your answer: {task.userAnswer || "Completed"}
+                                                </p>
+                                                {task.result && (
+                                                    <p className="text-sm text-gray-700">
+                                                        Result: {task.result}
+                                                    </p>
+                                                )}
+                                            </>
                                         )}
                                     </div>
                                 );
                             })}
                         </div>
                     ) : (
-                        <p>No tasks completed yet.</p>
+                        <p className="text-gray-500 text-center mt-4">No tasks completed yet.</p>
                     )}
                 </section>
-                <div className="fixed bottom-0 left-0 w-full bg-blue-500 text-white text-center py-4 z-50 shadow-inner">
+                <div
+                    className="sticky bottom-0 left-0 w-full bg-blue-500 text-white text-center py-4 z-10 shadow-inner">
                     <h3 className="text-lg font-semibold">
                         Use your camera to scan the task QR code
                     </h3>
