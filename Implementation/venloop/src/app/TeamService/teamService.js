@@ -188,7 +188,28 @@ const TeamService = {
                 : 'incorrect';
         }
         return null;
-    }
+    },
+
+    async updateTaskStatus(teamId, taskId, newStatus) {
+        try {
+            await TeamAdapter.updateTaskStatus(teamId, taskId, "approved");
+        } catch (err) {
+            console.error("Error updating task status:", err);
+            return false;
+        }
+    },
+
+    async removeCompletedTask(teamId, taskId) {
+        try {
+            await TeamAdapter.removeCompletedTask(teamId, taskId);
+        } catch (err) {
+            console.error("Error removing completed task:", err);
+            return false;
+        }
+    },
+
+
+
 };
 
 export default TeamService;
