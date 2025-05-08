@@ -7,7 +7,7 @@ function AnalogCountdownClock({ timeLeft }) {
     const secondAngle = seconds * 6;
 
     return (
-        <div className="flex flex-col items-center">
+        <div className="flex flex-col items-center text-black">
             <svg viewBox="0 0 100 100" className="w-[80px] h-[80px]">
                 <circle cx="50" cy="50" r="48" stroke="black" strokeWidth="2" fill="black" />
                 {[...Array(12)].map((_, i) => {
@@ -23,7 +23,7 @@ function AnalogCountdownClock({ timeLeft }) {
                 <circle cx="50" cy="50" r="2" fill="white" />
             </svg>
 
-            <div className="text-sm font-mono mt-1">
+            <div className="text-sm font-mono mt-1 text-black">
                 {minutes}:{seconds.toString().padStart(2, "0")}
             </div>
         </div>
@@ -70,14 +70,14 @@ export default function TaskFeatureTimer({ value, onChange }) {
     };
 
     return (
-        <div className="flex flex-col items-center w-full">
+        <div className="flex flex-col items-center w-full text-black">
             {!running && (
                 <input
                     type="number"
                     placeholder="Seconds"
                     value={value}
                     onChange={(e) => onChange(e.target.value)}
-                    className="w-20 text-center p-1 border rounded mb-2"
+                    className="w-20 text-center p-1 border rounded mb-2 text-black"
                 />
             )}
 

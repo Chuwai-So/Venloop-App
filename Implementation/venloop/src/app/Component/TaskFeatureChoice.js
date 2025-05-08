@@ -28,7 +28,7 @@ export default function TaskFeatureChoice({ value = [], onChange, readOnly = fal
     };
 
     return (
-        <div className="space-y-2 text-sm w-full">
+        <div className="space-y-2 text-sm w-full text-black">
             <p className="text-center font-semibold">Multiple Choice</p>
             {options.map((opt, index) => (
                 <div key={index} className="flex items-center gap-2">
@@ -44,7 +44,7 @@ export default function TaskFeatureChoice({ value = [], onChange, readOnly = fal
                         value={opt}
                         onChange={(e) => updateOption(index, e.target.value)}
                         placeholder={`Option ${index + 1}`}
-                        className="p-1 border rounded text-sm w-full bg-white"
+                        className="p-1 border rounded text-sm w-full bg-white text-black"
                         disabled={readOnly}
                     />
                     {!readOnly && (

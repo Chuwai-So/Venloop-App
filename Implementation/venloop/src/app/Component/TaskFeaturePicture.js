@@ -16,8 +16,8 @@ export default function TaskFeaturePicture({ file, onChange }) {
     };
 
     return (
-        <div className="flex flex-col items-center">
-            <label className="text-md text-gray-600 mb-2">Upload Picture</label>
+        <div className="flex flex-col items-center text-black">
+            <label className="text-md mb-2">Upload Picture</label>
 
             <div
                 className="w-40 h-40 bg-gray-200 bg-opacity-40 border-2 border-dashed border-gray-400 rounded-lg flex items-center justify-center cursor-pointer hover:border-blue-400 transition"
