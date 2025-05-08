@@ -57,7 +57,7 @@ function AdminTaskListContent() {
                             {expanded[task.id] && (
                                 <div className="mt-4 space-y-2">
                                     <div className="flex justify-center">
-                                        <QRCodeComponent value={`https://venloop-ee862.web.app/tasks/${task.id}`} size={120} />
+                                        <QRCodeComponent value={`https://venloop-ee862.web.app/teamleader-task-submition/view?id=${task.id}`} size={120} />
                                     </div>
                                     <div className="flex flex-col sm:flex-row justify-center gap-2 mt-2">
                                         <button

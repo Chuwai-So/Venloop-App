@@ -76,7 +76,30 @@ export const TeamAdapter = {
            console.error("Firebase error getAllTeams ", err)
            throw err;
        }
+    },
+
+    async updateTaskStatus(teamId, taskId, status) {
+        try {
+            await update(ref(db), {
+                [`${TEAM_PATH}/${teamId}/completedTasks/${taskId}/status`]: status
+            });
+        } catch (err) {
+            console.error(`Firebase error updating task status for ${taskId}:`, err);
+            throw err;
+        }
+    },
+
+
+    async removeCompletedTask(teamId, taskId) {
+        try {
+            const taskRef = ref(db, `${TEAM_PATH}/${teamId}/completedTasks/${taskId}`);
+            await remove(taskRef);
+        } catch (err) {
+            console.error(`Firebase error removing completed task ${taskId}:`, err);
+            throw err;
+        }
     }
+
 };
 
 

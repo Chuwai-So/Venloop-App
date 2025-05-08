@@ -37,7 +37,7 @@ export default function GridButtons() {
                                 Edit Tasks
                             </button>
                             <button className="bg-[#3C8DC3] text-white rounded px-4 py-2 w-full"
-                                    onClick={() => (router.push("/admin/tasks"))}>
+                                    onClick={() => (router.push("/task-pending"))}>
                                 Submissions
                             </button>
                         </div>
