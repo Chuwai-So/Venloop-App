@@ -3,19 +3,18 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import TaskService from "@/app/TaskService/taskService";
-import TeamService from "@/app/TeamService/teamService";
+import { TaskAdapter } from "@/app/TaskService/taskAdapter";
 import TaskFeatureDescription from "@/app/Component/TaskFeatureDescription";
 import TaskFeatureTimer from "@/app/Component/TaskFeatureTimer";
 import TaskFeaturePicture from "@/app/Component/TaskFeaturePicture";
 import TaskFeatureInput from "@/app/Component/TaskFeatureInput";
 import TaskFeatureChoice from "@/app/Component/TaskFeatureChoice";
 import CleanNavBar from "@/app/Component/NavBars/CleanNavBar";
-import {TaskAdapter} from "@/app/TaskService/taskAdapter";
 
 export default function Page() {
-
     const searchParams = useSearchParams();
     const taskId = searchParams.get("id");
+
     const [task, setTask] = useState(null);
     const [answer, setAnswer] = useState("");
     const [picture, setPicture] = useState(null);
@@ -34,42 +33,21 @@ export default function Page() {
         };
         fetchTask();
     }, [taskId]);
-    console.log('Here should be task id');
-    console.log(taskId);
 
     const handleSubmit = async () => {
-        const teamToken = localStorage.getItem("teamAccessToken");
-        console.log("Team token from localStorage:", teamToken);
-        if (!teamToken) {
-            alert("Team not authenticated.");
-            return;
-        }
-
         setIsSubmitting(true);
 
-        const submission = {
-            userAnswer: answer || selectedChoice || "",
-            userPicture: picture || null,
-            submittedAt: Date.now(),
-        };
-        console.log("Picture at submit time:", picture);
-        if (picture) {
-            console.log("Picture type:", picture.constructor.name);
-            console.log("Is File?", picture instanceof File);
-            console.log("Is Blob?", picture instanceof Blob);
-        }
+        const finalAnswer = selectedChoice || answer || "";
 
         try {
-            const teamId = await TeamService.verifyTokenAndGetTeamId(teamToken);
-            if ((submission.userPicture) != null) {
-                await TeamService.approvePictureTaskDemo(teamId, taskId, submission.userPicture)
-            } else {
-                await TeamService.completeTask(teamId, taskId, submission);
-            }
-            alert("Task submitted!");
+            await TaskAdapter.updateTask(taskId, {
+                answer: finalAnswer,
+                userPicture: picture || null,
+            });
+            alert("Task updated with answer!");
         } catch (err) {
-            console.error(err);
-            alert("Submission failed.");
+            console.error("Update failed:", err);
+            alert("Failed to save answer.");
         }
 
         setIsSubmitting(false);
@@ -101,7 +79,7 @@ export default function Page() {
                             value={task.choices}
                             selected={selectedChoice}
                             onSelect={(val) => setSelectedChoice(val)}
-                            readOnly={false}
+                            readOnly={true}
                         />
                     </div>
                 )}
