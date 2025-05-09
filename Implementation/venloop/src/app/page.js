@@ -1,5 +1,5 @@
 
-import LoginPage from "@/app/pages/admin-login/page";
+import LoginPage from "@/app/admin-login/page";
 
 
 export default function Home() {

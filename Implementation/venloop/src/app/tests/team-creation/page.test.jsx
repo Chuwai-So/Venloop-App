@@ -14,7 +14,7 @@ vi.mock("@/app/TeamService/teamAdapter", () => ({
 }));
 
 
-import CreateTeamsPage from "@/app/pages/team-creation/page";
+import CreateTeamsPage from "@/app/team-creation/page";
 
 describe("CreateTeamsPage", () => {
     it("renders core components", () => {

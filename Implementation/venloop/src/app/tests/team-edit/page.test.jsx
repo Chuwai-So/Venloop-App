@@ -40,7 +40,7 @@ vi.mock("@/app/TeamService/teamService", () => ({
     },
 }));
 
-import TeamMenu from "@/app/pages/team-edit/page";
+import TeamMenu from "@/app/team-edit/page";
 
 describe("TeamMenu", () => {
     it("renders all core components and team bars", async () => {
