@@ -3,11 +3,11 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { TaskAdapter } from '@/app/service/TaskService/taskAdapter';
-import TaskFeatureDescription from '@/app/components/TaskFeatureDescription';
-import TaskFeatureTimer from '@/app/components/TaskFeatureTimer';
-import TaskFeaturePicture from '@/app/components/TaskFeaturePicture';
-import TaskFeatureInput from '@/app/components/TaskFeatureInput';
-import TaskFeatureChoiceEditor from '@/app/components/TaskFeatureChoiceEditor';
+import TaskFeatureDescription from '@/app/components/TaskFeatures/TaskFeatureDescription';
+import TaskFeatureTimer from '@/app/components/TaskFeatures/TaskFeatureTimer';
+import TaskFeaturePicture from '@/app/components/TaskFeatures/TaskFeaturePicture';
+import TaskFeatureInput from '@/app/components/TaskFeatures/TaskFeatureInput';
+import TaskFeatureChoiceEditor from '@/app/components/TaskFeatures/TaskFeatureChoiceEditor';
 import NavBar from '@/app/components/NavBars/NavBar';
 
 export default function EditTaskPage() {

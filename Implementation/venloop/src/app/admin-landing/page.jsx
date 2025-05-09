@@ -2,7 +2,7 @@
 
 
 import LogOutNavBar from "@/app/components/NavBars/LogOutNavBar";
-import GridButtons from "@/app/components/GridButtons";
+import GridButtons from "@/app/components/Buttons/GridButtons";
 import ProtectedRoute from "@/app/ProtectedRoute";
 
 

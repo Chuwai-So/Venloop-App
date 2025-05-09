@@ -32,7 +32,7 @@ export default function TeamMenu() {
     return (
         <ProtectedRoute>
             <div className="min-h-screen bg-gray-50 relative overflow-hidden">
-                <NavBar backTo={"/task-list-landing"}/>
+                <NavBar backTo={"/admin-landing"}/>
                 <div className="p-4">
                     {teams.map((team) => (
                         <TeamBar

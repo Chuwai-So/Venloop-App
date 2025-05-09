@@ -4,14 +4,14 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import TaskService from "@/app/service/TaskService/taskService";
 import TeamService from "@/app/service/TeamService/teamService";
-import TaskFeatureDescription from "@/app/components/TaskFeatureDescription";
-import TaskFeatureTimer from "@/app/components/TaskFeatureTimer";
-import TaskFeaturePicture from "@/app/components/TaskFeaturePicture";
-import TaskFeatureInput from "@/app/components/TaskFeatureInput";
-import TaskFeatureChoiceEditor from "@/app/components/TaskFeatureChoiceEditor";
+import TaskFeatureDescription from "@/app/components/TaskFeatures/TaskFeatureDescription";
+import TaskFeatureTimer from "@/app/components/TaskFeatures/TaskFeatureTimer";
+import TaskFeaturePicture from "@/app/components/TaskFeatures/TaskFeaturePicture";
+import TaskFeatureInput from "@/app/components/TaskFeatures/TaskFeatureInput";
+import TaskFeatureChoiceEditor from "@/app/components/TaskFeatures/TaskFeatureChoiceEditor";
 import CleanNavBar from "@/app/components/NavBars/CleanNavBar";
 import Toast from "@/app/components/Toast";
-import TaskFeatureChoiceDisplay from "@/app/components/TaskFeatureChoiceDisplay";
+import TaskFeatureChoiceDisplay from "@/app/components/TaskFeatures/TaskFeatureChoiceDisplay";
 
 export default function Page() {
     const searchParams = useSearchParams();

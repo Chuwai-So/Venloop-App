@@ -1,4 +1,4 @@
-import BackButton from "@/app/components/BackButton";
+import BackButton from "@/app/components/Buttons/BackButton";
 import AccountDropdown from "@/app/components/AccountDropdown";
 
 export default function NavBar({backTo}) {

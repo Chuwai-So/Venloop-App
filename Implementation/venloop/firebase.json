@@ -8,12 +8,12 @@
     ],
     "rewrites": [
       {
-        "source": "/teamleader-task-submition/view",
-        "destination": "/teamleader-task-submition/view.html"
+        "source": "/task-submission/view",
+        "destination": "/task-submission/view.html"
       },
       {
-        "source": "/teams/view",
-        "destination": "/teams/view.html"
+        "source": "/team-detail/view",
+        "destination": "/team-detail/view.html"
       },
       {
         "source": "**",

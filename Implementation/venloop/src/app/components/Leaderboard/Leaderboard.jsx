@@ -1,6 +1,6 @@
 'use client';
 import { useState } from 'react';
-import ToggleSwitch from './ToggleSwitch';
+import ToggleSwitch from '../ToggleSwitch';
 import LeaderboardList from './LeaderboardList';
 
 const data = {

@@ -1,11 +1,16 @@
-"use client";
-import {useState, useEffect, useRef} from "react";
-import TeamService from "@/app/service/TeamService/teamService";
-import {db} from "@/app/firebase";
-import {ref, push, serverTimestamp} from "firebase/database";
-import QRCode from "@/app/components/QRCode";
+'use client';
 
-export default function TeamBar({team, isExpanded, onToggle, refreshTeams}) {
+import { useState, useEffect, useRef } from 'react';
+import TeamService from '@/app/service/TeamService/teamService';
+import { db } from '@/app/firebase';
+import { ref, push, serverTimestamp } from 'firebase/database';
+import QRCodeWithDownload from '@/app/components/QR/DownloadableQR';
+import qrUrls from '@/app/util/qrUrls';
+import UpdateButton from '@/app/components/Buttons/UpdateButton';
+import GenerateQRButton from '@/app/components/Buttons/QrButton';
+import DeleteButton from '@/app/components/Buttons/DeleteButton';
+
+export default function TeamBar({ team, isExpanded, onToggle, refreshTeams }) {
     const [isEditing, setIsEditing] = useState(false);
     const [newName, setNewName] = useState(team.name);
     const [isSaving, setIsSaving] = useState(false);
@@ -17,13 +22,14 @@ export default function TeamBar({team, isExpanded, onToggle, refreshTeams}) {
     useEffect(() => {
         if (!isExpanded) {
             setShowQR(false);
+            setQrToken(null);
         }
     }, [isExpanded]);
 
     const handleSave = async () => {
         setIsSaving(true);
         try {
-            await TeamService.updateTeam(team.id, {name: newName});
+            await TeamService.updateTeam(team.id, { name: newName });
             setIsEditing(false);
             refreshTeams();
             alert("Successfully updated team");
@@ -49,35 +55,6 @@ export default function TeamBar({team, isExpanded, onToggle, refreshTeams}) {
         }
     };
 
-    const handleDownloadQR = () => {
-        const svg = document.querySelector(`#qr-wrapper-${team.id} svg`);
-
-        if (!svg) {
-            alert("QR code not found.");
-            return;
-        }
-
-        try {
-            const svgData = new XMLSerializer().serializeToString(svg);
-            const blob = new Blob([svgData], {type: "image/svg+xml;charset=utf-8"});
-            const url = URL.createObjectURL(blob);
-
-            const link = document.createElement("a");
-            link.href = url;
-            link.download = `team-${team.id}-qr.svg`;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            URL.revokeObjectURL(url);
-        } catch (err) {
-            console.error("Error downloading QR code:", err);
-            alert("Failed to download QR code.");
-        }
-    };
-
-
-    const completedTaskList = team.completedTasks ? Object.keys(team.completedTasks) : [];
-
     const handleDelete = async () => {
         const confirmed = confirm("Are you sure you want to delete this team?");
         if (!confirmed) return;
@@ -93,6 +70,8 @@ export default function TeamBar({team, isExpanded, onToggle, refreshTeams}) {
         }
         setIsDeleting(false);
     };
+
+    const completedTaskList = team.completedTasks ? Object.keys(team.completedTasks) : [];
 
     return (
         <div
@@ -129,7 +108,18 @@ export default function TeamBar({team, isExpanded, onToggle, refreshTeams}) {
                         <p className="mt-4 mb-4 text-gray-400 text-sm italic">No completed tasks</p>
                     )}
 
-                    <div className="mt-4 flex gap-4 justify-center">
+                    {/* QR display */}
+                    {showQR && qrToken && (
+                        <div className="flex justify-center mb-2">
+                            <QRCodeWithDownload
+                                id={team.id}
+                                url={qrUrls.teamDetail(team.id)}
+                            />
+                        </div>
+                    )}
+
+                    {/* Buttons */}
+                    <div className="flex flex-col sm:flex-row justify-center gap-2 mt-2">
                         {isEditing ? (
                             <button
                                 className="px-4 py-2 bg-green-600 text-white rounded-lg shadow hover:bg-[#1F2A60] transition disabled:opacity-50"
@@ -142,63 +132,23 @@ export default function TeamBar({team, isExpanded, onToggle, refreshTeams}) {
                                 {isSaving ? "Saving..." : "Save"}
                             </button>
                         ) : (
-                            <button
-                                className="px-4 py-2 bg-[#3C8DC3] text-white rounded-lg shadow hover:bg-[#1F2A60] transition"
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    setIsEditing(true);
-                                }}
-                            >
-                                Update
-                            </button>
-                        )}
-                        <button
-                            className={`px-4 py-2 rounded-lg shadow transition ${
-                                isEditing || isSaving || isDeleting
-                                    ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                                    : "bg-[#3C8DC3] text-white hover:bg-[#1F2A60]"
-                            }`}
-                            disabled={isEditing || isSaving || isDeleting}
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                handleGenerateQR();
-                            }}
-                        >
-                            QR-Code
-                        </button>
-                        <button
-                            className={`px-4 py-2 rounded-lg shadow transition ${
-                                isEditing || isDeleting
-                                    ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                                    : "bg-[#D86F27] text-white hover:bg-red-700"
-                            }`}
-                            disabled={isEditing || isDeleting}
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                handleDelete();
-                            }}
-                        >
-                            {isDeleting ? "Deleting..." : "Delete"}
-                        </button>
-                    </div>
-
-                    {showQR && qrToken && (
-                        <div className="mt-4 flex flex-col items-center gap-2"
-                             id={`qr-wrapper-${team.id}`}
-                             ref={qrRef}
-                             onClick={(e) => e.stopPropagation()}>
-                            <QRCode
-                                id={`qr-${team.id}`}
-                                value={`https://venloop-ee862.web.app/team-detail/view?id=${team.id}`}
+                            <UpdateButton
+                                isSaving={isSaving}
+                                onClick={() => setIsEditing(true)}
                             />
-                            <button
-                                onClick={handleDownloadQR}
-                                className="mt-2 px-4 py-1 bg-[#3C8DC3] text-white text-sm rounded shadow hover:bg-[#1F2A60]"
-                            >
-                                Download QR Code
-                            </button>
-                        </div>
-                    )}
+                        )}
+                        {!showQR && (
+                            <GenerateQRButton
+                                disabled={isEditing || isSaving || isDeleting}
+                                onClick={handleGenerateQR}
+                            />
+                        )}
+                        <DeleteButton
+                            isEditing={isEditing}
+                            isDeleting={isDeleting}
+                            onClick={handleDelete}
+                        />
+                    </div>
                 </>
             )}
         </div>

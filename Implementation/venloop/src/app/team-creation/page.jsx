@@ -54,7 +54,7 @@ export default function CreateTeamsPage() {
     return (
         <ProtectedRoute>
             <div className="min-h-screen bg-gray-50">
-                <NavBar backTo={"/task-list-landing"}/>
+                <NavBar backTo={"/admin-landing"}/>
 
                 <div className="p-8 max-w-7xl mx-auto">
                     <h1 className="text-2xl font-bold mb-8 text-[#1F2A60]">Create Teams</h1>
