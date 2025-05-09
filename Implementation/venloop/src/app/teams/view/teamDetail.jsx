@@ -50,16 +50,31 @@ export default function TeamDetail() {
     const [team, setTeam] = useState(null);
 
     useEffect(() => {
-        const localToken = localStorage.getItem("teamAccessToken");
-        if (!localToken && teamId) {
-            console.log("⏳ No token found, issuing new one for:", teamId);
-            generateTeamToken(teamId).then((token) => {
-                localStorage.setItem("teamAccessToken", token);
-                console.log("✅ Token saved to localStorage:", token);
-            });
-        } else {
-            console.log("Token already exists:", localToken);
-        }
+        if (!teamId) return;
+
+        (async () => {
+            const existingToken = localStorage.getItem("teamAccessToken");
+
+            if (existingToken) {
+                try {
+                    const snapshot = await get(ref(db, `teamTokens/${existingToken}`));
+                    const tokenData = snapshot.val();
+
+                    if (tokenData?.teamId === teamId) {
+                        console.log("✅ Valid token found:", existingToken);
+                        return;
+                    } else {
+                        console.warn("⚠️ Token mismatch. Reissuing...");
+                    }
+                } catch (err) {
+                    console.error("❌ Error verifying token:", err);
+                }
+            }
+
+            const newToken = await generateTeamToken(teamId);
+            localStorage.setItem("teamAccessToken", newToken);
+            console.log("✅ New token saved:", newToken);
+        })();
     }, [teamId]);
 
     useEffect(() => {

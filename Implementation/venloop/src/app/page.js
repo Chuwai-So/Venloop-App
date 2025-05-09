@@ -1,6 +1,5 @@
 import Image from "next/image";
 import TeamForm from "@/app/Component/TeamForm";
-import Penis from "@/app/Component/Penis"
 import LoginPage from "./admin-login/page";
 import AdminLandingPage from "@/app/admin-landing/page";
 import PageWrapper from "@/app/teams/page";

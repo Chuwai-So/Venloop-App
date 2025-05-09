@@ -8,8 +8,10 @@ import TaskFeatureDescription from "@/app/Component/TaskFeatureDescription";
 import TaskFeatureTimer from "@/app/Component/TaskFeatureTimer";
 import TaskFeaturePicture from "@/app/Component/TaskFeaturePicture";
 import TaskFeatureInput from "@/app/Component/TaskFeatureInput";
-import TaskFeatureChoice from "@/app/Component/TaskFeatureChoice";
+import TaskFeatureChoiceEditor from "@/app/Component/TaskFeatureChoiceEditor";
 import CleanNavBar from "@/app/Component/NavBars/CleanNavBar";
+import Toast from "@/app/Component/Toast";
+import TaskFeatureChoiceDisplay from "@/app/Component/TaskFeatureChoiceDisplay";
 
 export default function Page() {
     const searchParams = useSearchParams();
@@ -20,6 +22,22 @@ export default function Page() {
     const [picture, setPicture] = useState(null);
     const [selectedChoice, setSelectedChoice] = useState(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const [toast, setToast] = useState("");
+    const [completionStats, setCompletionStats] = useState(null);
+
+    const fetchCompletionStats = async () => {
+        try {
+            const teams = await TeamService.getAllTeams();
+            const total = teams.length;
+            const completed = teams.filter(t => t.completedTasks && t.completedTasks[taskId]).length;
+
+            setCompletionStats({ total, completed });
+            setToast(`${completed} out of ${total} teams have  completed this task task as well!`);
+        } catch (err) {
+            console.error("Error fetching task stats:", err);
+        }
+    };
 
     useEffect(() => {
         const fetchTask = async () => {
@@ -48,20 +66,19 @@ export default function Page() {
             const teamId = await TeamService.verifyTokenAndGetTeamId(teamToken);
             const finalAnswer = selectedChoice || answer || "";
 
-            // Submit input-based or multiple choice tasks
             if (task.features.input || task.features.choice) {
                 await TeamService.completeTask(teamId, taskId, finalAnswer);
             }
 
-            // Handle picture task separately
             if (task.features.picture && picture) {
                 await TeamService.approvePictureTaskDemo(teamId, taskId, picture);
             }
 
-            alert("Task submitted!");
+            setToast("Task submitted!");
+            await fetchCompletionStats();
         } catch (err) {
             console.error("Submission failed:", err);
-            alert("Failed to submit task.");
+            setToast("Failed to submit task.");
         }
 
         setIsSubmitting(false);
@@ -70,7 +87,7 @@ export default function Page() {
     if (!task) return <div className="p-6 text-center">Loading task...</div>;
 
     return (
-        <div className="min-h-screen bg-[#F9FAFB]">
+        <div className="min-h-screen bg-[#F9FAFB] text-black">
             <CleanNavBar />
             <div className="max-w-md mx-auto mt-4 px-4 py-6 bg-white shadow rounded-lg space-y-6">
                 <h1 className="text-xl font-bold text-center">{task.name}</h1>
@@ -89,12 +106,12 @@ export default function Page() {
 
                 {task.features.choice && (
                     <div className="border p-3 rounded bg-gray-50">
-                        <TaskFeatureChoice
+                        <TaskFeatureChoiceDisplay
                             value={task.choices}
                             selected={selectedChoice}
                             onSelect={setSelectedChoice}
-                            readOnly={true} // disables adding/removing options
                         />
+
                     </div>
                 )}
 
@@ -118,6 +135,15 @@ export default function Page() {
                     {isSubmitting ? "Submitting..." : "Submit Task"}
                 </button>
             </div>
+
+            {toast && (
+                <Toast
+                    message={toast}
+                    onClose={() => setToast("")}
+                    type="success"
+                />
+            )}
+
         </div>
     );
 }

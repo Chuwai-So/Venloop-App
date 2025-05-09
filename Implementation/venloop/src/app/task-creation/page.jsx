@@ -5,7 +5,7 @@ import TaskFeatureDescription from "../Component/TaskFeatureDescription";
 import TaskFeatureTimer from "../Component/TaskFeatureTimer";
 import TaskFeaturePicture from "../Component/TaskFeaturePicture";
 import TaskFeatureInput from "../Component/TaskFeatureInput";
-import TaskFeatureChoice from "../Component/TaskFeatureChoice";
+import TaskFeatureChoiceEditor from "../Component/TaskFeatureChoiceEditor";
 import TaskService from "@/app/TaskService/taskService";
 import QRCodeComponent from "@/app/Component/QRCode";
 import NavBar from "@/app/Component/NavBars/NavBar";
@@ -58,11 +58,12 @@ export default function TaskCreation() {
             picture: features.picture ? taskData.picture : null,
             timer: features.timer ? taskData.timer : null,
             choices: features.choice ? taskData.choice : [],
-            answer: taskData.input || null,
+            answer: features.choice ? taskData.answer : (features.input ? taskData.input : null),
             type,
             features: { ...features },
             isTemplate,
         };
+
 
         try {
             const taskId = await TaskService.createTask(taskPayload);
@@ -116,10 +117,15 @@ export default function TaskCreation() {
                                         )}
                                         {features.choice && (
                                             <div className="w-1/2 bg-white border rounded p-2 shadow flex items-center min-h-[120px] text-black">
-                                                <TaskFeatureChoice
+                                                <TaskFeatureChoiceEditor
                                                     value={taskData.choice}
-                                                    onChange={(choices) => handleDataChange("choice", choices)}
+                                                    correctAnswer={taskData.answer}
+                                                    onChange={(choices, correct) => {
+                                                        handleDataChange("choice", choices);
+                                                        handleDataChange("answer", correct);
+                                                    }}
                                                 />
+
                                             </div>
                                         )}
                                     </div>
