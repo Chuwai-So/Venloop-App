@@ -40,13 +40,13 @@ vi.mock("@/app/TeamService/teamService", () => ({
     },
 }));
 
-import TeamMenu from "@/app/team-edit/page";
+import TeamMenu from "@/app/pages/team-edit/page";
 
 describe("TeamMenu", () => {
     it("renders all core components and team bars", async () => {
         render(<TeamMenu />);
 
-        // Wait for teams to load
+        // Wait for team-detail to load
         await waitFor(() => {
             expect(screen.getByTestId("mock-navbar")).toBeInTheDocument();
             expect(screen.getByText("Team A")).toBeInTheDocument();
