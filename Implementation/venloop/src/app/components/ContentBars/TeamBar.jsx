@@ -189,7 +189,7 @@ export default function TeamBar({team, isExpanded, onToggle, refreshTeams}) {
                              onClick={(e) => e.stopPropagation()}>
                             <QRCode
                                 id={`qr-${team.id}`}
-                                value={`https://venloop-ee862.web.app/teams/view?id=${team.id}`}
+                                value={`https://venloop-ee862.web.app/team-detail/view?id=${team.id}`}
                             />
                             <button
                                 onClick={handleDownloadQR}

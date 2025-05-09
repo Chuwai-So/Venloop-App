@@ -67,7 +67,7 @@ export default function TaskCreation() {
 
         try {
             const taskId = await TaskService.createTask(taskPayload);
-            const qrLink = `https://venloop-ee862.web.app/teamleader-task-submition/view?id=${taskId}`;
+            const qrLink = `https://venloop-ee862.web.app/task-submission/view?id=${taskId}`;
             setQrUrl(qrLink);
             alert("Task created successfully!");
         } catch (err) {

@@ -57,7 +57,7 @@ function AdminTaskListContent() {
                             {expanded[task.id] && (
                                 <div className="mt-4 space-y-2">
                                     <div className="flex justify-center">
-                                        <QRCodeComponent value={`https://venloop-ee862.web.app/teamleader-task-submition/view?id=${task.id}`} size={120} />
+                                        <QRCodeComponent value={`https://venloop-ee862.web.app/task-submission/view?id=${task.id}`} size={120} />
                                     </div>
                                     <div className="flex flex-col sm:flex-row justify-center gap-2 mt-2">
                                         <button
@@ -68,7 +68,7 @@ function AdminTaskListContent() {
                                         </button>
                                         <button
                                             className="bg-[#3CA9E2] text-white px-4 py-2 rounded hover:scale-105 transition-transform"
-                                            onClick={() => router.push(`/admin-edit-task-template/view?id=${task.id}`)}
+                                            onClick={() => router.push(`/task-template-edit/view?id=${task.id}`)}
                                         >
                                             Edit
                                         </button>

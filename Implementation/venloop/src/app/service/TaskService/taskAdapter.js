@@ -17,7 +17,7 @@ export const TaskAdapter = {
 
             const newRef = push(ref(db, TASK_PATH));
             const taskId = newRef.key;
-            const taskURL = `https://venloop-ee862.web.app/teamleader-task-submition/view${taskId}`;
+            const taskURL = `https://venloop-ee862.web.app/task-submission/view?${taskId}`;
 
 
             const task = {
