@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react';
 import TeamService from '@/app/service/TeamService/teamService';
-import ProtectedRoute from '@/app/ProtectedRoute';
 import TeamJoinBar from '@/app/components/ContentBars/TeamJoinBar';
 import CleanNavBar from "@/app/components/NavBars/CleanNavBar";
 

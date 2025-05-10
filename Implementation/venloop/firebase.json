@@ -16,14 +16,17 @@
         "destination": "/team-detail/view.html"
       },
       {
-        "source": "**",
+        "source": "/admin-edit-task-template/view",
+        "destination": "/admin-edit-task-template/view/index.html"
+      },
+      {
+        "source": "/team-join",
         "destination": "/index.html"
       },
       {
-        "source": "admin-edit-task-template/view",
-        "destination": "admin-edit-task-template/view/index.html"
+        "source": "**",
+        "destination": "/index.html"
       }
-
     ]
   }
 }
