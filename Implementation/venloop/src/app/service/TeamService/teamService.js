@@ -1,7 +1,7 @@
 import { TeamAdapter } from './teamAdapter';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'
 import TaskService from "@/app/service/TaskService/taskService";
-import { ref as dbRef, get, update } from 'firebase/database'
+import { ref as dbRef, get, update, remove } from 'firebase/database'
 
 import {storage} from "../../firebase";
 import { db } from "@/app/firebase";
@@ -207,6 +207,31 @@ const TeamService = {
             return false;
         }
     },
+
+    async joinTeamAsCaptain(teamId, token) {
+        try {
+            await TeamAdapter.joinTeamAsCaptain(teamId, token);
+            return await this.getTeam(teamId);
+        } catch (err) {
+            console.error("Error joining team as captain:", err);
+            return null;
+        }
+    },
+
+    async kickCaptain(teamId) {
+        try {
+            await TeamAdapter.kickCaptain(teamId);
+        } catch (err) {
+            console.error("Error kicking captain:", err);
+            return null;
+        }
+    },
+
+
+
+
+
+
 
 
 

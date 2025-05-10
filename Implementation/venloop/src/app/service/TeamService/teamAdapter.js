@@ -1,4 +1,5 @@
 import { db } from '../../firebase';
+import qrUrls from "@/app/util/qrUrls";
 import {
     ref,
     push,
@@ -7,6 +8,7 @@ import {
     update,
     remove
 } from 'firebase/database';
+import {ref as dbRef} from "@firebase/database";
 
 const TEAM_PATH = 'teams';
 
@@ -17,7 +19,7 @@ export const TeamAdapter = {
         try {
             const newRef = push(ref(db, TEAM_PATH));
             const teamId = newRef.key;
-            const teamURL = `https://venloop-ee862.web.app/teams/${teamId}`;
+            const teamURL = qrUrls.teamDetail(teamId);
 
             const team = {
                 id: teamId,
@@ -25,6 +27,7 @@ export const TeamAdapter = {
                 scoreHistory: {},
                 completedTasks: {},
                 captain: data.captain || [],
+                occupied: false,
                 qrURL: teamURL
 
             };
@@ -98,7 +101,54 @@ export const TeamAdapter = {
             console.error(`Firebase error removing completed task ${taskId}:`, err);
             throw err;
         }
-    }
+    },
+
+    async joinTeamAsCaptain(teamId, captainToken) {
+        try {
+            const updates = {
+                occupied: true,
+                captainToken: captainToken
+            };
+            const teamRef = ref(db, `${TEAM_PATH}/${teamId}`);
+            await update(teamRef, updates);
+            return true;
+        } catch (err) {
+            console.error(`Firebase error joining team ${teamId} as captain:`, err);
+            throw err;
+        }
+    },
+
+    async kickCaptain(teamId) {
+        try {
+            const tokensRef = dbRef(db, 'qr_tokens');
+            const snapshot = await get(tokensRef);
+            if (snapshot.exists()) {
+                const tokens = snapshot.val();
+                const tokenEntry = Object.entries(tokens).find(
+                    ([, value]) => value.teamId === teamId
+                );
+
+                if (tokenEntry) {
+                    const [tokenKey] = tokenEntry;
+
+
+                    await remove(dbRef(db, `qr_tokens/${tokenKey}`));
+                }
+            }
+
+
+            await update(dbRef(db, `teams/${teamId}`), {
+                captain: null,
+                occupied: false,
+            });
+
+            return true;
+        } catch (err) {
+            console.error('Error kicking captain:', err);
+            return false;
+        }
+    },
+
 
 };
 
