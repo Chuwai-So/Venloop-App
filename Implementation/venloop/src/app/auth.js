@@ -1,5 +1,5 @@
 import {auth} from "@/app/firebase";
-import AdminService from "@/app/AdminService/adminService";
+import AdminService from "@/app/service/AdminService/adminService";
 import {createUserWithEmailAndPassword, signInWithEmailAndPassword, updatePassword} from "firebase/auth"
 
 export const doCreateUserWithEmailAndPassword = async (email, password) => {

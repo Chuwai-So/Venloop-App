@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import CleanNavBar from "@/app/Component/NavBars/CleanNavBar";
-import AdminService from "@/app/AdminService/adminService";
+import CleanNavBar from "@/app/components/NavBars/CleanNavBar";
+import AdminService from "@/app/service/AdminService/adminService";
 
 export default function SignUpPage() {
     const [name, setName] = useState("");

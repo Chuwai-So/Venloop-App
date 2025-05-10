@@ -1,14 +1,14 @@
-"use client";
+'use client';
 
 import { useState } from "react";
-import TaskFeatureDescription from "../Component/TaskFeatureDescription";
-import TaskFeatureTimer from "../Component/TaskFeatureTimer";
-import TaskFeaturePicture from "../Component/TaskFeaturePicture";
-import TaskFeatureInput from "../Component/TaskFeatureInput";
-import TaskFeatureChoiceEditor from "../Component/TaskFeatureChoiceEditor";
-import TaskService from "@/app/TaskService/taskService";
-import QRCodeComponent from "@/app/Component/QRCode";
-import NavBar from "@/app/Component/NavBars/NavBar";
+import TaskFeatureDescription from "@/app/components/TaskFeatures/TaskFeatureDescription";
+import TaskFeatureTimer from "@/app/components/TaskFeatures/TaskFeatureTimer";
+import TaskFeaturePicture from "@/app/components/TaskFeatures/TaskFeaturePicture";
+import TaskFeatureInput from "@/app/components/TaskFeatures/TaskFeatureInput";
+import TaskFeatureChoiceEditor from "@/app/components/TaskFeatures/TaskFeatureChoiceEditor";
+import TaskService from "@/app/service/TaskService/taskService";
+import QRCodeWithDownload from "@/app/components/QR/DownloadableQR";
+import NavBar from "@/app/components/NavBars/NavBar";
 import ProtectedRoute from "@/app/ProtectedRoute";
 
 export default function TaskCreation() {
@@ -64,10 +64,9 @@ export default function TaskCreation() {
             isTemplate,
         };
 
-
         try {
             const taskId = await TaskService.createTask(taskPayload);
-            const qrLink = `https://venloop-ee862.web.app/teamleader-task-submition/view?id=${taskId}`;
+            const qrLink = `https://venloop-ee862.web.app/task-submission/view?id=${taskId}`;
             setQrUrl(qrLink);
             alert("Task created successfully!");
         } catch (err) {
@@ -125,7 +124,6 @@ export default function TaskCreation() {
                                                         handleDataChange("answer", correct);
                                                     }}
                                                 />
-
                                             </div>
                                         )}
                                     </div>
@@ -200,7 +198,7 @@ export default function TaskCreation() {
 
                 {qrUrl && (
                     <div className="mt-6 flex flex-col items-center text-black">
-                        <QRCodeComponent value={qrUrl} size={180} label="Scan to open task" />
+                        <QRCodeWithDownload id="task-creation" url={qrUrl} />
                         <button
                             onClick={() => setQrUrl(null)}
                             className="mt-2 text-sm text-blue-500 hover:underline"

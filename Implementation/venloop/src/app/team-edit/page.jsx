@@ -1,9 +1,9 @@
 "use client";
 
 import {useEffect, useState} from "react";
-import TeamService from "@/app/TeamService/teamService";
-import NavBar from "@/app/Component/NavBars/NavBar";
-import TeamBar from "@/app/Component/TeamBar";
+import TeamService from "@/app/service/TeamService/teamService";
+import NavBar from "@/app/components/NavBars/NavBar";
+import TeamBar from "@/app/components/ContentBars/TeamBar";
 import ProtectedRoute from "@/app/ProtectedRoute";
 
 export default function TeamMenu() {
@@ -20,7 +20,7 @@ export default function TeamMenu() {
                 }
             })
             .catch(err => {
-                console.error("Error loading teams:", err);
+                console.error("Error loading team-detail:", err);
                 setTeams([]);
             });
     };

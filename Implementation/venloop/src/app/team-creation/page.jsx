@@ -1,8 +1,8 @@
 "use client";
 
-import NavBar from "@/app/Component/NavBars/NavBar";
+import NavBar from "@/app/components/NavBars/NavBar";
 import {useState} from "react";
-import {TeamAdapter} from "@/app/TeamService/teamAdapter";
+import {TeamAdapter} from "@/app/service/TeamService/teamAdapter";
 import ProtectedRoute from "@/app/ProtectedRoute";
 
 export default function CreateTeamsPage() {
@@ -44,7 +44,7 @@ export default function CreateTeamsPage() {
             setTeamCount(0);
         } catch (error) {
             console.error(error);
-            setFailure("An error occurred while creating teams.");
+            setFailure("An error occurred while creating team-detail.");
         } finally {
             setLoading(false);
         }

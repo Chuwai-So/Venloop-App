@@ -1,8 +1,8 @@
 "use client";
 
 
-import LogOutNavBar from "@/app/Component/NavBars/LogOutNavBar";
-import GridButtons from "@/app/Component/GridButtons";
+import LogOutNavBar from "@/app/components/NavBars/LogOutNavBar";
+import GridButtons from "@/app/components/Buttons/GridButtons";
 import ProtectedRoute from "@/app/ProtectedRoute";
 
 
