@@ -2,7 +2,7 @@
 
 import {useState, useEffect} from "react";
 import {useRouter} from "next/navigation";
-import CleanNavBar from "@/app/Component/NavBars/CleanNavBar";
+import CleanNavBar from "@/app/components/NavBars/CleanNavBar";
 import {doSignInWithEmailAndPassword} from "@/app/auth";
 import {useAuth} from "@/app/contexts/authContext";
 

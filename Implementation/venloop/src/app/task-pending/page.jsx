@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import TeamService from "@/app/TeamService/teamService";
-import NavBar from "@/app/Component/NavBars/NavBar";
-import TaskApplicationBar from "@/app/Component/TaskApplicationBar";
+import TeamService from "@/app/service/TeamService/teamService";
+import NavBar from "@/app/components/NavBars/NavBar";
+import TaskApplicationBar from "@/app/components/ContentBars/TaskApplicationBar";
 import ProtectedRoute from "@/app/ProtectedRoute";
 
 export default function PictureSubmissionPage() {

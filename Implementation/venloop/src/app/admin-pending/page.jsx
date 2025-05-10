@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import AdminService from "@/app/AdminService/adminService";
-import AdminApplicationBar from "@/app/Component/AdminApplicationBar";
-import NavBar from "@/app/Component/NavBars/NavBar";
+import AdminService from "@/app/service/AdminService/adminService";
+import AdminApplicationBar from "@/app/components/ContentBars/AdminApplicationBar";
+import NavBar from "@/app/components/NavBars/NavBar";
 import ProtectedRoute from "@/app/ProtectedRoute";
 
 export default function AdminApprovalMenu() {
