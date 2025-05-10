@@ -173,7 +173,7 @@ export default function TeamBar({ team, isExpanded, onToggle, refreshTeams }) {
                             onClick={handleDelete}
                         />
 
-                        {team.captain && (
+                        {isOccupied && (
                             <KickCaptainButton
                                 isEditing={isEditing}
                                 isKicking={isKicking}

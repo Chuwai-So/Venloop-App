@@ -20,8 +20,8 @@
         "destination": "/admin-edit-task-template/view/index.html"
       },
       {
-        "source": "/team-join",
-        "destination": "/index.html"
+        "source": "/team-join/view",
+        "destination": "/team-join/view.html"
       },
       {
         "source": "**",

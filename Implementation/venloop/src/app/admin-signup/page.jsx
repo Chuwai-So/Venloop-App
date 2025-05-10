@@ -20,6 +20,7 @@ export default function SignUpPage() {
             await AdminService.createAdmin({ name, email, password });
             alert("Sign Up Request Sent Successfully!");
             router.push("/admin-login");
+            console.log("sing up done - redirecting to /admin-login");
         } catch (error) {
             console.error("Error signing up: ", error);
             const message = parseFirebaseError(error);

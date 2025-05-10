@@ -11,6 +11,7 @@ export default function ProtectedRoute({ children }) {
     useEffect(() => {
         if (!loading && !userLoggedIn) {
             router.push("/admin-login"); // or your login route
+            console.log("this is a protectedRoute - redirecting to /admin-login");
         }
     }, [userLoggedIn, loading, router]);
 

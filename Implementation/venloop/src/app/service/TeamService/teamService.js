@@ -221,9 +221,10 @@ const TeamService = {
     async kickCaptain(teamId) {
         try {
             await TeamAdapter.kickCaptain(teamId);
+            return true;
         } catch (err) {
             console.error("Error kicking captain:", err);
-            return null;
+            return false;
         }
     },
 
