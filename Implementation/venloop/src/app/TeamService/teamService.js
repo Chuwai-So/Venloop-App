@@ -148,7 +148,7 @@ const TeamService = {
             const updates = {
                 [`completedTasks/${taskId}`]: {
                     //...data,
-                    userAnswer:input,
+                    userAnswer: input,
                     result: verdict,
                     name: task.name,
                     completedAt: new Date().toISOString()

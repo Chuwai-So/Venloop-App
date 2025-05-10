@@ -25,6 +25,7 @@ export default function Page() {
 
     const [toast, setToast] = useState("");
     const [completionStats, setCompletionStats] = useState(null);
+    const [hasSubmitted, setHasSubmitted] = useState(false);
 
     const fetchCompletionStats = async () => {
         try {
@@ -76,6 +77,7 @@ export default function Page() {
 
             setToast("Task submitted!");
             await fetchCompletionStats();
+            setHasSubmitted(true);
         } catch (err) {
             console.error("Submission failed:", err);
             setToast("Failed to submit task.");
@@ -94,13 +96,15 @@ export default function Page() {
 
                 {task.features.description && (
                     <div className="border p-3 rounded bg-gray-50">
-                        <TaskFeatureDescription value={task.description} onChange={() => {}} readOnly />
+                        <TaskFeatureDescription value={task.description} onChange={() => {
+                        }} readOnly/>
                     </div>
                 )}
 
                 {task.features.timer && (
                     <div className="border p-3 rounded bg-gray-50">
-                        <TaskFeatureTimer value={task.timer} onChange={() => {}} readOnly />
+                        <TaskFeatureTimer value={task.timer} onChange={() => {
+                        }} readOnly/>
                     </div>
                 )}
 
@@ -110,6 +114,7 @@ export default function Page() {
                             value={task.choices}
                             selected={selectedChoice}
                             onSelect={setSelectedChoice}
+                            disabled={hasSubmitted}
                         />
 
                     </div>
@@ -117,22 +122,30 @@ export default function Page() {
 
                 {task.features.picture && (
                     <div className="border p-3 rounded bg-gray-50">
-                        <TaskFeaturePicture file={picture} onChange={setPicture} />
+                        <TaskFeaturePicture file={picture} onChange={setPicture} disabled={hasSubmitted}/>
                     </div>
                 )}
 
                 {task.features.input && (
                     <div className="border p-3 rounded bg-gray-50">
-                        <TaskFeatureInput value={answer} onChange={setAnswer} />
+                        <TaskFeatureInput value={answer} onChange={setAnswer} disabled={hasSubmitted}/>
                     </div>
                 )}
 
                 <button
                     onClick={handleSubmit}
-                    disabled={isSubmitting}
-                    className="w-full bg-[#D86F27] text-white font-semibold py-2 rounded hover:scale-105 transition-transform"
+                    disabled={isSubmitting || hasSubmitted}
+                    className={`w-full text-white font-semibold py-2 rounded transition-transform ${
+                        hasSubmitted
+                            ? "bg-gray-400 cursor-not-allowed"
+                            : "bg-[#D86F27] hover:scale-105"
+                    }`}
                 >
-                    {isSubmitting ? "Submitting..." : "Submit Task"}
+                    {isSubmitting
+                        ? "Submitting..."
+                        : hasSubmitted
+                            ? "Submitted"
+                            : "Submit Task"}
                 </button>
             </div>
 

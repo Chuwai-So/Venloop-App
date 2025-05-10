@@ -119,7 +119,7 @@ export default function TeamDetail() {
                         <div className="flex flex-col gap-3">
                             {Object.entries(team.completedTasks).map(([taskId, task]) => {
                                 const borderColor =
-                                    task.result === "correct"
+                                    task.result === "correct" || task.status === "approved"
                                         ? "border-l-green-500"
                                         : task.result === "incorrect"
                                             ? "border-l-red-500"

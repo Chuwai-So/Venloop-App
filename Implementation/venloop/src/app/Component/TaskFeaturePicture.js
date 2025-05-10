@@ -1,10 +1,12 @@
 import { useRef } from "react";
 
-export default function TaskFeaturePicture({ file, onChange }) {
+export default function TaskFeaturePicture({ file, onChange, disabled = false }) {
     const fileInputRef = useRef(null);
 
     const handleClick = () => {
-        fileInputRef.current.click();
+        if (!disabled && fileInputRef.current) {
+            fileInputRef.current.click();
+        }
     };
 
     const handleFileChange = (e) => {
@@ -20,7 +22,11 @@ export default function TaskFeaturePicture({ file, onChange }) {
             <label className="text-md mb-2">Upload Picture</label>
 
             <div
-                className="w-40 h-40 bg-gray-200 bg-opacity-40 border-2 border-dashed border-gray-400 rounded-lg flex items-center justify-center cursor-pointer hover:border-blue-400 transition"
+                className={`w-40 h-40 border-2 border-dashed rounded-lg flex items-center justify-center transition ${
+                    disabled
+                        ? "bg-gray-200 opacity-50 pointer-events-none border-gray-300"
+                        : "bg-gray-200 bg-opacity-40 hover:border-blue-400 border-gray-400 cursor-pointer"
+                }`}
                 onClick={handleClick}
             >
                 {file ? (
@@ -40,6 +46,7 @@ export default function TaskFeaturePicture({ file, onChange }) {
                 ref={fileInputRef}
                 onChange={handleFileChange}
                 className="hidden"
+                disabled={disabled}
             />
         </div>
     );
