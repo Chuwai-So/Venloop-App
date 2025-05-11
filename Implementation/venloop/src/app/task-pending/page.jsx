@@ -21,11 +21,16 @@ export default function PictureSubmissionPage() {
                     const status = task.status?.toString().trim().toLowerCase();
                     if (task.picture && status === "pending") {
                         result.push({
+                            ...task,
                             teamId: team.id,
                             teamName: team.name,
+                            taskName: task.name,
                             taskId,
-                            ...task,
                         });
+
+                        console.log("here is the task name", task.name)
+                        console.log(team.completedTasks);
+
                     }
                 }
             }

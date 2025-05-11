@@ -81,21 +81,27 @@ const TeamService = {
 
     async addPendingTask(teamId, taskId, file) {
         try {
-            const imageURL = await this.fileToBase64(file)
+            const imageURL = await this.fileToBase64(file);
+
+            const task = await TaskService.getTask(taskId);
+
             const updates = {
                 [`pendingTasks/${taskId}`]: {
                     picture: imageURL,
                     uploadedAt: new Date().toISOString(),
-                    status: 'pending'
+                    status: 'pending',
+                    name: task?.name || "",
                 }
             };
+
             await TeamAdapter.updateTeam(teamId, updates);
             return true;
         } catch (err) {
             console.error("Error adding pending task:", err);
-            return false
+            return false;
         }
     },
+
 
     async approvePictureTaskDemo(teamId, taskId, file) {
         const team = await TeamAdapter.getTeam(teamId);
@@ -116,7 +122,7 @@ const TeamService = {
                 [`completedTasks/${taskId}`]: {
                     picture: imageURL,
                     uploadedAt: new Date().toISOString(),
-                    status: 'pending'
+                    status: 'pending',
                 }
             };
             await TeamAdapter.updateTeam(teamId, updates);
