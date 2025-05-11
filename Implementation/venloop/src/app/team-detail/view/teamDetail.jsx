@@ -73,7 +73,7 @@ export default function TeamDetail() {
             localStorage.removeItem("teamAccessToken");
             alert("You have left the team.");
 
-            router.push("/team-join"); //
+            router.push("/team-join/view");
         } catch (err) {
             console.error("Failed to leave team:", err);
             alert("Error leaving the team. Please try again.");
