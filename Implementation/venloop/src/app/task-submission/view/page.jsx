@@ -69,7 +69,7 @@ export default function Page() {
             const finalAnswer = selectedChoice || answer || "";
 
             if (task.features.input || task.features.choice) {
-                await TeamService.submitTask(teamId, taskId, finalAnswer);
+                await TeamService.completeTask(teamId, taskId, finalAnswer);
             }
 
              if (task.features.picture && picture) {
