@@ -79,18 +79,16 @@ const TeamService = {
     },
 
 
-    async addPendingTask(teamId, taskId, file) {
+    async submitTask(teamId, taskId, file) {
         try {
             const imageURL = await this.fileToBase64(file);
 
-            const task = await TaskService.getTask(taskId);
 
             const updates = {
                 [`pendingTasks/${taskId}`]: {
                     picture: imageURL,
                     uploadedAt: new Date().toISOString(),
                     status: 'pending',
-                    name: task?.name || "",
                 }
             };
 
@@ -103,35 +101,40 @@ const TeamService = {
     },
 
 
-    async approvePictureTaskDemo(teamId, taskId, file) {
+    async submitPictureTask(teamId, taskId, file) {
         const team = await TeamAdapter.getTeam(teamId);
         if (team?.completedTasks?.[taskId]) {
             console.warn(`Task ${taskId} already completed`);
             return false;
         }
+
         try {
-            if (!(file instanceof File)) {
-                console.warn("Provided file is not a valid File object");
-            }
             if (!(file instanceof Blob)) {
                 console.warn("Submitted file is not a Blob or File");
             }
-            console.log("File object:", file);
+
             const imageURL = await this.fileToBase64(file);
+
+            const task = await TaskService.getTask(taskId);
+            const taskName = task?.name || taskId;
+
             const updates = {
                 [`completedTasks/${taskId}`]: {
                     picture: imageURL,
                     uploadedAt: new Date().toISOString(),
                     status: 'pending',
+                    name: taskName,
                 }
             };
+
             await TeamAdapter.updateTeam(teamId, updates);
             return true;
         } catch (err) {
-            console.error("Error adding pending task:", err);
-            return false
+            console.error("Error submitting picture task:", err);
+            return false;
         }
     },
+
 
 
 

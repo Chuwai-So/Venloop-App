@@ -24,13 +24,9 @@ export default function PictureSubmissionPage() {
                             ...task,
                             teamId: team.id,
                             teamName: team.name,
-                            taskName: task.name,
                             taskId,
+                            taskName: task.name || " ",
                         });
-
-                        console.log("here is the task name", task.name)
-                        console.log(team.completedTasks);
-
                     }
                 }
             }
@@ -43,6 +39,7 @@ export default function PictureSubmissionPage() {
             setPendingTasks([]);
         }
     };
+
 
 
     useEffect(() => {
