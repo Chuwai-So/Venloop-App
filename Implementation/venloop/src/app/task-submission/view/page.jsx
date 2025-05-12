@@ -80,8 +80,9 @@ export default function Page() {
             await fetchCompletionStats();
             setHasSubmitted(true);
 
-            router.push(`/team-detail/view?id=${teamId}`);
-
+            setTimeout(() => {
+                router.push(`/team-detail/view?id=${teamId}`);
+            }, 3000);
 
         } catch (err) {
             console.error("Submission failed:", err);
