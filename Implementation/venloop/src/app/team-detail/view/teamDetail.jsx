@@ -1,12 +1,13 @@
 'use client';
+
 import { Html5Qrcode } from 'html5-qrcode';
 import { useEffect, useState } from "react";
 import TeamService from "@/app/service/TeamService/teamService";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import CleanNavBar from "@/app/components/NavBars/CleanNavBar";
-import QRScannerButton from "@/app/components/Scanner";
 import { generateTeamToken } from "@/app/util/teamToken";
-
+import { db } from "@/app/firebase";
+import { ref, get, update } from 'firebase/database';
 
 export default function TeamDetail() {
     const colors = {
@@ -16,38 +17,11 @@ export default function TeamDetail() {
         white: '#FFFFFF',
         black: '#000000',
     };
-    console.log("Should have a team id")
-    // const startScan = () => {
-    //     const qrRegionId = "qr-reader";
-    //     const html5QrCode = new Html5Qrcode(qrRegionId);
-    //
-    //     Html5Qrcode.getCameras().then(devices => {
-    //         if (devices && devices.length) {
-    //             const cameraId = devices[0].id;
-    //             html5QrCode.start(
-    //                 cameraId,
-    //                 {
-    //                     fps: 10,
-    //                     qrbox: { width: 250, height: 250 }
-    //                 },
-    //                 (decodedText) => {
-    //                     alert(`Scanned: ${decodedText}`);
-    //                     html5QrCode.stop();
-    //                 },
-    //                 (errorMessage) => {
-    //                     console.warn(errorMessage);
-    //                 }
-    //             );
-    //         }
-    //     }).catch(err => {
-    //         console.error("Camera error: ", err);
-    //     });
-    // };
 
     const searchParams = useSearchParams();
     const teamId = searchParams.get("id");
-    console.log(`Here is the id: ${teamId}`)
     const [team, setTeam] = useState(null);
+    const router = useRouter();
 
     useEffect(() => {
         if (!teamId) return;
@@ -86,6 +60,26 @@ export default function TeamDetail() {
         if (teamId) fetchTeam();
     }, [teamId]);
 
+    const handleLeaveTeam = async () => {
+        const confirmed = confirm("Are you sure you want to leave this team?");
+        if (!confirmed) return;
+
+        try {
+            await update(ref(db, `teams/${teamId}`), {
+                occupied: false,
+                captain: null
+            });
+
+            localStorage.removeItem("teamAccessToken");
+            alert("You have left the team.");
+
+            router.push("/team-join/view");
+        } catch (err) {
+            console.error("Failed to leave team:", err);
+            alert("Error leaving the team. Please try again.");
+        }
+    };
+
     if (!team) {
         return <div className="text-center p-6">Loading team...</div>;
     }
@@ -99,7 +93,6 @@ export default function TeamDetail() {
             <main className="p-4 flex flex-col gap-6">
                 <header className="text-center border-b border-white pb-2">
                     <h1 className="text-5xl font-bold pb-2">{team.name}</h1>
-
                 </header>
 
                 <section style={{backgroundColor: colors.white, color: colors.black}} className="rounded-lg p-4 shadow">
@@ -108,12 +101,7 @@ export default function TeamDetail() {
                 </section>
 
                 <section style={{backgroundColor: colors.white, color: colors.black}} className="rounded-lg p-4 shadow">
-                    <h2
-                        style={{color: colors.orange}}
-                        className="text-lg font-semibold mb-4"
-                    >
-                        Completed Tasks
-                    </h2>
+                    <h2 style={{color: colors.orange}} className="text-lg font-semibold mb-4">Completed Tasks</h2>
 
                     {team.completedTasks && Object.keys(team.completedTasks).length > 0 ? (
                         <div className="flex flex-col gap-3">
@@ -123,7 +111,7 @@ export default function TeamDetail() {
                                         ? "border-l-green-500"
                                         : task.result === "incorrect"
                                             ? "border-l-red-500"
-                                            : "border-l-gray-300"; // fallback for null or pending
+                                            : "border-l-gray-300";
 
                                 return (
                                     <div
@@ -163,8 +151,15 @@ export default function TeamDetail() {
                         <p className="text-gray-500 text-center mt-4">No tasks completed yet.</p>
                     )}
                 </section>
-                <div
-                    className="sticky bottom-0 left-0 w-full bg-blue-500 text-white text-center py-4 z-10 shadow-inner">
+
+                <button
+                    onClick={handleLeaveTeam}
+                    className="mt-4 bg-red-500 text-white font-semibold px-4 py-2 rounded shadow hover:bg-red-700 transition w-full max-w-xs mx-auto"
+                >
+                    Leave Team
+                </button>
+
+                <div className="sticky bottom-0 left-0 w-full bg-blue-500 text-white text-center py-4 z-10 shadow-inner">
                     <h3 className="text-lg font-semibold">
                         Use your camera to scan the task QR code
                     </h3>

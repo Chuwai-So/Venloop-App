@@ -1,7 +1,7 @@
 import { TeamAdapter } from './teamAdapter';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'
 import TaskService from "@/app/service/TaskService/taskService";
-import { ref as dbRef, get, update } from 'firebase/database'
+import { ref as dbRef, get, update, remove } from 'firebase/database'
 
 import {storage} from "../../firebase";
 import { db } from "@/app/firebase";
@@ -79,53 +79,62 @@ const TeamService = {
     },
 
 
-    async addPendingTask(teamId, taskId, file) {
+    async submitTask(teamId, taskId, file) {
         try {
-            const imageURL = await this.fileToBase64(file)
+            const imageURL = await this.fileToBase64(file);
+
+
             const updates = {
                 [`pendingTasks/${taskId}`]: {
                     picture: imageURL,
                     uploadedAt: new Date().toISOString(),
-                    status: 'pending'
+                    status: 'pending',
                 }
             };
+
             await TeamAdapter.updateTeam(teamId, updates);
             return true;
         } catch (err) {
             console.error("Error adding pending task:", err);
-            return false
+            return false;
         }
     },
 
-    async approvePictureTaskDemo(teamId, taskId, file) {
+
+    async submitPictureTask(teamId, taskId, file) {
         const team = await TeamAdapter.getTeam(teamId);
         if (team?.completedTasks?.[taskId]) {
             console.warn(`Task ${taskId} already completed`);
             return false;
         }
+
         try {
-            if (!(file instanceof File)) {
-                console.warn("Provided file is not a valid File object");
-            }
             if (!(file instanceof Blob)) {
                 console.warn("Submitted file is not a Blob or File");
             }
-            console.log("File object:", file);
+
             const imageURL = await this.fileToBase64(file);
+
+            const task = await TaskService.getTask(taskId);
+            const taskName = task?.name || taskId;
+
             const updates = {
                 [`completedTasks/${taskId}`]: {
                     picture: imageURL,
                     uploadedAt: new Date().toISOString(),
-                    status: 'pending'
+                    status: 'pending',
+                    name: taskName,
                 }
             };
+
             await TeamAdapter.updateTeam(teamId, updates);
             return true;
         } catch (err) {
-            console.error("Error adding pending task:", err);
-            return false
+            console.error("Error submitting picture task:", err);
+            return false;
         }
     },
+
 
 
 
@@ -207,6 +216,32 @@ const TeamService = {
             return false;
         }
     },
+
+    async joinTeamAsCaptain(teamId, token) {
+        try {
+            await TeamAdapter.joinTeamAsCaptain(teamId, token);
+            return await this.getTeam(teamId);
+        } catch (err) {
+            console.error("Error joining team as captain:", err);
+            return null;
+        }
+    },
+
+    async kickCaptain(teamId) {
+        try {
+            await TeamAdapter.kickCaptain(teamId);
+            return true;
+        } catch (err) {
+            console.error("Error kicking captain:", err);
+            return false;
+        }
+    },
+
+
+
+
+
+
 
 
 

@@ -35,7 +35,7 @@ export default function CreateTeamsPage() {
         try {
             const createdIds = [];
             for (let name of teamNames) {
-                if (!name.trim()) continue;  /* Delete spaces at front and end */
+                if (!name.trim()) continue;
                 const id = await TeamAdapter.createTeam({name});
                 createdIds.push(id);
             }

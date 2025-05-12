@@ -1,5 +1,6 @@
 // File: app/TaskService/taskAdapter.js
 import { db } from '../../firebase';
+import qrUrls from "@/app/util/qrUrls";
 import {
     ref,
     push,
@@ -17,7 +18,7 @@ export const TaskAdapter = {
 
             const newRef = push(ref(db, TASK_PATH));
             const taskId = newRef.key;
-            const taskURL = `https://venloop-ee862.web.app/task-submission/view?${taskId}`;
+            const taskURL = qrUrls.taskDetail(taskId);
 
 
             const task = {
@@ -26,7 +27,7 @@ export const TaskAdapter = {
                 description: data.description,
                 type: data.type,
                 choices: data.choices || [],
-                answer: data.answer || null, // ← will now be a string from either input or selected choice
+                answer: data.answer || null,
                 timer: data.timer || null,
                 picture: data.picture || null,
                 features: data.features || {},

@@ -6,6 +6,26 @@
       "**/.*",
       "**/node_modules/**"
     ],
+    "headers": [
+      {
+        "source": "**/*.@(js|css|woff2|svg)",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "public,max-age=31536000,immutable"
+          }
+        ]
+      },
+      {
+        "source": "**",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "no-cache"
+          }
+        ]
+      }
+    ],
     "rewrites": [
       {
         "source": "/task-submission/view",
@@ -16,14 +36,17 @@
         "destination": "/team-detail/view.html"
       },
       {
-        "source": "**",
-        "destination": "/index.html"
+        "source": "/admin-edit-task-template/view",
+        "destination": "/admin-edit-task-template/view/index.html"
       },
       {
-        "source": "admin-edit-task-template/view",
-        "destination": "admin-edit-task-template/view/index.html"
+        "source": "/team-join/view",
+        "destination": "/team-join/view.html"
+      },
+      {
+        "source": "**",
+        "destination": "/index.html"
       }
-
     ]
   }
 }

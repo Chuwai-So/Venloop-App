@@ -10,6 +10,7 @@ export default function LogOutNavBar() {
     const handleSignOut = async () => {
         await doSignOut();
         router.push("/admin-login");
+        console.log("log out - redirecting to /admin-login");
     }
 
     return (
