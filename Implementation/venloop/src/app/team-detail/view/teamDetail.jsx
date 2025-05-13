@@ -89,14 +89,14 @@ export default function TeamDetail() {
     }
 
     return (
-        <div style={{ backgroundColor: colors.blue, color: colors.white }} className="min-h-screen">
+        <div style={{backgroundColor: colors.blue, color: colors.white}} className="min-h-screen">
             <div className="w-full sticky top-0 z-50">
-                <CleanNavBar />
+                <CleanNavBar/>
             </div>
 
             <main className="p-4 flex flex-col gap-6">
                 <header className="text-center border-b border-white pb-2">
-                    <h1 className="text-5xl font-bold pb-2">{team.name}</h1>
+                    <h1 className="text-5xl font-bold pb-2 break-words max-w-full overflow-wrap break-all">{team.name}</h1>
                 </header>
 
                 <section style={{backgroundColor: colors.white, color: colors.black}} className="rounded-lg p-4 shadow">
@@ -126,14 +126,14 @@ export default function TeamDetail() {
                                             {task.name || taskId}
                                         </h3>
 
-                                        {task.status === 'pending' && task.picture ? (
+                                        {task.picture ? (
                                             <div className="mt-2">
                                                 <img
                                                     src={task.picture}
                                                     alt="Submitted task image"
                                                     className="w-full max-w-xs rounded shadow"
                                                 />
-                                                <p className="text-sm text-gray-600 mt-1">Status: Pending</p>
+                                                <p className="text-sm text-gray-600 mt-1">Status: {task.status}</p>
                                             </div>
                                         ) : (
                                             <>
@@ -169,14 +169,15 @@ export default function TeamDetail() {
                     {showFAQ ? "Verberg Veelgestelde Vragen" : "Bekijk Veelgestelde Vragen"}
                 </button>
 
-                {showFAQ && <FAQSection />}
+                {showFAQ && <FAQSection/>}
 
-                <div className="sticky bottom-0 left-0 w-full bg-blue-500 text-white text-center py-4 z-10 shadow-inner">
-                    <h3 className="text-lg font-semibold">
-                        Use your camera to scan the task QR code
-                    </h3>
-                </div>
+
             </main>
+            <div className="sticky bottom-0 left-0 w-full bg-blue-500 text-white text-center py-4 z-10 shadow-inner">
+                <h3 className="text-lg font-semibold">
+                    Use your camera to scan the task QR code
+                </h3>
+            </div>
         </div>
     );
 }
