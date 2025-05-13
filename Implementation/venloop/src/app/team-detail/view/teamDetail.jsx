@@ -1,6 +1,7 @@
 'use client';
 
 import { Html5Qrcode } from 'html5-qrcode';
+import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 import TeamService from "@/app/service/TeamService/teamService";
 import { useSearchParams, useRouter } from "next/navigation";
@@ -22,6 +23,9 @@ export default function TeamDetail() {
     const teamId = searchParams.get("id");
     const [team, setTeam] = useState(null);
     const router = useRouter();
+    const FAQSection = dynamic(() => import('@/app/FAQ/FAQSection'), { ssr: false });
+    const [showFAQ, setShowFAQ] = useState(false);
+
 
     useEffect(() => {
         if (!teamId) return;
@@ -158,6 +162,14 @@ export default function TeamDetail() {
                 >
                     Leave Team
                 </button>
+                <button
+                    onClick={() => setShowFAQ(!showFAQ)}
+                    className="w-full max-w-xs mx-auto bg-orange-500 text-white font-semibold px-4 py-2 rounded shadow hover:bg-orange-600 transition"
+                >
+                    {showFAQ ? "Verberg Veelgestelde Vragen" : "Bekijk Veelgestelde Vragen"}
+                </button>
+
+                {showFAQ && <FAQSection />}
 
                 <div className="sticky bottom-0 left-0 w-full bg-blue-500 text-white text-center py-4 z-10 shadow-inner">
                     <h3 className="text-lg font-semibold">
