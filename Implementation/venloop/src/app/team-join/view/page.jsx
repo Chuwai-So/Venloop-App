@@ -7,6 +7,7 @@ import CleanNavBar from "@/app/components/NavBars/CleanNavBar";
 
 export default function TeamJoinMenu() {
     const [teams, setTeams] = useState([]);
+    const [userToken, setUserToken] = useState(null);
 
     const fetchTeams = async () => {
         try {
@@ -24,6 +25,9 @@ export default function TeamJoinMenu() {
 
     useEffect(() => {
         fetchTeams();
+        if (typeof window !== 'undefined') {
+            setUserToken(localStorage.getItem("captain_token"));
+        }
     }, []);
 
     const occupiedCount = teams.filter(t => t.occupied).length;
@@ -36,7 +40,9 @@ export default function TeamJoinMenu() {
                     {occupiedCount}/{teams.length} Teams are occupied
                 </h1>
                 {teams.map((team) =>
-                    team && team.id ? <TeamJoinBar key={team.id} team={team} /> : null
+                    team && team.id ? (
+                        <TeamJoinBar key={team.id} team={team} userToken={userToken} />
+                    ) : null
                 )}
             </div>
         </div>
