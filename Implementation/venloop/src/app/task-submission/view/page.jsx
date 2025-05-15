@@ -65,6 +65,7 @@ export default function Page() {
         }
 
         try {
+
             const teamId = await TeamService.verifyTokenAndGetTeamId(teamToken);
             const finalAnswer = selectedChoice || answer || "";
 

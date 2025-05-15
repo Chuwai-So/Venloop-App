@@ -124,9 +124,9 @@ const TeamService = {
         return handle(TeamAdapter.removeCompletedTask(teamId, taskId), "removing completed task");
     },
 
-    async joinTeamAsCaptain(teamId, token) {
+    async joinTeamAsCaptain(teamId) {
         try {
-            await TeamAdapter.joinTeamAsCaptain(teamId, token);
+            await TeamAdapter.joinTeamAsCaptain(teamId);
             return await this.getTeam(teamId);
         } catch (err) {
             console.error("Error joining team as captain:", err);
@@ -135,10 +135,11 @@ const TeamService = {
     },
 
     async kickCaptain(teamId) {
+        console.log("kicking captain is called in service for:", teamId);
         return handle(TeamAdapter.kickCaptain(teamId), "kicking captain");
     },
 
-    // 🔁 Shared helpers
+
     isTaskAlreadyCompleted(team, taskId) {
         if (team?.completedTasks?.[taskId]) {
             console.warn(`Task ${taskId} already completed`);

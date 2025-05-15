@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import TeamService from '@/app/service/TeamService/teamService';
 import { db } from '@/app/firebase';
-import { ref, push, serverTimestamp } from 'firebase/database';
+import { ref, push, serverTimestamp, get, remove } from 'firebase/database';
 import QRCodeWithDownload from '@/app/components/QR/DownloadableQR';
 import qrUrls from '@/app/util/qrUrls';
 import UpdateButton from '@/app/components/Buttons/UpdateButton';
@@ -17,7 +17,7 @@ export default function TeamBar({ team, isExpanded, onToggle, refreshTeams }) {
     const [isSaving, setIsSaving] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
     const [isKicking, setIsKicking] = useState(false);
-    const [qrToken, setQrToken] = useState(null);
+    const [teamToken, setTeamToken] = useState(null);
     const [showQR, setShowQR] = useState(false);
     const qrRef = useRef();
 
@@ -26,7 +26,7 @@ export default function TeamBar({ team, isExpanded, onToggle, refreshTeams }) {
     useEffect(() => {
         if (!isExpanded) {
             setShowQR(false);
-            setQrToken(null);
+            setTeamToken(null);
         }
     }, [isExpanded]);
 
@@ -46,15 +46,15 @@ export default function TeamBar({ team, isExpanded, onToggle, refreshTeams }) {
 
     const handleGenerateQR = async () => {
         try {
-            const qrRef = ref(db, 'qr_tokens');
-            const newTokenRef = await push(qrRef, {
+            const tokenRef = ref(db, 'teamTokens');
+            const newTokenRef = await push(tokenRef, {
                 teamId: team.id,
                 createdAt: serverTimestamp(),
             });
-            setQrToken(newTokenRef.key);
+            setTeamToken(newTokenRef.key);
             setShowQR(true);
         } catch (err) {
-            console.error('Error generating QR token:', err);
+            console.error('Error generating team token:', err);
             alert('Failed to generate QR code. Please try again.');
         }
     };
@@ -76,18 +76,16 @@ export default function TeamBar({ team, isExpanded, onToggle, refreshTeams }) {
     };
 
     const handleKickCaptain = async () => {
-        const confirmed = confirm('Are you sure you want to remove this team\'s captain?');
+        const confirmed = confirm("Are you sure you want to remove this team's captain?");
         if (!confirmed) return;
 
         setIsKicking(true);
         try {
             const success = await TeamService.kickCaptain(team.id);
-            if (success) {
-                alert('Captain kicked and token revoked.');
-                refreshTeams();
-            } else {
-                alert('Failed to kick captain.');
-            }
+            if (!success) throw new Error("Backend failed");
+
+            alert('Captain kicked and token revoked.');
+            refreshTeams();
         } catch (err) {
             console.error('Kick captain error:', err);
             alert('Error kicking captain.');
@@ -138,7 +136,7 @@ export default function TeamBar({ team, isExpanded, onToggle, refreshTeams }) {
                         <p className="mt-4 mb-4 text-gray-400 text-sm italic">No completed tasks</p>
                     )}
 
-                    {showQR && qrToken && (
+                    {showQR && teamToken && (
                         <div className="flex justify-center mb-2">
                             <QRCodeWithDownload id={team.id} url={qrUrls.teamDetail(team.id)} />
                         </div>

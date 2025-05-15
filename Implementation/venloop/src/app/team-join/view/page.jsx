@@ -26,7 +26,7 @@ export default function TeamJoinMenu() {
     useEffect(() => {
         fetchTeams();
         if (typeof window !== 'undefined') {
-            setUserToken(localStorage.getItem("captain_token"));
+            setUserToken(localStorage.getItem("teamAccessToken"));
         }
     }, []);
 

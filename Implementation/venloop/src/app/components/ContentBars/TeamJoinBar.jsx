@@ -1,12 +1,12 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { db } from '@/app/firebase';
-import { ref, push, get, serverTimestamp } from 'firebase/database';
+import {useEffect, useState} from 'react';
+import {useRouter} from 'next/navigation';
+import {db} from '@/app/firebase';
+import {ref, push, get, serverTimestamp} from 'firebase/database';
 import TeamService from '@/app/service/TeamService/teamService';
 
-export default function TeamJoinBar({ team, userToken }) {
+export default function TeamJoinBar({team, userToken}) {
     const router = useRouter();
     const [joining, setJoining] = useState(false);
     const [canRejoin, setCanRejoin] = useState(false);
@@ -17,7 +17,7 @@ export default function TeamJoinBar({ team, userToken }) {
         const checkRejoinPermission = async () => {
             if (isOccupied && userToken) {
                 try {
-                    const tokenRef = ref(db, `qr_tokens/${userToken}`);
+                    const tokenRef = ref(db, `teams/${team.id}/${userToken}`);
                     const snapshot = await get(tokenRef);
                     if (snapshot.exists()) {
                         const data = snapshot.val();
@@ -49,16 +49,16 @@ export default function TeamJoinBar({ team, userToken }) {
                 return;
             }
 
-            const tokenRef = ref(db, 'qr_tokens');
-            const newTokenRef = await push(tokenRef, {
-                teamId: team.id,
-                createdAt: serverTimestamp(),
-            });
-            const token = newTokenRef.key;
 
-            const success = await TeamService.joinTeamAsCaptain(team.id, token);
+            const token = crypto.randomUUID();
+
+            console.log('token to be added to the team:', token);
+            await TeamService.updateTeam(team.id, {teamToken: token});
+            console.log('token has been added to the team:', token);
+
+            const success = await TeamService.joinTeamAsCaptain(team.id);
             if (success) {
-                localStorage.setItem("captain_token", token);
+                localStorage.setItem("teamAccessToken", token);
                 router.push(`/team-detail/view?id=${team.id}`);
             } else {
                 alert("Failed to join team.");

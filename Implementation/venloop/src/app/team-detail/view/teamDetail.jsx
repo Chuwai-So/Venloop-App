@@ -6,9 +6,8 @@ import { useEffect, useState } from "react";
 import TeamService from "@/app/service/TeamService/teamService";
 import { useSearchParams, useRouter } from "next/navigation";
 import CleanNavBar from "@/app/components/NavBars/CleanNavBar";
-import { generateTeamToken } from "@/app/util/teamToken";
 import { db } from "@/app/firebase";
-import { ref, get, update } from 'firebase/database';
+import { ref, get, update, remove } from 'firebase/database';
 
 export default function TeamDetail() {
     const colors = {
@@ -35,7 +34,7 @@ export default function TeamDetail() {
 
             if (existingToken) {
                 try {
-                    const snapshot = await get(ref(db, `teamTokens/${existingToken}`));
+                    const snapshot = await get(ref(db, `teams/${team.id}/${existingToken}`));
                     const tokenData = snapshot.val();
 
                     if (tokenData?.teamId === teamId) {
@@ -49,7 +48,7 @@ export default function TeamDetail() {
                 }
             }
 
-            const newToken = await generateTeamToken(teamId);
+            const newToken = crypto.randomUUID()
             localStorage.setItem("teamAccessToken", newToken);
             console.log("✅ New token saved:", newToken);
         })();
@@ -69,20 +68,31 @@ export default function TeamDetail() {
         if (!confirmed) return;
 
         try {
+            const token = localStorage.getItem("teamAccessToken");
+
+
             await update(ref(db, `teams/${teamId}`), {
                 occupied: false,
                 captain: null
             });
 
-            localStorage.removeItem("teamAccessToken");
-            alert("You have left the team.");
+            console.log("Here is the token for handle leave", token)
+            if (token) {
+                await TeamService.kickCaptain(teamId);
+                await TeamService.updateTeam(teamId, {teamToken: null});
+                localStorage.removeItem("teamAccessToken");
+                console.log("token got removed from database:", token);
+            }
 
+
+            alert("You have left the team.");
             router.push("/team-join/view");
         } catch (err) {
             console.error("Failed to leave team:", err);
             alert("Error leaving the team. Please try again.");
         }
     };
+
 
     if (!team) {
         return <div className="text-center p-6">Loading team...</div>;

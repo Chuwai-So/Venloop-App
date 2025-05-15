@@ -1,4 +1,4 @@
-import { db } from '../../firebase';
+import {db} from '../../firebase';
 import qrUrls from "@/app/util/qrUrls";
 import {
     ref,
@@ -26,7 +26,8 @@ export const TeamAdapter = {
                 completedTasks: {},
                 captain: data.captain || [],
                 occupied: false,
-                qrURL: teamURL
+                qrURL: teamURL,
+                teamToken: null
             };
 
             await set(newRef, team);
@@ -71,7 +72,7 @@ export const TeamAdapter = {
         try {
             const snapshot = await get(ref(db, TEAM_PATH));
             const data = snapshot.exists() ? snapshot.val() : {};
-            return Object.entries(data).map(([id, team]) => ({ id, ...team }));
+            return Object.entries(data).map(([id, team]) => ({id, ...team}));
         } catch (err) {
             console.error("Firebase error getAllTeams", err);
             throw err;
@@ -98,11 +99,10 @@ export const TeamAdapter = {
         }
     },
 
-    async joinTeamAsCaptain(teamId, captainToken) {
+    async joinTeamAsCaptain(teamId) {
         try {
             await this.updateTeam(teamId, {
                 occupied: true,
-                captainToken
             });
             return true;
         } catch (err) {
@@ -112,6 +112,7 @@ export const TeamAdapter = {
     },
 
     async kickCaptain(teamId) {
+        console.log("kicking captain from adapter");
         try {
             await this.removeTeamTokenForTeam(teamId);
             await this.updateTeam(teamId, {
@@ -135,6 +136,8 @@ export const TeamAdapter = {
                 const tokenEntry = Object.entries(tokens).find(
                     ([, value]) => value.teamId === teamId
                 );
+                console.log("token found");
+                console.log("here is the token entry:", tokenEntry);
 
                 if (tokenEntry) {
                     const [tokenKey] = tokenEntry;
