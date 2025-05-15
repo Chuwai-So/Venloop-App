@@ -35,7 +35,7 @@ export default function Page() {
             const completed = teams.filter(t => t.completedTasks && t.completedTasks[taskId]).length;
 
             setCompletionStats({ total, completed });
-            setToast(`${completed} out of ${total} teams have  completed this task task as well!`);
+            setToast(`${completed} van de ${total} teams hebben deze taak ook voltooid!`);
         } catch (err) {
             console.error("Error fetching task stats:", err);
         }
@@ -148,10 +148,10 @@ export default function Page() {
                     }`}
                 >
                     {isSubmitting
-                        ? "Submitting..."
+                        ? "Indienen..."
                         : hasSubmitted
-                            ? "Submitted"
-                            : "Submit Task"}
+                            ? "Ingediend"
+                            : "Taak indienen"}
                 </button>
             </div>
 

@@ -22,7 +22,7 @@ export default function TaskFeatureChoiceDisplay({ value = [], selected, onSelec
                 disabled ? "opacity-50 pointer-events-none" : ""
             }`}
         >
-            <p className="text-center font-semibold">Select Your Answer</p>
+            <p className="text-center font-semibold">Selecteer je keuze</p>
             {value.map((opt, index) => (
                 <div key={index} className="flex items-center gap-2">
                     <input
