@@ -16,7 +16,7 @@ const TeamService = {
             return null;
         }
     },
-
+    //Need to change
     async verifyTokenAndGetTeamId(token) {
         const snapshot = await get(dbRef(db, `teamTokens/${token}`));
         if (snapshot.exists()) {

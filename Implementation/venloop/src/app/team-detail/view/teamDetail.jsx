@@ -35,6 +35,7 @@ export default function TeamDetail() {
 
             if (existingToken) {
                 try {
+                    //need to change
                     const snapshot = await get(ref(db, `teamTokens/${existingToken}`));
                     const tokenData = snapshot.val();
 
