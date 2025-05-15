@@ -180,8 +180,8 @@ export default function TeamDetail() {
 
             {showPopup && <FeedbackPopup onClose={() => setShowPopup(false)} />}
 
-            <footer className="fixed bottom-0 left-0 w-full bg-blue-500 text-white text-center py-2 z-10 shadow-inner">
-                <h3 className="text-sm font-medium">
+            <footer className="fixed bottom-0 left-0 w-full bg-blue-500 text-white text-center py-4 z-10 shadow-inner">
+                <h3 className="text-xs font-medium">
                     Gebruik je camera om de QR-code van de taak te scannen
                 </h3>
             </footer>
