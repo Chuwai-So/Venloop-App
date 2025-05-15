@@ -161,7 +161,7 @@ export default function TeamDetail() {
                     onClick={handleLeaveTeam}
                     className="mt-4 bg-red-500 text-white font-semibold px-4 py-2 rounded shadow hover:bg-red-700 transition w-full max-w-xs mx-auto"
                 >
-                    Leave Team
+                    Team verlaten
                 </button>
                 <button
                     onClick={() => setShowFAQ(!showFAQ)}
