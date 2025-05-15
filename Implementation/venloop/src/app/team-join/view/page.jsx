@@ -58,21 +58,22 @@ export default function TeamJoinMenu() {
     const occupiedCount = teams.filter(t => t.occupied).length;
 
     return (
-        <div className="min-h-screen flex flex-col bg-gray-50 overflow-hidden">
+        <div className="min-h-screen bg-gray-50 pb-16">
             <CleanNavBar/>
 
-            <main className="flex-grow p-4">
+            <div className="p-4">
                 <h1 className="text-xl font-semibold text-center text-[#1F2A60] mb-4">
-                    {occupiedCount}/{teams.length} Teams are occupied
+                    {occupiedCount}/{teams.length} Teams zijn bezet
                 </h1>
                 {teams.map((team) =>
                     team && team.id ? <TeamJoinBar key={team.id} team={team}/> : null
                 )}
-            </main>
+            </div>
 
-            <footer className="bg-[#1F2A60] text-white py-3 shadow-inner flex justify-center items-center gap-3">
+            <footer
+                className="fixed bottom-0 left-0 w-full bg-[#D6C8F3] text-[#4B0082] py-3 shadow-inner flex justify-center items-center gap-3 z-50">
                 <img src="/fontys-logo.png" alt="Fontys Logo" className="h-6"/>
-                <span className="text-sm font-light">Developed by Fontys</span>
+                <span className="text-sm font-light">Ontwikkeld door Fontys</span>
             </footer>
         </div>
     );
