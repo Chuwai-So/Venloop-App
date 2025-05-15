@@ -9,6 +9,7 @@ import CleanNavBar from "@/app/components/NavBars/CleanNavBar";
 import { generateTeamToken } from "@/app/util/teamToken";
 import { db } from "@/app/firebase";
 import { ref, get, update } from 'firebase/database';
+import FeedbackPopup from "@/app/components/FeedbackPopup"; // adjust path as needed
 
 export default function TeamDetail() {
     const colors = {
@@ -22,10 +23,10 @@ export default function TeamDetail() {
     const searchParams = useSearchParams();
     const teamId = searchParams.get("id");
     const [team, setTeam] = useState(null);
+    const [showPopup, setShowPopup] = useState(false);
     const router = useRouter();
     const FAQSection = dynamic(() => import('@/app/FAQ/FAQSection'), { ssr: false });
     const [showFAQ, setShowFAQ] = useState(false);
-
 
     useEffect(() => {
         if (!teamId) return;
@@ -35,7 +36,6 @@ export default function TeamDetail() {
 
             if (existingToken) {
                 try {
-                    //need to change
                     const snapshot = await get(ref(db, `teamTokens/${existingToken}`));
                     const tokenData = snapshot.val();
 
@@ -65,6 +65,15 @@ export default function TeamDetail() {
         if (teamId) fetchTeam();
     }, [teamId]);
 
+    useEffect(() => {
+        if (team?.completedTasks) {
+            const completedCount = Object.keys(team.completedTasks).length;
+            if (completedCount === 5 && !showPopup) {
+                setShowPopup(true);
+            }
+        }
+    }, [team]);
+
     const handleLeaveTeam = async () => {
         const confirmed = confirm("Are you sure you want to leave this team?");
         if (!confirmed) return;
@@ -90,9 +99,9 @@ export default function TeamDetail() {
     }
 
     return (
-        <div style={{backgroundColor: colors.blue, color: colors.white}} className="min-h-screen">
+        <div style={{ backgroundColor: colors.blue, color: colors.white }} className="min-h-screen">
             <div className="w-full sticky top-0 z-50">
-                <CleanNavBar/>
+                <CleanNavBar />
             </div>
 
             <main className="p-4 flex flex-col gap-6">
@@ -100,13 +109,13 @@ export default function TeamDetail() {
                     <h1 className="text-5xl font-bold pb-2 break-words max-w-full overflow-wrap break-all">{team.name}</h1>
                 </header>
 
-                <section style={{backgroundColor: colors.white, color: colors.black}} className="rounded-lg p-4 shadow">
-                    <h2 style={{color: colors.orange}} className="text-lg font-semibold mb-2">Captain</h2>
+                <section style={{ backgroundColor: colors.white, color: colors.black }} className="rounded-lg p-4 shadow">
+                    <h2 style={{ color: colors.orange }} className="text-lg font-semibold mb-2">Captain</h2>
                     <p>{team.captain || "Not assigned yet"}</p>
                 </section>
 
-                <section style={{backgroundColor: colors.white, color: colors.black}} className="rounded-lg p-4 shadow">
-                    <h2 style={{color: colors.orange}} className="text-lg font-semibold mb-4">Completed Tasks</h2>
+                <section style={{ backgroundColor: colors.white, color: colors.black }} className="rounded-lg p-4 shadow">
+                    <h2 style={{ color: colors.orange }} className="text-lg font-semibold mb-4">Completed Tasks</h2>
 
                     {team.completedTasks && Object.keys(team.completedTasks).length > 0 ? (
                         <div className="flex flex-col gap-3">
@@ -170,10 +179,11 @@ export default function TeamDetail() {
                     {showFAQ ? "Verberg Veelgestelde Vragen" : "Bekijk Veelgestelde Vragen"}
                 </button>
 
-                {showFAQ && <FAQSection/>}
-
-
+                {showFAQ && <FAQSection />}
             </main>
+
+            {showPopup && <FeedbackPopup onClose={() => setShowPopup(false)} />}
+
             <div className="sticky bottom-0 left-0 w-full bg-blue-500 text-white text-center py-4 z-10 shadow-inner">
                 <h3 className="text-lg font-semibold">
                     Use your camera to scan the task QR code
