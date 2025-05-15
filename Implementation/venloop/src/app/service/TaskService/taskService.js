@@ -1,58 +1,42 @@
-import {TaskAdapter} from "./taskAdapter";
-import {requireAuth} from "@/app/contexts/authContext/requireAuth";
+import { TaskAdapter } from "./taskAdapter";
+import { requireAuth } from "@/app/contexts/authContext/requireAuth";
 
- const TaskService = {
+async function handle(promise, context) {
+    try {
+        return await promise;
+    } catch (err) {
+        console.error(`Error ${context}:`, err);
+        return null;
+    }
+}
 
-     async createTask(data) {
-         try {
-             //requireAuth();
-             return await TaskAdapter.createTask(data);
-         } catch (err) {
-             console.error("Error creating task: ", err);
-             return null;
-         }
-     },
+const TaskService = {
+    async createTask(data) {
+        return handle(TaskAdapter.createTask(data), "creating task");
+    },
 
-     async getTask(taskId) {
-         try {
-            // requireAuth();
-             return await TaskAdapter.getTask(taskId);
-         } catch (err) {
-             console.error("Error getting task object back: ", err);
-             return null;
-         }
-     },
+    async getTask(taskId) {
+        return handle(TaskAdapter.getTask(taskId), "fetching task");
+    },
 
-     async getTaskQR(taskId) {
-         try {
-           //  requireAuth();
-             const task = await TaskAdapter.getTask(taskId);
-             return task?.qrURL || null;
-         } catch (err) {
-             console.error("Error getting task QR Code: ", err);
-             return null;
-         }
-     },
+    async getTaskQR(taskId) {
+        return handle(
+            (async () => {
+                const task = await TaskAdapter.getTask(taskId);
+                return task?.qrURL || null;
+            })(),
+            "getting task QR"
+        );
+    },
 
-     async deleteTask(taskId) {
-         try {
-             requireAuth();
-             return TaskAdapter.deleteTask(taskId);
-         } catch (err) {
-             console.error("Error deleting task: ", err);
-             return null;
-         }
-     },
+    async deleteTask(taskId) {
+        requireAuth();
+        return handle(TaskAdapter.deleteTask(taskId), "deleting task");
+    },
 
-     async getAllTasks() {
-         try {
-             return await TaskAdapter.getAllTasks();
-         } catch (err) {
-             console.error("Error getting all tasks");
-             return null;
-         }
-     }
+    async getAllTasks() {
+        return handle(TaskAdapter.getAllTasks(), "fetching all tasks");
+    }
+};
 
- }
-
- export default TaskService;
+export default TaskService;
