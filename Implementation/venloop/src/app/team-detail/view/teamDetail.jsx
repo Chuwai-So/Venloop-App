@@ -111,12 +111,7 @@ export default function TeamDetail() {
                 </header>
 
                 <section style={{ backgroundColor: colors.white, color: colors.black }} className="rounded-lg p-4 shadow">
-                    <h2 style={{ color: colors.orange }} className="text-lg font-semibold mb-2">Captain</h2>
-                    <p>{team.captain || "Not assigned yet"}</p>
-                </section>
-
-                <section style={{ backgroundColor: colors.white, color: colors.black }} className="rounded-lg p-4 shadow">
-                    <h2 style={{ color: colors.orange }} className="text-lg font-semibold mb-4">Completed Tasks</h2>
+                    <h2 style={{ color: colors.orange }} className="text-lg font-semibold mb-4">Voltooide taken</h2>
 
                     {team.completedTasks && Object.keys(team.completedTasks).length > 0 ? (
                         <div className="flex flex-col gap-3">
@@ -149,11 +144,11 @@ export default function TeamDetail() {
                                         ) : (
                                             <>
                                                 <p className="text-sm text-gray-700">
-                                                    Your answer: {task.userAnswer || "Completed"}
+                                                    Uw antwoord: {task.userAnswer || "Completed"}
                                                 </p>
                                                 {task.result && (
                                                     <p className="text-sm text-gray-700">
-                                                        Result: {task.result}
+                                                        Resultaat: {task.result}
                                                     </p>
                                                 )}
                                             </>
@@ -163,7 +158,7 @@ export default function TeamDetail() {
                             })}
                         </div>
                     ) : (
-                        <p className="text-gray-500 text-center mt-4">No tasks completed yet.</p>
+                        <p className="text-gray-500 text-center mt-4">Nog geen taken voltooid</p>
                     )}
                 </section>
 
@@ -186,8 +181,8 @@ export default function TeamDetail() {
             {showPopup && <FeedbackPopup onClose={() => setShowPopup(false)} />}
 
             <footer className="fixed bottom-0 left-0 w-full bg-blue-500 text-white text-center py-4 z-10 shadow-inner">
-                <h3 className="text-lg font-semibold">
-                    Use your camera to scan the task QR code
+                <h3 className="text-xs font-medium">
+                    Gebruik je camera om de QR-code van de taak te scannen
                 </h3>
             </footer>
         </div>
