@@ -8,13 +8,11 @@ import {
     update,
     remove
 } from 'firebase/database';
-import {ref as dbRef} from "@firebase/database";
 
 const TEAM_PATH = 'teams';
+const TOKEN_PATH = 'teamTokens';
 
 export const TeamAdapter = {
-
-
     async createTeam(data) {
         try {
             const newRef = push(ref(db, TEAM_PATH));
@@ -29,7 +27,6 @@ export const TeamAdapter = {
                 captain: data.captain || [],
                 occupied: false,
                 qrURL: teamURL
-
             };
 
             await set(newRef, team);
@@ -62,8 +59,8 @@ export const TeamAdapter = {
 
     async deleteTeam(teamId) {
         try {
-            const teamRef = ref(db, `${TEAM_PATH}/${teamId}`);
-            await remove(teamRef);
+            await this.removeTeamTokenForTeam(teamId);
+            await remove(ref(db, `${TEAM_PATH}/${teamId}`));
         } catch (err) {
             console.error('Firebase error deleting team:', err);
             throw err;
@@ -71,14 +68,14 @@ export const TeamAdapter = {
     },
 
     async getAllTeams() {
-       try {
-           const snapshot = await get(ref(db, TEAM_PATH));
-           const data = snapshot.exists() ? snapshot.val() : {};
-           return Object.entries(data).map(([id, team]) => ({id, ...team}));
-       } catch (err) {
-           console.error("Firebase error getAllTeams ", err)
-           throw err;
-       }
+        try {
+            const snapshot = await get(ref(db, TEAM_PATH));
+            const data = snapshot.exists() ? snapshot.val() : {};
+            return Object.entries(data).map(([id, team]) => ({ id, ...team }));
+        } catch (err) {
+            console.error("Firebase error getAllTeams", err);
+            throw err;
+        }
     },
 
     async updateTaskStatus(teamId, taskId, status) {
@@ -92,11 +89,9 @@ export const TeamAdapter = {
         }
     },
 
-
     async removeCompletedTask(teamId, taskId) {
         try {
-            const taskRef = ref(db, `${TEAM_PATH}/${teamId}/completedTasks/${taskId}`);
-            await remove(taskRef);
+            await remove(ref(db, `${TEAM_PATH}/${teamId}/completedTasks/${taskId}`));
         } catch (err) {
             console.error(`Firebase error removing completed task ${taskId}:`, err);
             throw err;
@@ -105,12 +100,10 @@ export const TeamAdapter = {
 
     async joinTeamAsCaptain(teamId, captainToken) {
         try {
-            const updates = {
+            await this.updateTeam(teamId, {
                 occupied: true,
-                captainToken: captainToken
-            };
-            const teamRef = ref(db, `${TEAM_PATH}/${teamId}`);
-            await update(teamRef, updates);
+                captainToken
+            });
             return true;
         } catch (err) {
             console.error(`Firebase error joining team ${teamId} as captain:`, err);
@@ -120,8 +113,23 @@ export const TeamAdapter = {
 
     async kickCaptain(teamId) {
         try {
-            const tokensRef = dbRef(db, 'qr_tokens');
+            await this.removeTeamTokenForTeam(teamId);
+            await this.updateTeam(teamId, {
+                captain: null,
+                occupied: false
+            });
+            return true;
+        } catch (err) {
+            console.error('Error kicking captain:', err);
+            return false;
+        }
+    },
+
+    async removeTeamTokenForTeam(teamId) {
+        try {
+            const tokensRef = ref(db, TOKEN_PATH);
             const snapshot = await get(tokensRef);
+
             if (snapshot.exists()) {
                 const tokens = snapshot.val();
                 const tokenEntry = Object.entries(tokens).find(
@@ -130,26 +138,11 @@ export const TeamAdapter = {
 
                 if (tokenEntry) {
                     const [tokenKey] = tokenEntry;
-
-
-                    await remove(dbRef(db, `qr_tokens/${tokenKey}`));
+                    await remove(ref(db, `${TOKEN_PATH}/${tokenKey}`));
                 }
             }
-
-
-            await update(dbRef(db, `teams/${teamId}`), {
-                captain: null,
-                occupied: false,
-            });
-
-            return true;
         } catch (err) {
-            console.error('Error kicking captain:', err);
-            return false;
+            console.error(`Failed to remove team token for team ${teamId}:`, err);
         }
-    },
-
-
+    }
 };
-
-
