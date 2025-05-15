@@ -2,6 +2,7 @@ import { TeamAdapter } from './teamAdapter';
 import TaskService from "@/app/service/TaskService/taskService";
 import { ref as dbRef, get } from 'firebase/database';
 import { db } from "@/app/firebase";
+import {handle} from "@/app/service/serviceHandler";
 
 const TeamService = {
     async createTeam(data) {
@@ -160,13 +161,6 @@ const TeamService = {
     }
 };
 
-async function handle(promise, context) {
-    try {
-        return await promise;
-    } catch (err) {
-        console.error(`Error ${context}:`, err);
-        return null;
-    }
-}
+
 
 export default TeamService;

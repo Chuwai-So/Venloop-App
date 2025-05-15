@@ -1,14 +1,6 @@
 import { TaskAdapter } from "./taskAdapter";
 import { requireAuth } from "@/app/contexts/authContext/requireAuth";
-
-async function handle(promise, context) {
-    try {
-        return await promise;
-    } catch (err) {
-        console.error(`Error ${context}:`, err);
-        return null;
-    }
-}
+import {handle} from "@/app/service/serviceHandler";
 
 const TaskService = {
     async createTask(data) {
