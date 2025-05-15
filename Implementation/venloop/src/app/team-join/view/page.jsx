@@ -14,6 +14,7 @@ import {useRouter} from "next/navigation";
 
 export default function TeamJoinMenu() {
     const [teams, setTeams] = useState([]);
+    const [showWarning, setShowWarning] = useState(true);
 
     const router = useRouter();
 
@@ -60,6 +61,23 @@ export default function TeamJoinMenu() {
     return (
         <div className="min-h-screen bg-gray-50 pb-16">
             <CleanNavBar/>
+            {showWarning && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+                    <div className="bg-white rounded-lg shadow-lg p-6 max-w-sm text-center space-y-4">
+                        <h2 className="text-lg font-semibold text-[#1F2A60]">Let op!</h2>
+                        <p className="text-sm text-gray-700">
+                            Gebruik deze pagina niet in privé- of incognitomodus. Als je dat hebt gedaan, kopieer dan de link en open deze in een normale browsermodus.
+                        </p>
+                        <button
+                            onClick={() => setShowWarning(false)}
+                            className="mt-4 bg-[#1F2A60] text-white px-4 py-2 rounded hover:bg-[#324285]"
+                        >
+                            Ik begrijp het
+                        </button>
+                    </div>
+                </div>
+            )}
+
 
             <div className="p-4">
                 <h1 className="text-xl font-semibold text-center text-[#1F2A60] mb-4">
