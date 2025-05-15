@@ -9,7 +9,7 @@ import CleanNavBar from "@/app/components/NavBars/CleanNavBar";
 import { generateTeamToken } from "@/app/util/teamToken";
 import { db } from "@/app/firebase";
 import { ref, get, update } from 'firebase/database';
-import FeedbackPopup from "@/app/components/FeedbackPopup"; // adjust path as needed
+import FeedbackPopup from "@/app/components/FeedbackPopup"; // Adjust path if needed
 
 export default function TeamDetail() {
     const colors = {
@@ -68,7 +68,7 @@ export default function TeamDetail() {
     useEffect(() => {
         if (team?.completedTasks) {
             const completedCount = Object.keys(team.completedTasks).length;
-            if (completedCount === 5 && !showPopup) {
+            if (completedCount === 4 && !showPopup) {
                 setShowPopup(true);
             }
         }
@@ -86,7 +86,6 @@ export default function TeamDetail() {
 
             localStorage.removeItem("teamAccessToken");
             alert("You have left the team.");
-
             router.push("/team-join/view");
         } catch (err) {
             console.error("Failed to leave team:", err);
@@ -106,7 +105,9 @@ export default function TeamDetail() {
 
             <main className="p-4 flex flex-col gap-6">
                 <header className="text-center border-b border-white pb-2">
-                    <h1 className="text-5xl font-bold pb-2 break-words max-w-full overflow-wrap break-all">{team.name}</h1>
+                    <h1 className="text-5xl font-bold pb-2 break-words max-w-full overflow-wrap break-all">
+                        {team.name}
+                    </h1>
                 </header>
 
                 <section style={{ backgroundColor: colors.white, color: colors.black }} className="rounded-lg p-4 shadow">
