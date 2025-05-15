@@ -1,6 +1,7 @@
 'use client';
 
 import { Html5Qrcode } from 'html5-qrcode';
+import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 import TeamService from "@/app/service/TeamService/teamService";
 import { useSearchParams, useRouter } from "next/navigation";
@@ -22,6 +23,9 @@ export default function TeamDetail() {
     const teamId = searchParams.get("id");
     const [team, setTeam] = useState(null);
     const router = useRouter();
+    const FAQSection = dynamic(() => import('@/app/FAQ/FAQSection'), { ssr: false });
+    const [showFAQ, setShowFAQ] = useState(false);
+
 
     useEffect(() => {
         if (!teamId) return;
@@ -73,7 +77,7 @@ export default function TeamDetail() {
             localStorage.removeItem("teamAccessToken");
             alert("You have left the team.");
 
-            router.push("/team-join"); //
+            router.push("/team-join/view");
         } catch (err) {
             console.error("Failed to leave team:", err);
             alert("Error leaving the team. Please try again.");
@@ -85,14 +89,14 @@ export default function TeamDetail() {
     }
 
     return (
-        <div style={{ backgroundColor: colors.blue, color: colors.white }} className="min-h-screen">
+        <div style={{backgroundColor: colors.blue, color: colors.white}} className="min-h-screen">
             <div className="w-full sticky top-0 z-50">
-                <CleanNavBar />
+                <CleanNavBar/>
             </div>
 
             <main className="p-4 flex flex-col gap-6">
                 <header className="text-center border-b border-white pb-2">
-                    <h1 className="text-5xl font-bold pb-2">{team.name}</h1>
+                    <h1 className="text-5xl font-bold pb-2 break-words max-w-full overflow-wrap break-all">{team.name}</h1>
                 </header>
 
                 <section style={{backgroundColor: colors.white, color: colors.black}} className="rounded-lg p-4 shadow">
@@ -122,14 +126,14 @@ export default function TeamDetail() {
                                             {task.name || taskId}
                                         </h3>
 
-                                        {task.status === 'pending' && task.picture ? (
+                                        {task.picture ? (
                                             <div className="mt-2">
                                                 <img
                                                     src={task.picture}
                                                     alt="Submitted task image"
                                                     className="w-full max-w-xs rounded shadow"
                                                 />
-                                                <p className="text-sm text-gray-600 mt-1">Status: Pending</p>
+                                                <p className="text-sm text-gray-600 mt-1">Status: {task.status}</p>
                                             </div>
                                         ) : (
                                             <>
@@ -158,13 +162,22 @@ export default function TeamDetail() {
                 >
                     Leave Team
                 </button>
+                <button
+                    onClick={() => setShowFAQ(!showFAQ)}
+                    className="w-full max-w-xs mx-auto bg-orange-500 text-white font-semibold px-4 py-2 rounded shadow hover:bg-orange-600 transition"
+                >
+                    {showFAQ ? "Verberg Veelgestelde Vragen" : "Bekijk Veelgestelde Vragen"}
+                </button>
 
-                <div className="sticky bottom-0 left-0 w-full bg-blue-500 text-white text-center py-4 z-10 shadow-inner">
-                    <h3 className="text-lg font-semibold">
-                        Use your camera to scan the task QR code
-                    </h3>
-                </div>
+                {showFAQ && <FAQSection/>}
+
+
             </main>
+            <div className="sticky bottom-0 left-0 w-full bg-blue-500 text-white text-center py-4 z-10 shadow-inner">
+                <h3 className="text-lg font-semibold">
+                    Use your camera to scan the task QR code
+                </h3>
+            </div>
         </div>
     );
 }

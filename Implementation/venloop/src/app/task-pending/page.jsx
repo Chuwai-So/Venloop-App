@@ -21,10 +21,11 @@ export default function PictureSubmissionPage() {
                     const status = task.status?.toString().trim().toLowerCase();
                     if (task.picture && status === "pending") {
                         result.push({
+                            ...task,
                             teamId: team.id,
                             teamName: team.name,
                             taskId,
-                            ...task,
+                            taskName: task.name || " ",
                         });
                     }
                 }
@@ -38,6 +39,7 @@ export default function PictureSubmissionPage() {
             setPendingTasks([]);
         }
     };
+
 
 
     useEffect(() => {

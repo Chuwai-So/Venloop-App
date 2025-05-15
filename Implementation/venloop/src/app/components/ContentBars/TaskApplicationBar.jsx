@@ -40,7 +40,7 @@ export default function TaskApplicationBar({ task, refreshList }) {
                         )}
                         <div>
                             <h3 className="text-lg font-semibold text-gray-800">
-                                {task.teamName} – {task.name || task.taskId}
+                                {task.teamName} – {task.taskName}
                             </h3>
                             <p className="text-sm text-gray-600">{task.description}</p>
                         </div>

@@ -42,6 +42,15 @@ import {requireAuth} from "@/app/contexts/authContext/requireAuth";
              console.error("Error deleting task: ", err);
              return null;
          }
+     },
+
+     async getAllTasks() {
+         try {
+             return await TaskAdapter.getAllTasks();
+         } catch (err) {
+             console.error("Error getting all tasks");
+             return null;
+         }
      }
 
  }

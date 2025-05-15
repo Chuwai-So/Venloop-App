@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import TaskService from "@/app/service/TaskService/taskService";
 import TeamService from "@/app/service/TeamService/teamService";
 import TaskFeatureDescription from "@/app/components/TaskFeatures/TaskFeatureDescription";
@@ -16,6 +16,7 @@ import TaskFeatureChoiceDisplay from "@/app/components/TaskFeatures/TaskFeatureC
 export default function Page() {
     const searchParams = useSearchParams();
     const taskId = searchParams.get("id");
+    const router = useRouter();
 
     const [task, setTask] = useState(null);
     const [answer, setAnswer] = useState("");
@@ -71,13 +72,18 @@ export default function Page() {
                 await TeamService.completeTask(teamId, taskId, finalAnswer);
             }
 
-            if (task.features.picture && picture) {
-                await TeamService.approvePictureTaskDemo(teamId, taskId, picture);
-            }
+             if (task.features.picture && picture) {
+                await TeamService.submitPictureTask(teamId, taskId, picture);
+             }
 
             setToast("Task submitted!");
             await fetchCompletionStats();
             setHasSubmitted(true);
+
+            setTimeout(() => {
+                router.push(`/team-detail/view?id=${teamId}`);
+            }, 3000);
+
         } catch (err) {
             console.error("Submission failed:", err);
             setToast("Failed to submit task.");
