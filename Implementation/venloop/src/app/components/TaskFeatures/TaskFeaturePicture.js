@@ -1,3 +1,5 @@
+'use client';
+
 import { useRef } from "react";
 
 export default function TaskFeaturePicture({ file, onChange, disabled = false }) {
@@ -12,14 +14,13 @@ export default function TaskFeaturePicture({ file, onChange, disabled = false })
     const handleFileChange = (e) => {
         const selected = e.target.files[0];
         if (selected) {
-            console.log("File selected:", selected.constructor.name); // Should be "File"
             onChange(selected);
         }
     };
 
     return (
         <div className="flex flex-col items-center text-black">
-            <label className="text-md mb-2">Upload Picture</label>
+            <label className="text-md mb-2">Maak een foto!</label>
 
             <div
                 className={`w-40 h-40 border-2 border-dashed rounded-lg flex items-center justify-center transition ${
@@ -36,13 +37,14 @@ export default function TaskFeaturePicture({ file, onChange, disabled = false })
                         className="w-full h-full object-cover rounded-lg"
                     />
                 ) : (
-                    <span className="text-sm text-gray-500">Click to upload</span>
+                    <span className="text-sm text-gray-500 text-center px-2">Tik om uw camera te openen</span>
                 )}
             </div>
 
             <input
                 type="file"
                 accept="image/*"
+                capture="environment" // 🔒 Enforces camera use on mobile
                 ref={fileInputRef}
                 onChange={handleFileChange}
                 className="hidden"
