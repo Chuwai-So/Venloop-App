@@ -103,7 +103,7 @@ export default function TeamDetail() {
                 <CleanNavBar />
             </div>
 
-            <main className="p-4 flex flex-col gap-6">
+            <main className="p-4 flex flex-col gap-6 pb-20">
                 <header className="text-center border-b border-white pb-2">
                     <h1 className="text-5xl font-bold pb-2 break-words max-w-full overflow-wrap break-all">
                         {team.name}
@@ -185,11 +185,11 @@ export default function TeamDetail() {
 
             {showPopup && <FeedbackPopup onClose={() => setShowPopup(false)} />}
 
-            <div className="sticky bottom-0 left-0 w-full bg-blue-500 text-white text-center py-4 z-10 shadow-inner">
+            <footer className="fixed bottom-0 left-0 w-full bg-blue-500 text-white text-center py-4 z-10 shadow-inner">
                 <h3 className="text-lg font-semibold">
                     Use your camera to scan the task QR code
                 </h3>
-            </div>
+            </footer>
         </div>
     );
 }
