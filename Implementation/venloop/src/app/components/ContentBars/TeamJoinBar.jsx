@@ -58,7 +58,7 @@ export default function TeamJoinBar({team, userToken}) {
 
             const success = await TeamService.joinTeamAsCaptain(team.id);
             if (success) {
-                localStorage.setItem("teamAccessToken", token);
+                localStorage.setItem('teamAccessToken', token);
                 router.push(`/team-detail/view?id=${team.id}`);
             } else {
                 alert("Failed to join team.");

@@ -7,7 +7,8 @@ import TeamService from "@/app/service/TeamService/teamService";
 import { useSearchParams, useRouter } from "next/navigation";
 import CleanNavBar from "@/app/components/NavBars/CleanNavBar";
 import { db } from "@/app/firebase";
-import { ref, get, update, remove } from 'firebase/database';
+import { ref, get, update } from 'firebase/database';
+import FeedbackPopup from "@/app/components/FeedbackPopup"; // Adjust path if needed
 
 export default function TeamDetail() {
     const colors = {
@@ -21,10 +22,10 @@ export default function TeamDetail() {
     const searchParams = useSearchParams();
     const teamId = searchParams.get("id");
     const [team, setTeam] = useState(null);
+    const [showPopup, setShowPopup] = useState(false);
     const router = useRouter();
     const FAQSection = dynamic(() => import('@/app/FAQ/FAQSection'), { ssr: false });
     const [showFAQ, setShowFAQ] = useState(false);
-
 
     useEffect(() => {
         if (!teamId) return;
@@ -63,6 +64,15 @@ export default function TeamDetail() {
         if (teamId) fetchTeam();
     }, [teamId]);
 
+    useEffect(() => {
+        if (team?.completedTasks) {
+            const completedCount = Object.keys(team.completedTasks).length;
+            if (completedCount === 4 && !showPopup) {
+                setShowPopup(true);
+            }
+        }
+    }, [team]);
+
     const handleLeaveTeam = async () => {
         const confirmed = confirm("Are you sure you want to leave this team?");
         if (!confirmed) return;
@@ -99,23 +109,20 @@ export default function TeamDetail() {
     }
 
     return (
-        <div style={{backgroundColor: colors.blue, color: colors.white}} className="min-h-screen">
+        <div style={{ backgroundColor: colors.blue, color: colors.white }} className="min-h-screen">
             <div className="w-full sticky top-0 z-50">
-                <CleanNavBar/>
+                <CleanNavBar />
             </div>
 
-            <main className="p-4 flex flex-col gap-6">
+            <main className="p-4 flex flex-col gap-6 pb-20">
                 <header className="text-center border-b border-white pb-2">
-                    <h1 className="text-5xl font-bold pb-2 break-words max-w-full overflow-wrap break-all">{team.name}</h1>
+                    <h1 className="text-5xl font-bold pb-2 break-words max-w-full overflow-wrap break-all">
+                        {team.name}
+                    </h1>
                 </header>
 
-                <section style={{backgroundColor: colors.white, color: colors.black}} className="rounded-lg p-4 shadow">
-                    <h2 style={{color: colors.orange}} className="text-lg font-semibold mb-2">Captain</h2>
-                    <p>{team.captain || "Not assigned yet"}</p>
-                </section>
-
-                <section style={{backgroundColor: colors.white, color: colors.black}} className="rounded-lg p-4 shadow">
-                    <h2 style={{color: colors.orange}} className="text-lg font-semibold mb-4">Completed Tasks</h2>
+                <section style={{ backgroundColor: colors.white, color: colors.black }} className="rounded-lg p-4 shadow">
+                    <h2 style={{ color: colors.orange }} className="text-lg font-semibold mb-4">Voltooide taken</h2>
 
                     {team.completedTasks && Object.keys(team.completedTasks).length > 0 ? (
                         <div className="flex flex-col gap-3">
@@ -148,11 +155,11 @@ export default function TeamDetail() {
                                         ) : (
                                             <>
                                                 <p className="text-sm text-gray-700">
-                                                    Your answer: {task.userAnswer || "Completed"}
+                                                    Uw antwoord: {task.userAnswer || "Completed"}
                                                 </p>
                                                 {task.result && (
                                                     <p className="text-sm text-gray-700">
-                                                        Result: {task.result}
+                                                        Resultaat: {task.result}
                                                     </p>
                                                 )}
                                             </>
@@ -162,7 +169,7 @@ export default function TeamDetail() {
                             })}
                         </div>
                     ) : (
-                        <p className="text-gray-500 text-center mt-4">No tasks completed yet.</p>
+                        <p className="text-gray-500 text-center mt-4">Nog geen taken voltooid</p>
                     )}
                 </section>
 
@@ -170,7 +177,7 @@ export default function TeamDetail() {
                     onClick={handleLeaveTeam}
                     className="mt-4 bg-red-500 text-white font-semibold px-4 py-2 rounded shadow hover:bg-red-700 transition w-full max-w-xs mx-auto"
                 >
-                    Leave Team
+                    Team verlaten
                 </button>
                 <button
                     onClick={() => setShowFAQ(!showFAQ)}
@@ -179,15 +186,16 @@ export default function TeamDetail() {
                     {showFAQ ? "Verberg Veelgestelde Vragen" : "Bekijk Veelgestelde Vragen"}
                 </button>
 
-                {showFAQ && <FAQSection/>}
-
-
+                {showFAQ && <FAQSection />}
             </main>
-            <div className="sticky bottom-0 left-0 w-full bg-blue-500 text-white text-center py-4 z-10 shadow-inner">
-                <h3 className="text-lg font-semibold">
-                    Use your camera to scan the task QR code
+
+            {showPopup && <FeedbackPopup onClose={() => setShowPopup(false)} />}
+
+            <footer className="fixed bottom-0 left-0 w-full bg-blue-500 text-white text-center py-4 z-10 shadow-inner">
+                <h3 className="text-xs font-medium">
+                    Gebruik je camera om de QR-code van de taak te scannen
                 </h3>
-            </div>
+            </footer>
         </div>
     );
 }

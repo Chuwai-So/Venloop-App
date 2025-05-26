@@ -8,7 +8,7 @@ const TeamService = {
     async createTeam(data) {
         return handle(TeamAdapter.createTeam(data), "creating team");
     },
-
+    //Need to change
     async verifyTokenAndGetTeamId(token) {
         const snapshot = await get(dbRef(db, `teamTokens/${token}`));
         if (snapshot.exists()) {
