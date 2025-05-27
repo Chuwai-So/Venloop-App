@@ -2,7 +2,7 @@
 
 import {useRouter} from "next/navigation";
 import {doSignOut} from "@/app/auth";
-import AccountDropdown from "@/app/components/AccountDropdown";
+import AccountDropdown from "@/app/components/Dropdowns/AccountDropdown";
 
 export default function LogOutNavBar() {
     const router = useRouter();
