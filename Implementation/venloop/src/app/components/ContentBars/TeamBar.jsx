@@ -19,7 +19,15 @@ export default function TeamBar({ team, isExpanded, onToggle, refreshTeams }) {
     const [isKicking, setIsKicking] = useState(false);
     const [teamToken, setTeamToken] = useState(null);
     const [showQR, setShowQR] = useState(false);
-    const qrRef = useRef();
+    const [expandedTasks, setExpandedTasks] = useState({});
+
+    const toggleTask = (taskId) => {
+        setExpandedTasks((prev) => ({
+            ...prev,
+            [taskId]: !prev[taskId],
+        }));
+    };
+
 
     const isOccupied = !!team.occupied;
 
@@ -27,8 +35,10 @@ export default function TeamBar({ team, isExpanded, onToggle, refreshTeams }) {
         if (!isExpanded) {
             setShowQR(false);
             setTeamToken(null);
+            setExpandedTasks({});
         }
     }, [isExpanded]);
+
 
     const handleSave = async () => {
         setIsSaving(true);
@@ -112,9 +122,14 @@ export default function TeamBar({ team, isExpanded, onToggle, refreshTeams }) {
                 ) : (
                     <div className="flex flex-col">
                         <h2 className="text-xl font-bold text-gray-800">{team.name}</h2>
-                        {isOccupied && (
-                            <span className="text-sm text-red-600 font-medium">Occupied</span>
-                        )}
+                        <div className="flex gap-2 mt-1">
+                            {isOccupied && (
+                                <span className="text-sm text-red-600 font-medium">Occupied</span>
+                            )}
+                            {completedTaskList.length > 0 && (
+                                <span className="text-sm text-[#1F2A60] font-medium">Tasks Completed</span>
+                            )}
+                        </div>
                     </div>
                 )}
                 <span className={`ml-2 transform transition-transform ${isExpanded ? 'rotate-180' : 'rotate-0'}`}>
@@ -125,20 +140,48 @@ export default function TeamBar({ team, isExpanded, onToggle, refreshTeams }) {
             {isExpanded && (
                 <>
                     {completedTaskList.length > 0 ? (
-                        <ul className="mt-4 mb-4 list-disc list-inside text-gray-700 text-sm">
-                            {completedTaskList.map((taskId) => (
-                                <li key={taskId}>
-                                    {team.completedTasks[taskId]?.name || taskId}
-                                </li>
-                            ))}
+                        <ul className="mt-4 mb-4 space-y-2 text-sm">
+                            {completedTaskList.map((taskId) => {
+                                const task = team.completedTasks[taskId];
+                                const result = task?.result;
+                                const status = task?.status;
+                                const userAnswer = task?.userAnswer;
+
+                                let textColor = "text-gray-500";
+                                if (result === "correct" || status === "approved") {
+                                    textColor = "text-green-600";
+                                } else if (result === "incorrect" || status === "rejected") {
+                                    textColor = "text-red-600";
+                                }
+
+                                const isOpen = expandedTasks[taskId];
+
+                                return (
+                                    <li key={taskId} className="cursor-pointer" onClick={(e) => {
+                                        e.stopPropagation();
+                                        toggleTask(taskId);
+                                    }}>
+                                        <div className={`${textColor} font-medium`}>
+                                            {task?.name || taskId}
+                                        </div>
+                                        {isOpen && (
+                                            <div className="ml-4 mt-1 text-xs text-gray-600">
+                                                {userAnswer ? `Answer: ${userAnswer}` : status ? `Status: ${status}` : 'No result/status available'}
+                                            </div>
+                                        )}
+                                    </li>
+                                );
+                            })}
                         </ul>
+
+
                     ) : (
                         <p className="mt-4 mb-4 text-gray-400 text-sm italic">No completed tasks</p>
                     )}
 
                     {showQR && teamToken && (
                         <div className="flex justify-center mb-2">
-                            <QRCodeWithDownload id={team.id} url={qrUrls.teamDetail(team.id)} />
+                            <QRCodeWithDownload id={team.id} url={qrUrls.teamDetail(team.id)}/>
                         </div>
                     )}
 
