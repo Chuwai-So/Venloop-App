@@ -1,27 +1,50 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import NavBar from "@/app/components/NavBars/NavBar";
 import ProtectedRoute from "@/app/ProtectedRoute";
+import TeamService from "@/app/service/TeamService/teamService";
 
 export default function AdminSettings() {
-
     const [teamId, setTeamId] = useState("");
     const [days, setDays] = useState(7);
     const [teams, setTeams] = useState([]);
 
+    const fetchTeams = async () => {
+        try {
+            const allTeams = await TeamService.getAllTeams();
+
+            // Filter teams where at least one completedTask has a 'picture'
+            const teamsWithPictures = allTeams.filter(team =>
+                team.completedTasks &&
+                Object.values(team.completedTasks).some(task => task.picture)
+            );
+
+            setTeams(teamsWithPictures);
+        } catch (err) {
+            console.error("Error loading teams with pictures:", err);
+            setTeams([]);
+        }
+    };
+
     useEffect(() => {
-        // TODO: Replace with actual team data
-        setTeams([
-            { id: "team1", name: "School1" },
-            { id: "team2", name: "School2" },
-            { id: "team3", name: "School3" }
-        ]);
+        fetchTeams();
     }, []);
 
-    const handleDeleteTeamPictures = () => {
-        console.log("Delete pictures for team:", teamId);
+    const handleDeleteTeamPictures = async () => {
+        if (!teamId) {
+            alert("Please select a team first.");
+            return;
+        }
+
+        const success = await TeamService.deleteSubmittedPictures(teamId);
+        if (success) {
+            alert("Submitted pictures deleted successfully.");
+            setTeamId(""); // Reset selection
+            fetchTeams(); // Refresh team list
+        } else {
+            alert("No pictures found or failed to delete.");
+        }
     };
 
     const handleSetDeletionTimeframe = () => {
@@ -52,7 +75,7 @@ export default function AdminSettings() {
                             <select
                                 value={teamId}
                                 onChange={(e) => setTeamId(e.target.value)}
-                                className="bg-gray-100 text-black rounded px-2 py-1 text-xs w-3/4"
+                                className="bg-gray-200 text-black rounded px-2 py-1 text-xs w-3/4"
                                 onClick={(e) => e.stopPropagation()}
                             >
                                 <option value="">Select team</option>
@@ -90,7 +113,7 @@ export default function AdminSettings() {
                             <select
                                 value={days}
                                 onChange={(e) => setDays(Number(e.target.value))}
-                                className="bg-gray-100 text-black rounded px-2 py-1 text-xs w-3/4"
+                                className="bg-gray-200 text-black rounded px-2 py-1 text-xs w-3/4"
                                 onClick={(e) => e.stopPropagation()}
                             >
                                 {Array.from({ length: 30 }, (_, i) => i + 1).map((d) => (

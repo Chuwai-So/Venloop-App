@@ -161,7 +161,12 @@ const TeamService = {
         };
         if (name) updates[path].name = name;
         return handle(TeamAdapter.updateTeam(teamId, updates), "updating team with picture");
+    },
+
+    async deleteSubmittedPictures(teamId) {
+        return handle(TeamAdapter.deleteSubmittedPictures(teamId), "deleting submitted pictures");
     }
+
 };
 
 export default TeamService;

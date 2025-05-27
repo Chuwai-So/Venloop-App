@@ -147,5 +147,31 @@ export const TeamAdapter = {
         } catch (err) {
             console.error(`Failed to remove team token for team ${teamId}:`, err);
         }
+    },
+
+    async deleteSubmittedPictures(teamId) {
+        try {
+            const teamSnap = await get(ref(db, `${TEAM_PATH}/${teamId}`));
+            if (!teamSnap.exists()) return false;
+
+            const team = teamSnap.val();
+            const completedTasks = team.completedTasks || {};
+
+            const updates = {};
+            for (const [taskId, task] of Object.entries(completedTasks)) {
+                if (task.picture) {
+                    updates[`${TEAM_PATH}/${teamId}/completedTasks/${taskId}`] = null;
+                }
+            }
+
+            if (Object.keys(updates).length === 0) return false;
+
+            await update(ref(db), updates);
+            return true;
+        } catch (err) {
+            console.error(`Firebase error removing submitted pictures for team ${teamId}:`, err);
+            throw err;
+        }
     }
+
 };
