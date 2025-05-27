@@ -2,19 +2,24 @@ import { TeamAdapter } from './teamAdapter';
 import TaskService from "@/app/service/TaskService/taskService";
 import { ref as dbRef, get } from 'firebase/database';
 import { db } from "@/app/firebase";
-import {handle} from "@/app/service/serviceHandler";
+import { handle } from "@/app/service/serviceHandler";
 
 const TeamService = {
     async createTeam(data) {
         return handle(TeamAdapter.createTeam(data), "creating team");
     },
-    //Need to change
+
     async verifyTokenAndGetTeamId(token) {
-        const snapshot = await get(dbRef(db, `teamTokens/${token}`));
-        if (snapshot.exists()) {
-            return snapshot.val().teamId;
-        }
-        throw new Error("Invalid token.");
+        return handle(
+            (async () => {
+                const snapshot = await get(dbRef(db, `teamTokens/${token}`));
+                if (snapshot.exists()) {
+                    return snapshot.val().teamId;
+                }
+                throw new Error("Invalid token.");
+            })(),
+            "verifying token"
+        );
     },
 
     async getTeam(teamId) {
@@ -26,13 +31,13 @@ const TeamService = {
     },
 
     async getTeamQR(teamId) {
-        try {
-            const team = await TeamAdapter.getTeam(teamId);
-            return team?.qrURL || null;
-        } catch (err) {
-            console.error("Error getting team QR code:", err);
-            return null;
-        }
+        return handle(
+            (async () => {
+                const team = await TeamAdapter.getTeam(teamId);
+                return team?.qrURL || null;
+            })(),
+            "getting team QR code"
+        );
     },
 
     async updateCaptain(teamId, captains) {
@@ -50,55 +55,54 @@ const TeamService = {
     },
 
     async submitTask(teamId, taskId, file) {
-        try {
-            const imageURL = await this.fileToBase64(file);
-            return await this.updateTeamWithPicture(teamId, `pendingTasks/${taskId}`, imageURL, 'pending');
-        } catch (err) {
-            console.error("Error adding pending task:", err);
-            return false;
-        }
+        return handle(
+            (async () => {
+                const imageURL = await this.fileToBase64(file);
+                return await this.updateTeamWithPicture(teamId, `pendingTasks/${taskId}`, imageURL, 'pending');
+            })(),
+            "submitting task"
+        );
     },
 
     async submitPictureTask(teamId, taskId, file) {
-        const team = await TeamAdapter.getTeam(teamId);
-        if (this.isTaskAlreadyCompleted(team, taskId)) return false;
-
-        try {
-            const imageURL = await this.fileToBase64(file);
-            const task = await TaskService.getTask(taskId);
-            return await this.updateTeamWithPicture(
-                teamId,
-                `completedTasks/${taskId}`,
-                imageURL,
-                'pending',
-                task?.name || taskId
-            );
-        } catch (err) {
-            console.error("Error submitting picture task:", err);
-            return false;
-        }
+        return handle(
+            (async () => {
+                const team = await TeamAdapter.getTeam(teamId);
+                if (this.isTaskAlreadyCompleted(team, taskId)) return false;
+                const imageURL = await this.fileToBase64(file);
+                const task = await TaskService.getTask(taskId);
+                return await this.updateTeamWithPicture(
+                    teamId,
+                    `completedTasks/${taskId}`,
+                    imageURL,
+                    'pending',
+                    task?.name || taskId
+                );
+            })(),
+            "submitting picture task"
+        );
     },
 
     async completeTask(teamId, taskId, input) {
-        const team = await TeamAdapter.getTeam(teamId);
-        if (this.isTaskAlreadyCompleted(team, taskId)) return false;
+        return handle(
+            (async () => {
+                const team = await TeamAdapter.getTeam(teamId);
+                if (this.isTaskAlreadyCompleted(team, taskId)) return false;
 
-        try {
-            const task = await TaskService.getTask(taskId);
-            const verdict = this.evaluate(input, task?.answer);
-            const updates = {
-                [`completedTasks/${taskId}`]: {
-                    userAnswer: input,
-                    result: verdict,
-                    name: task?.name,
-                    completedAt: new Date().toISOString()
-                }
-            };
-            return await TeamAdapter.updateTeam(teamId, updates);
-        } catch (err) {
-            console.error("Error updating task progress:", err);
-            return null;
-        }
+                const task = await TaskService.getTask(taskId);
+                const verdict = this.evaluate(input, task?.answer);
+                const updates = {
+                    [`completedTasks/${taskId}`]: {
+                        userAnswer: input,
+                        result: verdict,
+                        name: task?.name,
+                        completedAt: new Date().toISOString()
+                    }
+                };
+                return await TeamAdapter.updateTeam(teamId, updates);
+            })(),
+            "completing task"
+        );
     },
 
     async deleteTeam(teamId) {
@@ -125,20 +129,19 @@ const TeamService = {
     },
 
     async joinTeamAsCaptain(teamId) {
-        try {
-            await TeamAdapter.joinTeamAsCaptain(teamId);
-            return await this.getTeam(teamId);
-        } catch (err) {
-            console.error("Error joining team as captain:", err);
-            return null;
-        }
+        return handle(
+            (async () => {
+                await TeamAdapter.joinTeamAsCaptain(teamId);
+                return await this.getTeam(teamId);
+            })(),
+            "joining team as captain"
+        );
     },
 
     async kickCaptain(teamId) {
         console.log("kicking captain is called in service for:", teamId);
         return handle(TeamAdapter.kickCaptain(teamId), "kicking captain");
     },
-
 
     isTaskAlreadyCompleted(team, taskId) {
         if (team?.completedTasks?.[taskId]) {
@@ -157,11 +160,8 @@ const TeamService = {
             }
         };
         if (name) updates[path].name = name;
-        await TeamAdapter.updateTeam(teamId, updates);
-        return true;
+        return handle(TeamAdapter.updateTeam(teamId, updates), "updating team with picture");
     }
 };
-
-
 
 export default TeamService;
