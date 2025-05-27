@@ -5,6 +5,7 @@ import NavBar from "@/app/components/NavBars/NavBar";
 import ProtectedRoute from "@/app/ProtectedRoute";
 import TeamService from "@/app/service/TeamService/teamService";
 import TaskService from "@/app/service/TaskService/taskService";
+import {TokenAdapter} from "@/app/service/TokenService/tokenAdapter";
 
 export default function AdminSettings() {
     const [teamId, setTeamId] = useState("");
@@ -27,6 +28,20 @@ export default function AdminSettings() {
             setTeams([]);
         }
     };
+
+    const handleRestartEvent = async () => {
+        const confirmed = confirm("This will restart the event and invalidate all old QR codes. Proceed?");
+        if (!confirmed) return;
+
+        try {
+            const newToken = await TokenAdapter.setGlobalEventToken();
+            alert(`Event restarted. New token generated: ${newToken}`);
+        } catch (err) {
+            console.error("Failed to restart event:", err);
+            alert("Failed to restart event. Please try again.");
+        }
+    };
+
 
     useEffect(() => {
         fetchTeams();
@@ -129,10 +144,11 @@ export default function AdminSettings() {
                     <div className="grid grid-cols-12 gap-4 h-full">
                         <button
                             className="bg-[#D86F27] text-white rounded-xl col-span-6 flex items-center justify-center text-center text-sm p-6 hover:scale-102 transition-all"
-                            onClick={() => console.log("Restart Event")}
+                            onClick={handleRestartEvent}
                         >
                             Restart Event
                         </button>
+
 
                         {/* Timeframe selector with styling match */}
                         <button
@@ -146,7 +162,7 @@ export default function AdminSettings() {
                                 className="bg-gray-200 text-black rounded px-2 py-1 text-xs w-3/4"
                                 onClick={(e) => e.stopPropagation()}
                             >
-                                {Array.from({ length: 30 }, (_, i) => i + 1).map((d) => (
+                                {Array.from({length: 30}, (_, i) => i + 1).map((d) => (
                                     <option key={d} value={d}>{d} days</option>
                                 ))}
                             </select>

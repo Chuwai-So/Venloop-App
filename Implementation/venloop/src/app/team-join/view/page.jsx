@@ -4,19 +4,16 @@ import { useEffect, useState } from 'react';
 import TeamService from '@/app/service/TeamService/teamService';
 import TeamJoinBar from '@/app/components/ContentBars/TeamJoinBar';
 import CleanNavBar from "@/app/components/NavBars/CleanNavBar";
-import {get, ref} from "firebase/database";
-import {db} from "@/app/firebase";
-import {TokenAdapter} from "@/app/service/TokenService/tokenAdapter";
-import {router} from "next/client";
+import { TokenAdapter } from "@/app/service/TokenService/tokenAdapter";
 import qrUrls from "@/app/util/qrUrls";
-import {useRouter} from "next/navigation";
-
+import { useRouter, useSearchParams } from "next/navigation";
 
 export default function TeamJoinMenu() {
     const [teams, setTeams] = useState([]);
     const [showWarning, setShowWarning] = useState(true);
-
+    const [validToken, setValidToken] = useState(false);
     const router = useRouter();
+    const searchParams = useSearchParams();
 
     useEffect(() => {
         const checkTokenAndRedirect = async () => {
@@ -27,16 +24,30 @@ export default function TeamJoinMenu() {
                     if (teamId) {
                         router.push(qrUrls.teamDetail(teamId));
                     }
-                } }catch (err) {
-                    console.error(err)
                 }
+            } catch (err) {
+                console.error(err);
             }
-
-
+        };
 
         checkTokenAndRedirect();
     }, [router]);
 
+    useEffect(() => {
+        const validateEventToken = async () => {
+            const urlToken = searchParams.get("event");
+            const currentToken = await TokenAdapter.getGlobalEventToken();
+
+            if (!urlToken || urlToken !== currentToken) {
+                alert("Deze QR-code is niet langer geldig.");
+                return;
+            }
+
+            setValidToken(true);
+        };
+
+        validateEventToken();
+    }, [searchParams, router]);
 
     const fetchTeams = async () => {
         try {
@@ -53,17 +64,19 @@ export default function TeamJoinMenu() {
     };
 
     useEffect(() => {
-        fetchTeams();
         if (typeof window !== 'undefined') {
-            setUserToken(localStorage.getItem("teamAccessToken"));
+            localStorage.getItem("teamAccessToken") && setValidToken(true);
         }
+        fetchTeams();
     }, []);
 
     const occupiedCount = teams.filter(t => t.occupied).length;
 
+    if (!validToken) return null;
+
     return (
         <div className="min-h-screen bg-gray-50 pb-16">
-            <CleanNavBar/>
+            <CleanNavBar />
             {showWarning && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
                     <div className="bg-white rounded-lg shadow-lg p-6 max-w-sm text-center space-y-4">
@@ -81,19 +94,17 @@ export default function TeamJoinMenu() {
                 </div>
             )}
 
-
             <div className="p-4">
                 <h1 className="text-xl font-semibold text-center text-[#1F2A60] mb-4">
                     {occupiedCount}/{teams.length} Teams zijn bezet
                 </h1>
                 {teams.map((team) =>
-                    team && team.id ? <TeamJoinBar key={team.id} team={team}/> : null
+                    team && team.id ? <TeamJoinBar key={team.id} team={team} /> : null
                 )}
             </div>
 
-            <footer
-                className="fixed bottom-0 left-0 w-full bg-[#D6C8F3] text-[#4B0082] py-3 shadow-inner flex justify-center items-center gap-3 z-50">
-                <img src="/fontys-logo.png" alt="Fontys Logo" className="h-6"/>
+            <footer className="fixed bottom-0 left-0 w-full bg-[#D6C8F3] text-[#4B0082] py-3 shadow-inner flex justify-center items-center gap-3 z-50">
+                <img src="/fontys-logo.png" alt="Fontys Logo" className="h-6" />
                 <span className="text-sm font-light">Ontwikkeld door Fontys</span>
             </footer>
         </div>
