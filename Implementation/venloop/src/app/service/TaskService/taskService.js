@@ -28,7 +28,19 @@ const TaskService = {
 
     async getAllTasks() {
         return handle(TaskAdapter.getAllTasks(), "fetching all tasks");
+    },
+
+    async deleteAllTasks() {
+        requireAuth()
+        const tasks = await this.getAllTasks();
+        if (!tasks || typeof tasks !== 'object') return false;
+
+        const deletions = await Promise.all(
+            Object.keys(tasks).map((taskId) => this.deleteTask(taskId))
+        );
+        return deletions.every(Boolean);
     }
+
 };
 
 export default TaskService;

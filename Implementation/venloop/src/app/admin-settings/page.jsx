@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import NavBar from "@/app/components/NavBars/NavBar";
 import ProtectedRoute from "@/app/ProtectedRoute";
 import TeamService from "@/app/service/TeamService/teamService";
+import TaskService from "@/app/service/TaskService/taskService";
 
 export default function AdminSettings() {
     const [teamId, setTeamId] = useState("");
@@ -37,13 +38,42 @@ export default function AdminSettings() {
             return;
         }
 
+        const confirmed = confirm("Are you sure you want to delete all submitted pictures for this team?");
+        if (!confirmed) return;
+
         const success = await TeamService.deleteSubmittedPictures(teamId);
         if (success) {
             alert("Submitted pictures deleted successfully.");
-            setTeamId(""); // Reset selection
-            fetchTeams(); // Refresh team list
+            setTeamId("");
+            fetchTeams();
         } else {
             alert("No pictures found or failed to delete.");
+        }
+    };
+
+    const handleDeleteAllTeams = async () => {
+        const confirmed = confirm("Are you sure you want to delete ALL teams?");
+        if (!confirmed) return;
+
+        const success = await TeamService.deleteAllTeams();
+        if (success) {
+            alert("All teams deleted.");
+            setTeamId("");
+            fetchTeams();
+        } else {
+            alert("Failed to delete all teams.");
+        }
+    };
+
+    const handleDeleteAllTasks = async () => {
+        const confirmed = confirm("Are you sure you want to delete ALL tasks?");
+        if (!confirmed) return;
+
+        const success = await TaskService.deleteAllTasks();
+        if (success) {
+            alert("All tasks deleted.");
+        } else {
+            alert("Failed to delete all tasks.");
         }
     };
 
@@ -56,12 +86,12 @@ export default function AdminSettings() {
             <div className="h-screen flex flex-col">
                 <NavBar backTo="/admin-landing" showInfoButton={true} />
 
-                <main className="p-6 grid grid-rows-2 gap-6 flex-grow bg-white font-black">
+                <main className="pt-20 p-6 grid grid-rows-2 gap-6 flex-grow bg-white font-black">
                     {/* Top 3 buttons */}
                     <div className="grid grid-cols-12 gap-4 h-full">
                         <button
                             className="bg-[#3C8DC3] text-white rounded-xl col-span-4 flex items-center justify-center text-center text-sm p-4 hover:scale-102 transition-all"
-                            onClick={() => console.log("Delete all teams")}
+                            onClick={handleDeleteAllTeams}
                         >
                             Delete all teams
                         </button>
@@ -89,7 +119,7 @@ export default function AdminSettings() {
 
                         <button
                             className="bg-[#3C8DC3] text-white rounded-xl col-span-4 flex items-center justify-center text-center text-sm p-4 hover:scale-102 transition-all"
-                            onClick={() => console.log("Delete all tasks")}
+                            onClick={handleDeleteAllTasks}
                         >
                             Delete all tasks
                         </button>

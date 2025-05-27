@@ -1,8 +1,9 @@
-import { TeamAdapter } from './teamAdapter';
+import {TeamAdapter} from './teamAdapter';
 import TaskService from "@/app/service/TaskService/taskService";
-import { ref as dbRef, get } from 'firebase/database';
-import { db } from "@/app/firebase";
-import { handle } from "@/app/service/serviceHandler";
+import {ref as dbRef, get} from 'firebase/database';
+import {db} from "@/app/firebase";
+import {handle} from "@/app/service/serviceHandler";
+import {requireAuth} from "@/app/contexts/authContext/requireAuth";
 
 const TeamService = {
     async createTeam(data) {
@@ -41,7 +42,7 @@ const TeamService = {
     },
 
     async updateCaptain(teamId, captains) {
-        return handle(TeamAdapter.updateTeam(teamId, { captain: captains }), "updating captain");
+        return handle(TeamAdapter.updateTeam(teamId, {captain: captains}), "updating captain");
     },
 
     async fileToBase64(file) {
@@ -165,7 +166,19 @@ const TeamService = {
 
     async deleteSubmittedPictures(teamId) {
         return handle(TeamAdapter.deleteSubmittedPictures(teamId), "deleting submitted pictures");
+    },
+
+    async deleteAllTeams() {
+        requireAuth()
+        const teams = await this.getAllTeams();
+        if (!teams || !Array.isArray(teams)) return false;
+
+        const deletions = await Promise.all(teams.map((team) =>
+            this.deleteTeam(team.id)
+        ));
+        return deletions.every(Boolean);
     }
+
 
 };
 
