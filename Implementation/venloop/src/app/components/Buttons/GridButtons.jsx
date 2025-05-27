@@ -54,7 +54,8 @@ export default function GridButtons() {
 
             {/* Top-right (30%) - STATIC */}
             <button
-                className="bg-[#D86F27] text-white rounded-lg p-4 col-span-3 row-start-1 flex items-center justify-center text-lg hover:scale-102 cursor-pointer">
+                className="bg-[#D86F27] text-white rounded-lg p-4 col-span-3 row-start-1 flex items-center justify-center text-lg hover:scale-102 cursor-pointer"
+                onClick={() => router.push("/admin-settings")}>
                 Event Settings️
             </button>
 

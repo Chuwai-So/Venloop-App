@@ -25,7 +25,7 @@ export default function TeamJoinMenu() {
                 if (localToken) {
                     const teamId = await TokenAdapter.getTeamId(localToken);
                     if (teamId) {
-                        router.push(`/team-detail/view?id=${teamId}`);
+                        router.push(qrUrls.teamDetail(teamId));
                     }
                 } }catch (err) {
                     console.error(err)
