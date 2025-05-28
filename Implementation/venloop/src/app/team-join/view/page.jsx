@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import TeamService from '@/app/service/TeamService/teamService';
 import TeamJoinBar from '@/app/components/ContentBars/TeamJoinBar';
 import CleanNavBar from "@/app/components/NavBars/CleanNavBar";
-import { TokenAdapter } from "@/app/service/TokenService/tokenAdapter";
+import TokenService from "@/app/service/TokenService/tokenService";
 import qrUrls from "@/app/util/qrUrls";
 import { useRouter, useSearchParams } from "next/navigation";
 
@@ -20,7 +20,7 @@ export default function TeamJoinMenu() {
             try {
                 const localToken = localStorage.getItem("teamAccessToken");
                 if (localToken) {
-                    const teamId = await TokenAdapter.getTeamId(localToken);
+                    const teamId = await TokenService.getTeamId(localToken);
                     if (teamId) {
                         router.push(qrUrls.teamDetail(teamId));
                     }
@@ -36,7 +36,7 @@ export default function TeamJoinMenu() {
     useEffect(() => {
         const validateEventToken = async () => {
             const urlToken = searchParams.get("event");
-            const currentToken = await TokenAdapter.getGlobalEventToken();
+            const currentToken = await TokenService.getGlobalEventToken();
 
             if (!urlToken || urlToken !== currentToken) {
                 alert("Deze QR-code is niet langer geldig.");

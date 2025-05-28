@@ -1,9 +1,9 @@
-import {TeamAdapter} from './teamAdapter';
+import { TeamAdapter } from './teamAdapter';
 import TaskService from "@/app/service/TaskService/taskService";
-import {ref as dbRef, get} from 'firebase/database';
-import {db} from "@/app/firebase";
-import {handle} from "@/app/service/serviceHandler";
-import {requireAuth} from "@/app/contexts/authContext/requireAuth";
+import { ref as dbRef, get } from 'firebase/database';
+import { db } from "@/app/firebase";
+import { handle } from "@/app/service/serviceHandler";
+import { requireAuth } from "@/app/contexts/authContext/requireAuth";
 
 const TeamService = {
     async createTeam(data) {
@@ -42,7 +42,7 @@ const TeamService = {
     },
 
     async updateCaptain(teamId, captains) {
-        return handle(TeamAdapter.updateTeam(teamId, {captain: captains}), "updating captain");
+        return handle(TeamAdapter.updateTeam(teamId, { captain: captains }), "updating captain");
     },
 
     async fileToBase64(file) {
@@ -70,8 +70,10 @@ const TeamService = {
             (async () => {
                 const team = await TeamAdapter.getTeam(teamId);
                 if (this.isTaskAlreadyCompleted(team, taskId)) return false;
+
                 const imageURL = await this.fileToBase64(file);
                 const task = await TaskService.getTask(taskId);
+
                 return await this.updateTeamWithPicture(
                     teamId,
                     `completedTasks/${taskId}`,
@@ -133,14 +135,13 @@ const TeamService = {
         return handle(
             (async () => {
                 await TeamAdapter.joinTeamAsCaptain(teamId);
-                return await this.getTeam(teamId);
+                return await TeamAdapter.getTeam(teamId);
             })(),
             "joining team as captain"
         );
     },
 
     async kickCaptain(teamId) {
-        console.log("kicking captain is called in service for:", teamId);
         return handle(TeamAdapter.kickCaptain(teamId), "kicking captain");
     },
 
@@ -161,6 +162,7 @@ const TeamService = {
             }
         };
         if (name) updates[path].name = name;
+
         return handle(TeamAdapter.updateTeam(teamId, updates), "updating team with picture");
     },
 
@@ -169,17 +171,17 @@ const TeamService = {
     },
 
     async deleteAllTeams() {
-        requireAuth()
-        const teams = await this.getAllTeams();
+        requireAuth();
+
+        const teams = await handle(TeamAdapter.getAllTeams(), "retrieving all teams for bulk delete");
         if (!teams || !Array.isArray(teams)) return false;
 
-        const deletions = await Promise.all(teams.map((team) =>
-            this.deleteTeam(team.id)
-        ));
+        const deletions = await Promise.all(
+            teams.map(team => handle(TeamAdapter.deleteTeam(team.id), `deleting team ${team.id}`))
+        );
+
         return deletions.every(Boolean);
     }
-
-
 };
 
 export default TeamService;

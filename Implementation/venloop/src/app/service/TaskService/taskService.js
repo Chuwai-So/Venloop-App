@@ -1,6 +1,6 @@
 import { TaskAdapter } from "./taskAdapter";
 import { requireAuth } from "@/app/contexts/authContext/requireAuth";
-import {handle} from "@/app/service/serviceHandler";
+import { handle } from "@/app/service/serviceHandler";
 
 const TaskService = {
     async createTask(data) {
@@ -31,16 +31,17 @@ const TaskService = {
     },
 
     async deleteAllTasks() {
-        requireAuth()
-        const tasks = await this.getAllTasks();
+        requireAuth();
+        const tasks = await TaskAdapter.getAllTasks();
         if (!tasks || typeof tasks !== 'object') return false;
 
         const deletions = await Promise.all(
-            Object.keys(tasks).map((taskId) => this.deleteTask(taskId))
+            Object.keys(tasks).map((taskId) =>
+                TaskAdapter.deleteTask(taskId)
+            )
         );
-        return deletions.every(Boolean);
+        return deletions.every(() => true);
     }
-
 };
 
 export default TaskService;

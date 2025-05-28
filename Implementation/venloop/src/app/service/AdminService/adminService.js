@@ -48,6 +48,7 @@ const AdminService = {
     },
 
     async getAdminByFirebaseUid(firebaseUid) {
+        requireAuth()
         return handle(AdminAdapter.getAdminByFirebaseUid(firebaseUid), "getting admin by Firebase UID");
     }
 };

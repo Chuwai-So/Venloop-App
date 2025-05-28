@@ -5,7 +5,7 @@ import NavBar from "@/app/components/NavBars/NavBar";
 import ProtectedRoute from "@/app/ProtectedRoute";
 import TeamService from "@/app/service/TeamService/teamService";
 import TaskService from "@/app/service/TaskService/taskService";
-import {TokenAdapter} from "@/app/service/TokenService/tokenAdapter";
+import TokenService from "@/app/service/TokenService/tokenService";
 
 export default function AdminSettings() {
     const [teamId, setTeamId] = useState("");
@@ -34,7 +34,7 @@ export default function AdminSettings() {
         if (!confirmed) return;
 
         try {
-            const newToken = await TokenAdapter.setGlobalEventToken();
+            const newToken = await TokenService.setGlobalEventToken();
             alert(`Event restarted. New token generated: ${newToken}`);
         } catch (err) {
             console.error("Failed to restart event:", err);

@@ -7,7 +7,7 @@ import TeamBar from '@/app/components/ContentBars/TeamBar';
 import ProtectedRoute from '@/app/ProtectedRoute';
 import QRCodeWithDownload from '@/app/components/QR/DownloadableQR';
 import qrUrls from '@/app/util/qrUrls';
-import { TokenAdapter } from '@/app/service/TokenService/tokenAdapter';
+import TokenService from "@/app/service/TokenService/tokenService";
 
 export default function TeamMenu() {
     const [teams, setTeams] = useState([]);
@@ -32,7 +32,7 @@ export default function TeamMenu() {
 
     const fetchEventToken = async () => {
         try {
-            const token = await TokenAdapter.getGlobalEventToken();
+            const token = await TokenService.getGlobalEventToken();
             setEventToken(token);
         } catch (err) {
             console.error("Failed to load global event token:", err);

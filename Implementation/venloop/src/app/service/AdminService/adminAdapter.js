@@ -69,6 +69,7 @@ export const AdminAdapter = {
     },
 
     async getAdminByFirebaseUid(firebaseUid) {
+        requireAuth()
         const snapshot = await get(ref(db, ADMIN_PATH));
         if (!snapshot.exists()) return null;
         const data = snapshot.val();
