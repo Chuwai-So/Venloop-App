@@ -28,6 +28,7 @@
     "@tailwindcss/postcss": "^4",
     "@testing-library/jest-dom": "^6.6.3",
     "@vitejs/plugin-react": "^4.4.1",
+    "cypress": "^14.4.0",
     "tailwindcss": "^4",
     "vitest": "^3.1.2"
   }
