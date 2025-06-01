@@ -61,6 +61,7 @@ export default function GridButtons() {
 
             {/* Bottom-left (30%) - STATIC */}
             <button
+                onClick={() => router.push("/Leaderboard/view")}
                 className="bg-[#D86F27] text-white rounded-lg p-4 col-span-3 row-start-2 flex items-center justify-center text-lg hover:scale-102 cursor-pointer">
                 Leaderboard
             </button>

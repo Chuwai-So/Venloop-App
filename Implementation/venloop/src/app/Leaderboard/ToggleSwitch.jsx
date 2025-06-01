@@ -3,24 +3,22 @@ import { motion, AnimatePresence, useAnimation } from 'framer-motion';
 import { useEffect, useState } from 'react';
 
 export default function ToggleSwitch({ value, onChange }) {
-    const [isOn, setIsOn] = useState(value === 'day');
+    const [isOn, setIsOn] = useState(value === 'completed');
     const controls = useAnimation();
 
     const toggle = async () => {
-        const newVal = isOn ? 'day' : 'week';
+        const newVal = isOn ? 'correct' : 'completed';
         setIsOn(!isOn);
         onChange(newVal);
 
-        // Midpoint squish
         await controls.start({
             x: 40,
             scale: 0.85,
             transition: { duration: 0.15 },
         });
 
-        // Final slide
         await controls.start({
-            x: newVal === 'week' ? 60 : 0,
+            x: newVal === 'correct' ? 60 : 0,
             scale: 1,
             transition: { type: 'spring', stiffness: 600, damping: 30 },
         });
@@ -29,22 +27,20 @@ export default function ToggleSwitch({ value, onChange }) {
     return (
         <div
             onClick={toggle}
-            className="w-36 h-16 rounded-full bg-[#a6f6cf] border-2 border-white shadow-inner flex items-center justify-between px-4 relative cursor-pointer transition-all"
+            className="w-35 h-16 rounded-full bg-[#003399] border-2 border-white shadow-inner flex items-center justify-between px-4 relative cursor-pointer transition-all"
         >
-            {/* OFF label */}
             <span
-                className={`text-lg font-bold transition-colors ${
-                    !isOn ? 'text-white' : 'text-[#1b4d3e]'
+                className={`text-sm font-bold transition-colors ${
+                    !isOn ? 'text-white' : 'text-[#3CA9E2]'
                 }`}
             >
-        Day
-      </span>
+                Done
+            </span>
 
-            {/* Toggle knob */}
             <motion.div
                 animate={controls}
                 initial={{ x: 0 }}
-                className="absolute w-12 h-12 rounded-full bg-[#1b4d3e] top-2 flex items-center justify-center"
+                className="absolute w-12 h-12 rounded-full bg-[#D86F27] top-2 flex items-center justify-center"
             >
                 <AnimatePresence mode="wait">
                     <motion.div
@@ -53,22 +49,20 @@ export default function ToggleSwitch({ value, onChange }) {
                         animate={{ opacity: 1, rotate: 0 }}
                         exit={{ opacity: 0, rotate: 180 }}
                         transition={{ duration: 0.3 }}
-                        className="text-[#a6f6cf] text-2xl font-bold"
+                        className="text-white text-2xl font-bold"
                     >
                         {isOn ? '-' : '+'}
                     </motion.div>
                 </AnimatePresence>
             </motion.div>
 
-            {/* ON label */}
             <span
-                className={`text-lg font-bold transition-colors ${
-                    isOn ? 'text-white' : 'text-[#1b4d3e]'
+                className={`text-sm font-bold transition-colors ${
+                    isOn ? 'text-white' : 'text-[#3CA9E2]'
                 }`}
             >
-        Week
-      </span>
+                Right
+            </span>
         </div>
     );
 }
-

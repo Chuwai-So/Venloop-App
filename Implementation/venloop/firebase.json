@@ -53,6 +53,10 @@
         "destination": "/team-join/view.html"
       },
       {
+        "source": "/Leaderboard/view",
+        "destination": "/Leaderboard/view/index.html"
+      },
+      {
         "source": "**",
         "destination": "/index.html"
       }
