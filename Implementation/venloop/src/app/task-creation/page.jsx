@@ -80,8 +80,9 @@ export default function TaskCreation() {
             <div className="font-sans bg-[#F9FAFB] min-h-screen text-black">
                 <NavBar backTo="/admin-landing" />
 
-                <div className="flex flex-col md:flex-row h-full">
-                    <div className="w-full md:w-1/2 p-4 bg-white md:bg-[#3CA9E2] flex justify-center items-start md:items-center">
+                <div className="flex flex-col md:flex-row-reverse h-full">
+                    {/* Phone Preview */}
+                    <div className="w-full md:w-1/2 p-4 bg-white md:bg-[#3CA9E2] flex justify-center items-center">
                         <div className="relative w-[360px] h-[640px] bg-gray-50 rounded-[40px] shadow border border-white p-4 pr-1 overflow-y-auto text-black">
                             <div className="relative">
                                 <div className="hidden md:block absolute top-4 left-1/2 -translate-x-1/2 w-24 h-7 bg-black rounded-full z-10 shadow-inner"></div>
@@ -146,31 +147,21 @@ export default function TaskCreation() {
                                         />
                                     </div>
                                 )}
-
-                                <div className="mt-4 flex items-center gap-2">
-                                    <input
-                                        type="checkbox"
-                                        id="isTemplate"
-                                        checked={isTemplate}
-                                        onChange={() => setIsTemplate(prev => !prev)}
-                                    />
-                                    <label htmlFor="isTemplate" className="text-sm text-black">
-                                        Save as Task Template
-                                    </label>
-                                </div>
-
-                                <button
-                                    onClick={handleSubmitTask}
-                                    className="mt-6 bg-[#D86F27] text-white p-2 w-full rounded hover:scale-105 transition-transform"
-                                >
-                                    Submit Task
-                                </button>
                             </div>
                         </div>
                     </div>
 
-                    <div className="w-full md:w-1/2 bg-blue-50 p-6 border-t md:border-t-0 md:border-l text-black">
+                    {/* Config Panel */}
+                    <div className="w-full md:w-1/2 bg-[#E3F4FC] p-6 border-t md:border-t-0 md:border-r text-black shadow-inner">
                         <h2 className="text-xl font-bold mb-4 text-[#1F2A60]">Configure Features</h2>
+
+                        <input
+                            type="text"
+                            placeholder="Task Name"
+                            value={taskData.name}
+                            onChange={(e) => handleDataChange("name", e.target.value)}
+                            className="mb-6 p-2 border w-full rounded text-black bg-white"
+                        />
 
                         {["description", "timer", "choice", "picture", "input"].map((feat) => (
                             <div key={feat} className="flex justify-between mb-3 items-center">
@@ -186,13 +177,24 @@ export default function TaskCreation() {
                             </div>
                         ))}
 
-                        <input
-                            type="text"
-                            placeholder="Task Name"
-                            value={taskData.name}
-                            onChange={(e) => handleDataChange("name", e.target.value)}
-                            className="mt-6 p-2 border w-full rounded text-black bg-white"
-                        />
+                        <div className="mt-4 flex items-center gap-2">
+                            <input
+                                type="checkbox"
+                                id="isTemplate"
+                                checked={isTemplate}
+                                onChange={() => setIsTemplate(prev => !prev)}
+                            />
+                            <label htmlFor="isTemplate" className="text-sm text-black">
+                                Save as Task Template
+                            </label>
+                        </div>
+
+                        <button
+                            onClick={handleSubmitTask}
+                            className="mt-6 bg-[#D86F27] text-white p-2 w-full rounded hover:scale-105 transition-transform"
+                        >
+                            Submit Task
+                        </button>
                     </div>
                 </div>
 
