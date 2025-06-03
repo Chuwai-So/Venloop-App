@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import TeamService from "@/app/service/TeamService/teamService";
+import Icon from "@/app/components/Icon";
 
 export default function TaskApplicationBar({ task, refreshList }) {
     const [processing, setProcessing] = useState(false);

@@ -2,6 +2,8 @@ import BackButton from "@/app/components/Buttons/BackButton";
 import AccountDropdown from "@/app/components/Dropdowns/AccountDropdown";
 import {useState} from "react";
 import SettingsInfoDropdown from "@/app/components/Dropdowns/SettingInfoDropdown";
+import Icon from "@/app/components/Icon";
+
 
 export default function NavBar({backTo, showInfoButton = false}) {
     const [showInfoTab, setShowInfoTab] = useState(false);
@@ -18,7 +20,7 @@ export default function NavBar({backTo, showInfoButton = false}) {
                 <>
                     <button
                         onClick={toggleInfoTab}>
-                        Info
+                        <Icon name={"info-white"}/>
                     </button>
                     {showInfoTab && <SettingsInfoDropdown/>}
                 </>
