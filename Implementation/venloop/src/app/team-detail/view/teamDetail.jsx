@@ -1,14 +1,16 @@
 'use client';
 
-import { Html5Qrcode } from 'html5-qrcode';
+import {Html5Qrcode} from 'html5-qrcode';
 import dynamic from "next/dynamic";
-import { useEffect, useState } from "react";
+import {useEffect, useState} from "react";
 import TeamService from "@/app/service/TeamService/teamService";
-import { useSearchParams, useRouter } from "next/navigation";
+import {useSearchParams, useRouter} from "next/navigation";
 import CleanNavBar from "@/app/components/NavBars/CleanNavBar";
-import { db } from "@/app/firebase";
-import { ref, get, update } from 'firebase/database';
-import FeedbackPopup from "@/app/components/FeedbackPopup"; // Adjust path if needed
+import {generateTeamToken} from "@/app/util/teamToken";
+import {db} from "@/app/firebase";
+import {ref, get, update} from 'firebase/database';
+import FeedbackPopup from "@/app/components/FeedbackPopup";
+import TokenService from "@/app/service/TokenService/tokenService"; // Adjust path if needed
 
 export default function TeamDetail() {
     const colors = {
@@ -24,7 +26,7 @@ export default function TeamDetail() {
     const [team, setTeam] = useState(null);
     const [showPopup, setShowPopup] = useState(false);
     const router = useRouter();
-    const FAQSection = dynamic(() => import('@/app/FAQ/FAQSection'), { ssr: false });
+    const FAQSection = dynamic(() => import('@/app/FAQ/FAQSection'), {ssr: false});
     const [showFAQ, setShowFAQ] = useState(false);
 
     useEffect(() => {
@@ -32,28 +34,39 @@ export default function TeamDetail() {
 
         (async () => {
             const existingToken = localStorage.getItem("teamAccessToken");
+            console.log("LOGhere is the accessToken:", existingToken);
 
             if (existingToken) {
                 try {
-                    const snapshot = await get(ref(db, `teams/${team.id}/${existingToken}`));
-                    const tokenData = snapshot.val();
+                    const verifiedTeamId = await TeamService.verifyTokenAndGetTeamId(existingToken);
+                    console.log("LOGteamId from token:", `"${verifiedTeamId}"`);
+                    console.log("LOGteamId from URL:", `"${teamId}"`);
 
-                    if (tokenData?.teamId === teamId) {
-                        console.log("✅ Valid token found:", existingToken);
-                        return;
-                    } else {
-                        console.warn("⚠️ Token mismatch. Reissuing...");
+                    if (verifiedTeamId && verifiedTeamId.trim() === teamId.trim()) {
+                        console.log("✅ Valid token and teamId match.");
+                        return; // token is valid, nothing more to do
                     }
+
+                    console.warn("⚠️ Token mismatch. Reissuing...");
+
                 } catch (err) {
                     console.error("❌ Error verifying token:", err);
+                    // falls through to token generation
                 }
             }
 
-            const newToken = crypto.randomUUID()
-            localStorage.setItem("teamAccessToken", newToken);
-            console.log("✅ New token saved:", newToken);
+            // Generate a new token if not found or invalid
+            const newToken = await generateTeamToken(teamId);
+
+            if (typeof newToken === 'string') {
+                localStorage.setItem("teamAccessToken", newToken);
+                console.log("✅ New token saved:", newToken);
+            } else {
+                console.error("❌ Failed to save token – invalid format:", newToken);
+            }
         })();
     }, [teamId]);
+
 
     useEffect(() => {
         const fetchTeam = async () => {
@@ -78,40 +91,29 @@ export default function TeamDetail() {
         if (!confirmed) return;
 
         try {
-            const token = localStorage.getItem("teamAccessToken");
-
-
             await update(ref(db, `teams/${teamId}`), {
                 occupied: false,
                 captain: null
             });
 
-            console.log("Here is the token for handle leave", token)
-            if (token) {
-                await TeamService.kickCaptain(teamId);
-                await TeamService.updateTeam(teamId, {teamToken: null});
-                localStorage.removeItem("teamAccessToken");
-                console.log("token got removed from database:", token);
-            }
-
-
+            localStorage.removeItem("teamAccessToken");
             alert("You have left the team.");
-            router.push("/team-join/view");
+            const eventToken = await TokenService.getGlobalEventToken();
+            router.push(`/team-join/view?event=${eventToken}`);
         } catch (err) {
             console.error("Failed to leave team:", err);
             alert("Error leaving the team. Please try again.");
         }
     };
 
-
     if (!team) {
         return <div className="text-center p-6">Loading team...</div>;
     }
 
     return (
-        <div style={{ backgroundColor: colors.blue, color: colors.white }} className="min-h-screen">
+        <div style={{backgroundColor: colors.blue, color: colors.white}} className="min-h-screen">
             <div className="w-full sticky top-0 z-50">
-                <CleanNavBar />
+                <CleanNavBar/>
             </div>
 
             <main className="p-4 flex flex-col gap-6 pb-20">
@@ -121,8 +123,8 @@ export default function TeamDetail() {
                     </h1>
                 </header>
 
-                <section style={{ backgroundColor: colors.white, color: colors.black }} className="rounded-lg p-4 shadow">
-                    <h2 style={{ color: colors.orange }} className="text-lg font-semibold mb-4">Voltooide taken</h2>
+                <section style={{backgroundColor: colors.white, color: colors.black}} className="rounded-lg p-4 shadow">
+                    <h2 style={{color: colors.orange}} className="text-lg font-semibold mb-4">Voltooide taken</h2>
 
                     {team.completedTasks && Object.keys(team.completedTasks).length > 0 ? (
                         <div className="flex flex-col gap-3">
@@ -186,10 +188,10 @@ export default function TeamDetail() {
                     {showFAQ ? "Verberg Veelgestelde Vragen" : "Bekijk Veelgestelde Vragen"}
                 </button>
 
-                {showFAQ && <FAQSection />}
+                {showFAQ && <FAQSection/>}
             </main>
 
-            {showPopup && <FeedbackPopup onClose={() => setShowPopup(false)} />}
+            {showPopup && <FeedbackPopup onClose={() => setShowPopup(false)}/>}
 
             <footer className="fixed bottom-0 left-0 w-full bg-blue-500 text-white text-center py-4 z-10 shadow-inner">
                 <h3 className="text-xs font-medium">
