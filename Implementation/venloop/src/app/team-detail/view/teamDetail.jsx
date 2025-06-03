@@ -118,7 +118,9 @@ export default function TeamDetail() {
 
             <main className="p-4 flex flex-col gap-6 pb-20">
                 <header className="text-center border-b border-white pb-2">
-                    <h1 className="text-5xl font-bold pb-2 break-words max-w-full overflow-wrap break-all">
+                    <h1 className={`font-bold pb-2 max-w-full break-words ${
+                        team.name.length > 20 ? "text-2xl" : "text-5xl"
+                    }`}>
                         {team.name}
                     </h1>
                 </header>
@@ -139,7 +141,7 @@ export default function TeamDetail() {
                                 return (
                                     <div
                                         key={taskId}
-                                        className={`border border-gray-300 border-l-8 rounded-lg p-3 shadow-sm bg-gray-50 ${borderColor}`}
+                                        className={`border border-gray-300 border-l-8 rounded-lg p-3 shadow bg-gray-50 ${borderColor}`}
                                     >
                                         <h3 className="font-semibold text-base mb-1">
                                             {task.name || taskId}
@@ -147,11 +149,14 @@ export default function TeamDetail() {
 
                                         {task.picture ? (
                                             <div className="mt-2">
-                                                <img
+                                                <div className="flex justify-center items-center">
+                                                    <img
                                                     src={task.picture}
                                                     alt="Submitted task image"
-                                                    className="w-full max-w-xs rounded shadow"
+                                                    className="h-24 w-auto object-cove rounded shadow"
                                                 />
+                                                </div>
+
                                                 <p className="text-sm text-gray-600 mt-1">Status: {task.status}</p>
                                             </div>
                                         ) : (
@@ -175,18 +180,20 @@ export default function TeamDetail() {
                     )}
                 </section>
 
-                <button
-                    onClick={handleLeaveTeam}
-                    className="mt-4 bg-red-500 text-white font-semibold px-4 py-2 rounded shadow hover:bg-red-700 transition w-full max-w-xs mx-auto"
-                >
-                    Team verlaten
-                </button>
-                <button
-                    onClick={() => setShowFAQ(!showFAQ)}
-                    className="w-full max-w-xs mx-auto bg-orange-500 text-white font-semibold px-4 py-2 rounded shadow hover:bg-orange-600 transition"
-                >
-                    {showFAQ ? "Verberg Veelgestelde Vragen" : "Bekijk Veelgestelde Vragen"}
-                </button>
+                <div className="flex justify-center items-center gap-4 mt-4 items-stretch">
+                    <button
+                        onClick={handleLeaveTeam}
+                        className="w-40 bg-red-500 text-white font-semibold px-4 py-2 rounded shadow hover:bg-red-700 transition"
+                    >
+                        Team verlaten
+                    </button>
+                    <button
+                        onClick={() => setShowFAQ(!showFAQ)}
+                        className="w-40 bg-orange-500 text-white text-xs font-semibold px-2 py-2 rounded shadow hover:bg-orange-600 transition"
+                    >
+                        {showFAQ ? "Verberg Veelgestelde Vragen" : "Bekijk Veelgestelde Vragen"}
+                    </button>
+                </div>
 
                 {showFAQ && <FAQSection/>}
             </main>
