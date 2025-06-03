@@ -1,31 +1,7 @@
-// ***********************************************
-// This example commands.js shows you how to
-// create various custom commands and overwrite
-// existing commands.
-//
-// For more comprehensive examples of custom
-// commands please read more here:
-// https://on.cypress.io/custom-commands
-// ***********************************************
-//
-//
-// -- This is a parent command --
-// Cypress.Commands.add('login', (email, password) => { ... })
-//
-//
-// -- This is a child command --
-// Cypress.Commands.add('drag', { prevSubject: 'element'}, (subject, options) => { ... })
-//
-//
-// -- This is a dual command --
-// Cypress.Commands.add('dismiss', { prevSubject: 'optional'}, (subject, options) => { ... })
-//
-//
-// -- This will overwrite an existing command --
-// Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
-import TeamService from "@/app/service/TeamService/teamService";
+//import TeamService from "@/app/service/TeamService/teamService";
 
-Cypress.Commands.add("createTestTeam", (teamId) => {
+// Create a test team
+/*Cypress.Commands.add("createTestTeam", (teamId) => {
     const testTeamData = {
         id: teamId,
         name: "Test Team",
@@ -38,6 +14,7 @@ Cypress.Commands.add("createTestTeam", (teamId) => {
     return TeamService.createTeam(testTeamData);
 });
 
+// Reset a test team
 Cypress.Commands.add("resetTestTeam", (teamId) => {
     return TeamService.updateTeam(teamId, {
         captain: null,
@@ -45,4 +22,17 @@ Cypress.Commands.add("resetTestTeam", (teamId) => {
         completedTasks: null,
         pendingTasks: null,
     });
+});
+
+ */
+
+Cypress.Commands.add("adminLogin", () => {
+    cy.visit('https://venloop-ee862.web.app'); // adjust if needed
+
+    cy.get('input[type="email"]').type('test@v.com');
+    cy.get('input[type="password"]').type('123456');
+    cy.get('button[type="submit"]').click();
+
+    // Confirm login succeeded
+    cy.url().should('include', '/admin-landing');
 });

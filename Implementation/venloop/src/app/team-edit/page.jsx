@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { useEffect, useState } from 'react';
 import TeamService from '@/app/service/TeamService/teamService';
@@ -7,11 +7,13 @@ import TeamBar from '@/app/components/ContentBars/TeamBar';
 import ProtectedRoute from '@/app/ProtectedRoute';
 import QRCodeWithDownload from '@/app/components/QR/DownloadableQR';
 import qrUrls from '@/app/util/qrUrls';
+import TokenService from "@/app/service/TokenService/tokenService";
 
 export default function TeamMenu() {
     const [teams, setTeams] = useState([]);
     const [expanded, setExpanded] = useState(null);
     const [showQR, setShowQR] = useState(false);
+    const [eventToken, setEventToken] = useState(null);
 
     const fetchTeams = () => {
         TeamService.getAllTeams()
@@ -28,8 +30,18 @@ export default function TeamMenu() {
             });
     };
 
+    const fetchEventToken = async () => {
+        try {
+            const token = await TokenService.getGlobalEventToken();
+            setEventToken(token);
+        } catch (err) {
+            console.error("Failed to load global event token:", err);
+        }
+    };
+
     useEffect(() => {
         fetchTeams();
+        fetchEventToken();
     }, []);
 
     return (
@@ -67,10 +79,14 @@ export default function TeamMenu() {
                             >
                                 <span className="text-xl text-black">▲</span> Hide
                             </button>
-                            <QRCodeWithDownload
-                                id="universal-team-join"
-                                url={qrUrls.teamJoin()}
-                            />
+                            {eventToken ? (
+                                <QRCodeWithDownload
+                                    id="universal-team-join"
+                                    url={qrUrls.teamJoin(eventToken)}
+                                />
+                            ) : (
+                                <p className="text-sm text-red-500 mt-2">Unable to load QR Code</p>
+                            )}
                         </div>
                     )}
                 </div>

@@ -1,58 +1,47 @@
-import {TaskAdapter} from "./taskAdapter";
-import {requireAuth} from "@/app/contexts/authContext/requireAuth";
+import { TaskAdapter } from "./taskAdapter";
+import { requireAuth } from "@/app/contexts/authContext/requireAuth";
+import { handle } from "@/app/service/serviceHandler";
 
- const TaskService = {
+const TaskService = {
+    async createTask(data) {
+        return handle(TaskAdapter.createTask(data), "creating task");
+    },
 
-     async createTask(data) {
-         try {
-             //requireAuth();
-             return await TaskAdapter.createTask(data);
-         } catch (err) {
-             console.error("Error creating task: ", err);
-             return null;
-         }
-     },
+    async getTask(taskId) {
+        return handle(TaskAdapter.getTask(taskId), "fetching task");
+    },
 
-     async getTask(taskId) {
-         try {
-            // requireAuth();
-             return await TaskAdapter.getTask(taskId);
-         } catch (err) {
-             console.error("Error getting task object back: ", err);
-             return null;
-         }
-     },
+    async getTaskQR(taskId) {
+        return handle(
+            (async () => {
+                const task = await TaskAdapter.getTask(taskId);
+                return task?.qrURL || null;
+            })(),
+            "getting task QR"
+        );
+    },
 
-     async getTaskQR(taskId) {
-         try {
-           //  requireAuth();
-             const task = await TaskAdapter.getTask(taskId);
-             return task?.qrURL || null;
-         } catch (err) {
-             console.error("Error getting task QR Code: ", err);
-             return null;
-         }
-     },
+    async deleteTask(taskId) {
+        requireAuth();
+        return handle(TaskAdapter.deleteTask(taskId), "deleting task");
+    },
 
-     async deleteTask(taskId) {
-         try {
-             requireAuth();
-             return TaskAdapter.deleteTask(taskId);
-         } catch (err) {
-             console.error("Error deleting task: ", err);
-             return null;
-         }
-     },
+    async getAllTasks() {
+        return handle(TaskAdapter.getAllTasks(), "fetching all tasks");
+    },
 
-     async getAllTasks() {
-         try {
-             return await TaskAdapter.getAllTasks();
-         } catch (err) {
-             console.error("Error getting all tasks");
-             return null;
-         }
-     }
+    async deleteAllTasks() {
+        requireAuth();
+        const tasks = await TaskAdapter.getAllTasks();
+        if (!tasks || typeof tasks !== 'object') return false;
 
- }
+        const deletions = await Promise.all(
+            Object.keys(tasks).map((taskId) =>
+                TaskAdapter.deleteTask(taskId)
+            )
+        );
+        return deletions.every(() => true);
+    }
+};
 
- export default TaskService;
+export default TaskService;

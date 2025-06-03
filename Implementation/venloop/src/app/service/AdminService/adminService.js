@@ -1,93 +1,56 @@
-import {AdminAdapter} from "./adminAdapter";
-import bcrypt from 'bcryptjs'
-import {requireAuth} from "@/app/contexts/authContext/requireAuth";
+import { AdminAdapter } from "./adminAdapter";
+import bcrypt from 'bcryptjs';
+import { requireAuth } from "@/app/contexts/authContext/requireAuth";
+import {handle} from "@/app/service/serviceHandler";
+
 
 
 
 const AdminService = {
-
-
     async createAdmin(data) {
-        try {
-            return await AdminAdapter.createAdmin(data);
-        } catch (err) {
-            console.error("Error creating task-list: ", err);
-            throw err;
-        }
+        return handle(AdminAdapter.createAdmin(data), "creating admin");
     },
 
-
     async getAdmin(adminId) {
-        try {
-            requireAuth()
-            return await AdminAdapter.getAdmin(adminId);
-        } catch (err) {
-            console.error("Error getting task-list back: ", err);
-            return null;
-        }
+        requireAuth();
+        return handle(AdminAdapter.getAdmin(adminId), "fetching admin");
     },
 
     async approveAdmin(adminId) {
-        try {
-            requireAuth()
-            return await AdminAdapter.updateAdmin(adminId, { verified: true});
-        } catch (err) {
-            console.error("Error approving Admin: ", err);
-            return null;
-        }
+        requireAuth();
+        return handle(AdminAdapter.updateAdmin(adminId, { verified: true }), "approving admin");
     },
 
     async setPassword(adminId, password) {
+        requireAuth();
         try {
-            requireAuth()
-            const saltRounds = 10;
-            const hashed = await bcrypt.hash(password, saltRounds);
-            return await AdminAdapter.updateAdmin(adminId, {password: hashed});
+            const hashed = await bcrypt.hash(password, 10);
+            return await AdminAdapter.updateAdmin(adminId, { password: hashed });
         } catch (err) {
-            console.error("Error setting Password")
+            console.error("Error setting password:", err);
             return null;
         }
     },
 
     async deleteAdmin(adminId) {
-        try {
-            requireAuth()
-            return await AdminAdapter.deleteAdmin(adminId);
-        } catch (err) {
-            console.error("Error deleting Admin")
-            return null;
-        }
+        requireAuth();
+        return handle(AdminAdapter.deleteAdmin(adminId), "deleting admin");
     },
 
     async getAllAdmins() {
-        try {
-            requireAuth();
-            return await AdminAdapter.getAllAdmins();
-        } catch (err) {
-            console.error("Error getting all admins:", err);
-            return [];
-        }
+        requireAuth();
+        return handle(AdminAdapter.getAllAdmins(), "getting all admins");
     },
 
     async getUnverifiedAdmins() {
-        try {
-            requireAuth();
-            return await AdminAdapter.getUnverifiedAdmins();
-        } catch (err) {
-            console.error("Error getting unverified admins:", err);
-            return [];
-        }
+        requireAuth();
+        return handle(AdminAdapter.getUnverifiedAdmins(), "getting unverified admins");
     },
 
-    async getAdminByFirebaseUid(firebaseUid){
-        try {
-            return await AdminAdapter.getAdminByFirebaseUid(firebaseUid);
-        } catch (err) {
-            console.error("Error getting adminByFirebaseUid:", err);
-            return [];
-        }
+    async getAdminByFirebaseUid(firebaseUid) {
+        requireAuth()
+        return handle(AdminAdapter.getAdminByFirebaseUid(firebaseUid), "getting admin by Firebase UID");
     }
-
-}
+};
 
 export default AdminService;

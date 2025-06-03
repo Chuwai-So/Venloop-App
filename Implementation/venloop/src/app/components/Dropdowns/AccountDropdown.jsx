@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { deleteUser, getAuth } from "firebase/auth";
 import AdminService from "@/app/service/AdminService/adminService";
+import Icon from "@/app/components/Icon";
 
 export default function AccountDropdown() {
     const [menuOpen, setMenuOpen] = useState(false);
@@ -60,7 +61,7 @@ export default function AccountDropdown() {
                 onClick={() => setMenuOpen(!menuOpen)}
                 className="text-white hover:text-blue-400 cursor-pointer"
             >
-                Account
+                <Icon name={"user-white"}/>
             </span>
 
             {menuOpen && auth.currentUser && (

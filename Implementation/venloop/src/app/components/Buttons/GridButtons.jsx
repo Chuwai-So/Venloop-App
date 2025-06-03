@@ -28,24 +28,24 @@ export default function GridButtons() {
                     >
                         <div onClick={(e) => e.stopPropagation()} className="w-full flex flex-col gap-4">
                             <button
-                                className="bg-[#3C8DC3] text-white rounded px-4 py-2 w-full"
+                                className="bg-[#3C8DC3] text-white text-xl rounded px-4 py-2 w-full hover:scale-102 cursor-pointer"
                                 onClick={() => (router.push("/task-creation"))}>
-                                Create Task
+                                Task Creation
                             </button>
-                            <button className="bg-[#3C8DC3] text-white rounded px-4 py-2 w-full"
+                            <button className="bg-[#3C8DC3] text-white text-xl rounded px-4 py-2 w-full hover:scale-102 cursor-pointer"
                                     onClick={() => (router.push("/task-list"))}>
-                                Edit Tasks
+                                Task List
                             </button>
-                            <button className="bg-[#3C8DC3] text-white rounded px-4 py-2 w-full"
+                            <button className="bg-[#3C8DC3] text-white text-xl rounded px-4 py-2 w-full hover:scale-102 cursor-pointer"
                                     onClick={() => (router.push("/task-pending"))}>
-                                Submissions
+                                Picture Submissions
                             </button>
                         </div>
                     </div>
                 ) : (
                     <button
                         onClick={() => toggleMenu("tasks")}
-                        className="bg-[#3C8DC3] text-white rounded-lg p-6 w-full h-full flex items-center justify-center text-xl hover:scale-102 cursor-pointer"
+                        className="bg-[#3C8DC3] text-white rounded-lg p-6 w-full h-full flex items-center justify-center text-5xl hover:scale-102 cursor-pointer"
                     >
                         Tasks
                     </button>
@@ -54,14 +54,17 @@ export default function GridButtons() {
 
             {/* Top-right (30%) - STATIC */}
             <button
-                className="bg-[#D86F27] text-white rounded-lg p-4 col-span-3 row-start-1 flex items-center justify-center text-lg hover:scale-102 cursor-pointer">
-                Event Settings️
+                data-cy="admin-settings-button"
+                className="bg-[#D86F27] text-white text-3xl rounded-lg p-4 col-span-3 row-start-1 flex items-center justify-center hover:scale-102 cursor-pointer"
+                onClick={() => router.push("/admin-settings")}
+            >
+                Event Settings
             </button>
 
             {/* Bottom-left (30%) - STATIC */}
             <button
                 onClick={() => router.push("/Leaderboard/view")}
-                className="bg-[#D86F27] text-white rounded-lg p-4 col-span-3 row-start-2 flex items-center justify-center text-lg hover:scale-102 cursor-pointer">
+                className="bg-[#D86F27] text-white text-3xl rounded-lg p-4 col-span-3 row-start-2 flex items-center justify-center hover:scale-102 cursor-pointer">
                 Leaderboard
             </button>
 
@@ -74,12 +77,12 @@ export default function GridButtons() {
                     >
                         <div onClick={(e) => e.stopPropagation()} className="w-full flex flex-col gap-4">
                             <button
-                                className="bg-[#3C8DC3] text-white rounded px-4 py-2 w-full"
+                                className="bg-[#3C8DC3] text-white text-xl rounded px-4 py-2 w-full hover:scale-102 cursor-pointer"
                                 onClick={() => (router.push("/team-creation"))}>
                                 Create Team
                             </button>
                             <button
-                                className="bg-[#3C8DC3] text-white rounded px-4 py-2 w-full"
+                                className="bg-[#3C8DC3] text-white text-xl rounded px-4 py-2 w-full hover:scale-102 cursor-pointer"
                                 onClick={() => (router.push("/team-edit"))}>
                                 Team Menu
                             </button>
@@ -88,7 +91,7 @@ export default function GridButtons() {
                 ) : (
                     <button
                         onClick={() => toggleMenu("teams")}
-                        className="bg-[#3C8DC3] text-white rounded-lg p-6 w-full h-full flex items-center justify-center text-xl hover:scale-102 cursor-pointer"
+                        className="bg-[#3C8DC3] text-white rounded-lg p-6 w-full h-full flex items-center justify-center text-5xl hover:scale-102 cursor-pointer"
                     >
                         Teams
                     </button>

@@ -1,6 +1,7 @@
-"use client";
+'use client';
 import { useRef } from "react";
 import QRCode from "@/app/components/QR/QRCode";
+import Icon from "@/app/components/Icon"; // Make sure path is correct
 
 export default function QRCodeWithDownload({ id, url }) {
     const qrRef = useRef(null);
@@ -40,9 +41,10 @@ export default function QRCodeWithDownload({ id, url }) {
             <QRCode id={`qr-${id}`} value={url} />
             <button
                 onClick={handleDownload}
-                className="mt-2 px-4 py-1 bg-[#3C8DC3] text-white text-sm rounded shadow hover:bg-[#1F2A60]"
+                className="mt-2 px-4 py-1 bg-[#3C8DC3] text-white text-sm rounded shadow hover:bg-[#1F2A60] flex items-center gap-2"
             >
-                Download QR Code
+                <Icon name="download-white" size="16px" />
+                <span>Download QR Code</span>
             </button>
         </div>
     );

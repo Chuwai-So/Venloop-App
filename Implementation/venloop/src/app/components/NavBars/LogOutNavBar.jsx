@@ -2,7 +2,9 @@
 
 import {useRouter} from "next/navigation";
 import {doSignOut} from "@/app/auth";
-import AccountDropdown from "@/app/components/AccountDropdown";
+import AccountDropdown from "@/app/components/Dropdowns/AccountDropdown";
+import Icon from "@/app/components/Icon";
+
 
 export default function LogOutNavBar() {
     const router = useRouter();
@@ -16,8 +18,8 @@ export default function LogOutNavBar() {
     return (
         <header className="bg-[#1F2A60] shadow-md px-6 py-4 flex justify-between items-center z-30 relative">
             <button onClick={() => handleSignOut()}
-                    className="text-white hover:text-blue-300 font-medium">
-                Sign Out
+                    className="text-white hover:text-blue-300 font-medium cursor-pointer">
+                <Icon name={"log-out-white"} size={24} />
             </button>
             <img src="/Avond4daagse_diapositief.png" alt="Logo" className="h-7"/>
             <AccountDropdown/>

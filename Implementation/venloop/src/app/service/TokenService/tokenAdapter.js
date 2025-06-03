@@ -1,24 +1,44 @@
 import { db } from '../../firebase';
-import qrUrls from "@/app/util/qrUrls";
 import {
     ref,
     push,
     set,
-    get,
-    update,
-    remove
+    get
 } from 'firebase/database';
-import {ref as dbRef} from "@firebase/database";
 
-const PATH = 'teamTokens';
+const TEAM_TOKEN_PATH = 'teamTokens';
+const EVENT_TOKEN_PATH = 'eventToken';
+
 export const TokenAdapter = {
     async getTeamId(token) {
-    try {
-        const snapshot = await get(ref(db, `${PATH}/${token}`));
-        return snapshot.exists() ? snapshot.val().teamId : null;
-    } catch (err) {
-        console.error('Firebase error getting team:', err);
-        throw err;
+        try {
+            const snapshot = await get(ref(db, `${TEAM_TOKEN_PATH}/${token}`));
+            return snapshot.exists() ? snapshot.val().teamId : null;
+        } catch (err) {
+            console.error('Firebase error getting team by token:', err);
+            throw err;
+        }
+    },
+
+    async setGlobalEventToken() {
+        try {
+            const newTokenRef = push(ref(db, 'temp')); // use push just to generate a key
+            const newToken = newTokenRef.key;
+            await set(ref(db, EVENT_TOKEN_PATH), { token: newToken });
+            return newToken;
+        } catch (err) {
+            console.error("Error generating and setting global event token:", err);
+            throw err;
+        }
+    },
+
+    async getGlobalEventToken() {
+        try {
+            const snapshot = await get(ref(db, EVENT_TOKEN_PATH));
+            return snapshot.exists() ? snapshot.val().token : null;
+        } catch (err) {
+            console.error("Error getting global event token:", err);
+            throw err;
+        }
     }
-},
-}
+};

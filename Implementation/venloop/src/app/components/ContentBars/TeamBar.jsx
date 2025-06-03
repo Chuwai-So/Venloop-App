@@ -1,15 +1,15 @@
-'use client';
+"use client";
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import TeamService from '@/app/service/TeamService/teamService';
 import { db } from '@/app/firebase';
-import { ref, push, serverTimestamp } from 'firebase/database';
+import { ref, push, serverTimestamp, get, remove } from 'firebase/database';
 import QRCodeWithDownload from '@/app/components/QR/DownloadableQR';
 import qrUrls from '@/app/util/qrUrls';
-import UpdateButton from '@/app/components/Buttons/UpdateButton';
-import GenerateQRButton from '@/app/components/Buttons/QrButton';
 import DeleteButton from '@/app/components/Buttons/DeleteButton';
 import KickCaptainButton from "@/app/components/Buttons/KickButton";
+import Icon from "@/app/components/Icon";
+// import Icon from "@/app/components/Icon"; // 👈 import your icon when ready
 
 export default function TeamBar({ team, isExpanded, onToggle, refreshTeams }) {
     const [isEditing, setIsEditing] = useState(false);
@@ -17,16 +17,24 @@ export default function TeamBar({ team, isExpanded, onToggle, refreshTeams }) {
     const [isSaving, setIsSaving] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
     const [isKicking, setIsKicking] = useState(false);
-    const [qrToken, setQrToken] = useState(null);
+    const [teamToken, setTeamToken] = useState(null);
     const [showQR, setShowQR] = useState(false);
-    const qrRef = useRef();
+    const [expandedTasks, setExpandedTasks] = useState({});
+
+    const toggleTask = (taskId) => {
+        setExpandedTasks((prev) => ({
+            ...prev,
+            [taskId]: !prev[taskId],
+        }));
+    };
 
     const isOccupied = !!team.occupied;
 
     useEffect(() => {
         if (!isExpanded) {
             setShowQR(false);
-            setQrToken(null);
+            setTeamToken(null);
+            setExpandedTasks({});
         }
     }, [isExpanded]);
 
@@ -42,21 +50,6 @@ export default function TeamBar({ team, isExpanded, onToggle, refreshTeams }) {
             alert('Failed to update team. Please try again.');
         }
         setIsSaving(false);
-    };
-
-    const handleGenerateQR = async () => {
-        try {
-            const qrRef = ref(db, 'qr_tokens');
-            const newTokenRef = await push(qrRef, {
-                teamId: team.id,
-                createdAt: serverTimestamp(),
-            });
-            setQrToken(newTokenRef.key);
-            setShowQR(true);
-        } catch (err) {
-            console.error('Error generating QR token:', err);
-            alert('Failed to generate QR code. Please try again.');
-        }
     };
 
     const handleDelete = async () => {
@@ -76,18 +69,16 @@ export default function TeamBar({ team, isExpanded, onToggle, refreshTeams }) {
     };
 
     const handleKickCaptain = async () => {
-        const confirmed = confirm('Are you sure you want to remove this team\'s captain?');
+        const confirmed = confirm("Are you sure you want to remove this team's captain?");
         if (!confirmed) return;
 
         setIsKicking(true);
         try {
             const success = await TeamService.kickCaptain(team.id);
-            if (success) {
-                alert('Captain kicked and token revoked.');
-                refreshTeams();
-            } else {
-                alert('Failed to kick captain.');
-            }
+            if (!success) throw new Error("Backend failed");
+
+            alert('Captain kicked and token revoked.');
+            refreshTeams();
         } catch (err) {
             console.error('Kick captain error:', err);
             alert('Error kicking captain.');
@@ -110,13 +101,36 @@ export default function TeamBar({ team, isExpanded, onToggle, refreshTeams }) {
                         onChange={(e) => setNewName(e.target.value)}
                         className="text-xl font-bold text-gray-800 border rounded px-2 py-1 w-full"
                         onClick={(e) => e.stopPropagation()}
+                        onKeyDown={(e) => {
+                            if (e.key === "Enter") handleSave();
+                        }}
                     />
                 ) : (
                     <div className="flex flex-col">
-                        <h2 className="text-xl font-bold text-gray-800">{team.name}</h2>
-                        {isOccupied && (
-                            <span className="text-sm text-red-600 font-medium">Occupied</span>
-                        )}
+                        <div className="flex items-center gap-2">
+                            <h2 className="text-xl font-bold text-gray-800">{team.name}</h2>
+                            {isExpanded && !isEditing && (
+                                <button
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        setIsEditing(true);
+                                    }}
+                                    className="text-gray-400 hover:text-[#1F2A60] transition"
+                                    title="Edit team name"
+                                >
+                                    <Icon name="edit-3" size="20px" />
+                                </button>
+                            )}
+
+                        </div>
+                        <div className="flex gap-2 mt-1">
+                            {isOccupied && (
+                                <span className="text-sm text-red-600 font-medium">Occupied</span>
+                            )}
+                            {completedTaskList.length > 0 && (
+                                <span className="text-sm text-[#1F2A60] font-medium">Tasks Completed</span>
+                            )}
+                        </div>
                     </div>
                 )}
                 <span className={`ml-2 transform transition-transform ${isExpanded ? 'rotate-180' : 'rotate-0'}`}>
@@ -127,25 +141,51 @@ export default function TeamBar({ team, isExpanded, onToggle, refreshTeams }) {
             {isExpanded && (
                 <>
                     {completedTaskList.length > 0 ? (
-                        <ul className="mt-4 mb-4 list-disc list-inside text-gray-700 text-sm">
-                            {completedTaskList.map((taskId) => (
-                                <li key={taskId}>
-                                    {team.completedTasks[taskId]?.name || taskId}
-                                </li>
-                            ))}
+                        <ul className="mt-4 mb-4 space-y-2 text-sm">
+                            {completedTaskList.map((taskId) => {
+                                const task = team.completedTasks[taskId];
+                                const result = task?.result;
+                                const status = task?.status;
+                                const userAnswer = task?.userAnswer;
+
+                                let textColor = "text-gray-500";
+                                if (result === "correct" || status === "approved") {
+                                    textColor = "text-green-600";
+                                } else if (result === "incorrect" || status === "rejected") {
+                                    textColor = "text-red-600";
+                                }
+
+                                const isOpen = expandedTasks[taskId];
+
+                                return (
+                                    <li key={taskId} className="cursor-pointer" onClick={(e) => {
+                                        e.stopPropagation();
+                                        toggleTask(taskId);
+                                    }}>
+                                        <div className={`${textColor} font-medium`}>
+                                            {task?.name || taskId}
+                                        </div>
+                                        {isOpen && (
+                                            <div className="ml-4 mt-1 text-xs text-gray-600">
+                                                {userAnswer ? `Answer: ${userAnswer}` : status ? `Status: ${status}` : 'No result/status available'}
+                                            </div>
+                                        )}
+                                    </li>
+                                );
+                            })}
                         </ul>
                     ) : (
                         <p className="mt-4 mb-4 text-gray-400 text-sm italic">No completed tasks</p>
                     )}
 
-                    {showQR && qrToken && (
+                    {showQR && teamToken && (
                         <div className="flex justify-center mb-2">
                             <QRCodeWithDownload id={team.id} url={qrUrls.teamDetail(team.id)} />
                         </div>
                     )}
 
                     <div className="flex flex-col sm:flex-row justify-center gap-2 mt-2">
-                        {isEditing ? (
+                        {isEditing && (
                             <button
                                 className="px-4 py-2 bg-green-600 text-white rounded-lg shadow hover:bg-[#1F2A60] transition disabled:opacity-50"
                                 onClick={(e) => {
@@ -156,15 +196,6 @@ export default function TeamBar({ team, isExpanded, onToggle, refreshTeams }) {
                             >
                                 {isSaving ? 'Saving...' : 'Save'}
                             </button>
-                        ) : (
-                            <UpdateButton isSaving={isSaving} onClick={() => setIsEditing(true)} />
-                        )}
-
-                        {!showQR && (
-                            <GenerateQRButton
-                                disabled={isEditing || isSaving || isDeleting}
-                                onClick={handleGenerateQR}
-                            />
                         )}
 
                         <DeleteButton

@@ -5,6 +5,7 @@ import {useRouter} from "next/navigation";
 import CleanNavBar from "@/app/components/NavBars/CleanNavBar";
 import {doSignInWithEmailAndPassword} from "@/app/auth";
 import {useAuth} from "@/app/contexts/authContext";
+import Icon from "@/app/components/Icon";
 
 export default function LoginPage() {
 
@@ -79,10 +80,12 @@ export default function LoginPage() {
 
                     <button
                         type="submit"
-                        className="bg-[#3C8DC3] text-white font-bold py-2 rounded hover:scale-102 transition-transform"
+                        className="bg-[#3C8DC3] text-white font-bold py-2 rounded hover:scale-102 transition-transform flex items-center justify-center gap-2"
                     >
-                        Log In
+                        <Icon name="log-in-white" size={18}/>
+                        <span>Log In</span>
                     </button>
+
 
                     <p className="text-sm text-center text-gray-500">
                         Don't have an account?{" "}

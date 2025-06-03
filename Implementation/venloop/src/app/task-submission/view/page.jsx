@@ -58,6 +58,7 @@ export default function Page() {
         setIsSubmitting(true);
 
         const teamToken = localStorage.getItem("teamAccessToken");
+        console.log("here is the accessToken:",teamToken);
         if (!teamToken) {
             alert("Team not authenticated.");
             setIsSubmitting(false);
@@ -65,8 +66,10 @@ export default function Page() {
         }
 
         try {
+
             const teamId = await TeamService.verifyTokenAndGetTeamId(teamToken);
             const finalAnswer = selectedChoice || answer || "";
+            console.log("here is the team id based on the token from local storage:",teamId)
 
             if (task.features.input || task.features.choice) {
                 await TeamService.completeTask(teamId, taskId, finalAnswer);

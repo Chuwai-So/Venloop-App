@@ -1,75 +1,52 @@
 import { TeamAdapter } from './teamAdapter';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'
 import TaskService from "@/app/service/TaskService/taskService";
-import { ref as dbRef, get, update, remove } from 'firebase/database'
-
-import {storage} from "../../firebase";
+import { ref as dbRef, get } from 'firebase/database';
 import { db } from "@/app/firebase";
-
+import { handle } from "@/app/service/serviceHandler";
+import { requireAuth } from "@/app/contexts/authContext/requireAuth";
 
 const TeamService = {
     async createTeam(data) {
-        try {
-            return await TeamAdapter.createTeam(data);
-        } catch (err) {
-            console.error("Error creating team:", err);
-            return null;
-        }
+        return handle(TeamAdapter.createTeam(data), "creating team");
     },
-    //Need to change
+
     async verifyTokenAndGetTeamId(token) {
-        const snapshot = await get(dbRef(db, `teamTokens/${token}`));
-        if (snapshot.exists()) {
-            const { teamId } = snapshot.val();
-            return teamId;
-        } else {
-            throw new Error("Invalid token.");
-        }
+        return handle(
+            (async () => {
+                const snapshot = await get(dbRef(db, `teamTokens/${token}`));
+                if (snapshot.exists()) {
+                    return snapshot.val().teamId;
+                }
+                throw new Error("Invalid token.");
+            })(),
+            "verifying token"
+        );
     },
 
     async getTeam(teamId) {
-        try {
-            return await TeamAdapter.getTeam(teamId);
-        } catch (err) {
-            console.error("Error fetching team:", err);
-            return null;
-        }
+        return handle(TeamAdapter.getTeam(teamId), "fetching team");
     },
 
     async updateTeam(teamId, data) {
-        try {
-            return await TeamAdapter.updateTeam(teamId, data);
-        } catch (err) {
-            console.error("Error updating team:", err);
-            return null;
-        }
+        return handle(TeamAdapter.updateTeam(teamId, data), "updating team");
     },
 
     async getTeamQR(teamId) {
-        try {
-            const team = await TeamAdapter.getTeam(teamId);
-            return team?.qrURL || null;
-        } catch (err) {
-            console.error("Error getting team QR code: ", err);
-            return null;
-        }
+        return handle(
+            (async () => {
+                const team = await TeamAdapter.getTeam(teamId);
+                return team?.qrURL || null;
+            })(),
+            "getting team QR code"
+        );
     },
 
     async updateCaptain(teamId, captains) {
-        try {
-            return await TeamAdapter.updateTeam(teamId, { captain: captains });
-        } catch (err) {
-            console.error("Error updating captain:", err);
-            return null;
-        }
+        return handle(TeamAdapter.updateTeam(teamId, { captain: captains }), "updating captain");
     },
 
     async fileToBase64(file) {
-        if (!(file instanceof Blob)) {
-            console.error("Invalid file input:", file);
-            throw new Error("Provided input is not a Blob or File.");
-        }
-
+        if (!(file instanceof Blob)) throw new Error("Invalid file format");
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
             reader.onloadend = () => resolve(reader.result);
@@ -78,173 +55,133 @@ const TeamService = {
         });
     },
 
-
     async submitTask(teamId, taskId, file) {
-        try {
-            const imageURL = await this.fileToBase64(file);
-
-
-            const updates = {
-                [`pendingTasks/${taskId}`]: {
-                    picture: imageURL,
-                    uploadedAt: new Date().toISOString(),
-                    status: 'pending',
-                }
-            };
-
-            await TeamAdapter.updateTeam(teamId, updates);
-            return true;
-        } catch (err) {
-            console.error("Error adding pending task:", err);
-            return false;
-        }
+        return handle(
+            (async () => {
+                const imageURL = await this.fileToBase64(file);
+                return await this.updateTeamWithPicture(teamId, `pendingTasks/${taskId}`, imageURL, 'pending');
+            })(),
+            "submitting task"
+        );
     },
-
 
     async submitPictureTask(teamId, taskId, file) {
-        const team = await TeamAdapter.getTeam(teamId);
-        if (team?.completedTasks?.[taskId]) {
-            console.warn(`Task ${taskId} already completed`);
-            return false;
-        }
+        return handle(
+            (async () => {
+                const team = await TeamAdapter.getTeam(teamId);
+                if (this.isTaskAlreadyCompleted(team, taskId)) return false;
 
-        try {
-            if (!(file instanceof Blob)) {
-                console.warn("Submitted file is not a Blob or File");
-            }
+                const imageURL = await this.fileToBase64(file);
+                const task = await TaskService.getTask(taskId);
 
-            const imageURL = await this.fileToBase64(file);
-
-            const task = await TaskService.getTask(taskId);
-            const taskName = task?.name || taskId;
-
-            const updates = {
-                [`completedTasks/${taskId}`]: {
-                    picture: imageURL,
-                    uploadedAt: new Date().toISOString(),
-                    status: 'pending',
-                    name: taskName,
-                }
-            };
-
-            await TeamAdapter.updateTeam(teamId, updates);
-            return true;
-        } catch (err) {
-            console.error("Error submitting picture task:", err);
-            return false;
-        }
+                return await this.updateTeamWithPicture(
+                    teamId,
+                    `completedTasks/${taskId}`,
+                    imageURL,
+                    'pending',
+                    task?.name || taskId
+                );
+            })(),
+            "submitting picture task"
+        );
     },
-
-
-
 
     async completeTask(teamId, taskId, input) {
-        const team = await TeamAdapter.getTeam(teamId);
-        if (team?.completedTasks?.[taskId]) {
-            console.warn(`Task ${taskId} already completed`);
-            return false;
-        }
+        return handle(
+            (async () => {
+                const team = await TeamAdapter.getTeam(teamId);
+                if (this.isTaskAlreadyCompleted(team, taskId)) return false;
 
-        const task = await TaskService.getTask(taskId)
-        const correctAnswer = task?.answer
-
-        let verdict = null;
-        if (correctAnswer !== undefined && input !== undefined) {
-            verdict = this.evaluate(input, correctAnswer);
-        }
-
-        try {
-            const updates = {
-                [`completedTasks/${taskId}`]: {
-                    //...data,
-                    userAnswer: input,
-                    result: verdict,
-                    name: task.name,
-                    completedAt: new Date().toISOString()
-                }
-            };
-            return TeamAdapter.updateTeam(teamId, updates);
-        } catch (err) {
-            console.error("Error updating task progress:", err);
-            return null;
-        }
+                const task = await TaskService.getTask(taskId);
+                const verdict = this.evaluate(input, task?.answer);
+                const updates = {
+                    [`completedTasks/${taskId}`]: {
+                        userAnswer: input,
+                        result: verdict,
+                        name: task?.name,
+                        completedAt: new Date().toISOString()
+                    }
+                };
+                return await TeamAdapter.updateTeam(teamId, updates);
+            })(),
+            "completing task"
+        );
     },
 
-
-
     async deleteTeam(teamId) {
-        try {
-            return await TeamAdapter.deleteTeam(teamId);
-        } catch (err) {
-            console.error("Error deleting team:", err);
-            return null;
-        }
+        return handle(TeamAdapter.deleteTeam(teamId), "deleting team");
     },
 
     async getAllTeams() {
-        try {
-            return await TeamAdapter.getAllTeams();
-        } catch (err) {
-            console.error("Error retrieving all team-detail:", err);
-            return null;
-        }
+        return handle(TeamAdapter.getAllTeams(), "retrieving all teams");
     },
 
     evaluate(userInput, correctAnswer) {
-        if (typeof userInput == 'string' && typeof correctAnswer == 'string') {
-            return userInput.trim().toLowerCase() === correctAnswer.trim().toLowerCase()
-                ? 'correct'
-                : 'incorrect';
-        }
-        return null;
+        return (typeof userInput === 'string' && typeof correctAnswer === 'string')
+            ? userInput.trim().toLowerCase() === correctAnswer.trim().toLowerCase()
+                ? 'correct' : 'incorrect'
+            : null;
     },
 
     async updateTaskStatus(teamId, taskId, newStatus) {
-        try {
-            await TeamAdapter.updateTaskStatus(teamId, taskId, "approved");
-        } catch (err) {
-            console.error("Error updating task status:", err);
-            return false;
-        }
+        return handle(TeamAdapter.updateTaskStatus(teamId, taskId, newStatus), "updating task status");
     },
 
     async removeCompletedTask(teamId, taskId) {
-        try {
-            await TeamAdapter.removeCompletedTask(teamId, taskId);
-        } catch (err) {
-            console.error("Error removing completed task:", err);
-            return false;
-        }
+        return handle(TeamAdapter.removeCompletedTask(teamId, taskId), "removing completed task");
     },
 
-    async joinTeamAsCaptain(teamId, token) {
-        try {
-            await TeamAdapter.joinTeamAsCaptain(teamId, token);
-            return await this.getTeam(teamId);
-        } catch (err) {
-            console.error("Error joining team as captain:", err);
-            return null;
-        }
+    async joinTeamAsCaptain(teamId) {
+        return handle(
+            (async () => {
+                await TeamAdapter.joinTeamAsCaptain(teamId);
+                return await TeamAdapter.getTeam(teamId);
+            })(),
+            "joining team as captain"
+        );
     },
 
     async kickCaptain(teamId) {
-        try {
-            await TeamAdapter.kickCaptain(teamId);
-            return true;
-        } catch (err) {
-            console.error("Error kicking captain:", err);
-            return false;
-        }
+        return handle(TeamAdapter.kickCaptain(teamId), "kicking captain");
     },
 
+    isTaskAlreadyCompleted(team, taskId) {
+        if (team?.completedTasks?.[taskId]) {
+            console.warn(`Task ${taskId} already completed`);
+            return true;
+        }
+        return false;
+    },
 
+    async updateTeamWithPicture(teamId, path, imageURL, status, name = null) {
+        const updates = {
+            [path]: {
+                picture: imageURL,
+                uploadedAt: new Date().toISOString(),
+                status,
+            }
+        };
+        if (name) updates[path].name = name;
 
+        return handle(TeamAdapter.updateTeam(teamId, updates), "updating team with picture");
+    },
 
+    async deleteSubmittedPictures(teamId) {
+        return handle(TeamAdapter.deleteSubmittedPictures(teamId), "deleting submitted pictures");
+    },
 
+    async deleteAllTeams() {
+        requireAuth();
 
+        const teams = await handle(TeamAdapter.getAllTeams(), "retrieving all teams for bulk delete");
+        if (!teams || !Array.isArray(teams)) return false;
 
+        const deletions = await Promise.all(
+            teams.map(team => handle(TeamAdapter.deleteTeam(team.id), `deleting team ${team.id}`))
+        );
 
-
+        return deletions.every(Boolean);
+    }
 };
 
 export default TeamService;
