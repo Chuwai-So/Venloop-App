@@ -105,7 +105,7 @@ export default function AdminSettings() {
                     {/* Top 3 buttons */}
                     <div className="grid grid-cols-12 gap-4 h-full">
                         <button
-                            className="bg-[#3C8DC3] text-white rounded-xl col-span-4 flex items-center justify-center text-center text-sm p-4 hover:scale-102 transition-all"
+                            className="bg-[#3C8DC3] text-white rounded-xl col-span-4 flex items-center justify-center text-center text-xl p-4 hover:scale-102 transition-all"
                             onClick={handleDeleteAllTeams}
                         >
                             Delete all teams
@@ -114,7 +114,7 @@ export default function AdminSettings() {
                         {/* Team selector in the middle */}
                         <button
                             onClick={handleDeleteTeamPictures}
-                            className="bg-[#3C8DC3] text-white rounded-xl col-span-4 flex flex-col justify-center items-center text-sm p-4 gap-3 hover:scale-102 transition-all"
+                            className="bg-[#3C8DC3] text-white rounded-xl col-span-4 flex flex-col justify-center items-center text-xl p-4 gap-3 hover:scale-102 transition-all"
                         >
                             <div className="text-center leading-tight">Delete picture submission</div>
                             <select
@@ -133,7 +133,7 @@ export default function AdminSettings() {
                         </button>
 
                         <button
-                            className="bg-[#3C8DC3] text-white rounded-xl col-span-4 flex items-center justify-center text-center text-sm p-4 hover:scale-102 transition-all"
+                            className="bg-[#3C8DC3] text-white rounded-xl col-span-4 flex items-center justify-center text-center text-xl p-4 hover:scale-102 transition-all"
                             onClick={handleDeleteAllTasks}
                         >
                             Delete all tasks
@@ -143,7 +143,7 @@ export default function AdminSettings() {
                     {/* Bottom 2 buttons */}
                     <div className="grid grid-cols-12 gap-4 h-full">
                         <button
-                            className="bg-[#D86F27] text-white rounded-xl col-span-6 flex items-center justify-center text-center text-sm p-6 hover:scale-102 transition-all"
+                            className="bg-[#D86F27] text-white rounded-xl col-span-6 flex items-center justify-center text-center text-xl p-6 hover:scale-102 transition-all"
                             onClick={handleRestartEvent}
                         >
                             Restart Event
@@ -153,7 +153,7 @@ export default function AdminSettings() {
                         {/* Timeframe selector with styling match */}
                         <button
                             onClick={handleSetDeletionTimeframe}
-                            className="bg-[#D86F27] text-white rounded-xl col-span-6 flex flex-col justify-center items-center text-sm p-4 gap-3 hover:scale-102 transition-all"
+                            className="bg-[#D86F27] text-white rounded-xl col-span-6 flex flex-col justify-center items-center text-xl p-4 gap-3 hover:scale-102 transition-all"
                         >
                             <div className="text-center">Set Data Deletion Timeframe</div>
                             <select
