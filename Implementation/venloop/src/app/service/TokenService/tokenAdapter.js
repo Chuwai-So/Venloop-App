@@ -43,6 +43,15 @@ export const TokenAdapter = {
         }
     },
 
+    async deleteTeamToken(teamToken) {
+        try {
+            await remove (ref(db, `${TEAM_TOKEN_PATH}/${teamToken}`))
+        } catch (err) {
+            console.error("Error deleting chosen teamToken:", err)
+            throw err;
+        }
+    },
+
     async deleteAllTeamTokens() {
         try {
             await remove(ref(db, TEAM_TOKEN_PATH));
