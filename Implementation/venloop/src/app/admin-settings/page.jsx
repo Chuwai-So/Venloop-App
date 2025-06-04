@@ -36,6 +36,8 @@ export default function AdminSettings() {
         try {
             const newToken = await TokenService.setGlobalEventToken();
             alert(`Event restarted. New token generated: ${newToken}`);
+            await TokenService.deleteAllTeamTokens();
+            alert(`TeamTokens revoked`)
         } catch (err) {
             console.error("Failed to restart event:", err);
             alert("Failed to restart event. Please try again.");

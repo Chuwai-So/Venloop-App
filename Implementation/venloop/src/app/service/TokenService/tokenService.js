@@ -12,6 +12,10 @@ const TokenService = {
 
     async getGlobalEventToken() {
         return handle(TokenAdapter.getGlobalEventToken(), "getting global event token");
+    },
+
+    async deleteAllTeamTokens(){
+        return handle(TokenAdapter.deleteAllTeamTokens(), "deleted teams from token");
     }
 };
 
