@@ -96,6 +96,8 @@ export default function TeamDetail() {
                 captain: null
             });
 
+            const existingToken = localStorage.getItem("teamAccessToken");
+            await TokenService.deleteTeamToken(existingToken);
             localStorage.removeItem("teamAccessToken");
             alert("You have left the team.");
             const eventToken = await TokenService.getGlobalEventToken();

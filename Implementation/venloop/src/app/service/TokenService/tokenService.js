@@ -16,6 +16,10 @@ const TokenService = {
 
     async deleteAllTeamTokens(){
         return handle(TokenAdapter.deleteAllTeamTokens(), "deleted teams from token");
+    },
+
+    async deleteTeamToken(teamToken) {
+        return handle(TokenAdapter.deleteTeamToken(teamToken), "deleted token from teamTokens node")
     }
 };
 
