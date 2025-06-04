@@ -17,7 +17,6 @@ export const TeamAdapter = {
         try {
             const newRef = push(ref(db, TEAM_PATH));
             const teamId = newRef.key;
-            const teamURL = qrUrls.teamDetail(teamId);
 
             const team = {
                 id: teamId,
@@ -26,7 +25,6 @@ export const TeamAdapter = {
                 completedTasks: {},
                 captain: data.captain || [],
                 occupied: false,
-                qrURL: teamURL,
                 teamToken: null
             };
 
