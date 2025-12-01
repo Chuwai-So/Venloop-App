@@ -1,0 +1,3 @@
+This week, we learn the bad news from our stakeholders, that the project is not as successful as projected. Not many school jump abord with the idea, only two schools tried the application. The stakeholders explained that most school cant find times or efforts for using the applicaiton since it is quite hard for the school to look after all those kids during the event. 
+
+This is a devasting blow for the team no doubt, but the work must carry on. Even without this response, we still had plan for this coming sprint. I got tasked to find a testing framework, specially for the UI/UX experience. We might need to readjust the scope in the next meeting with our project coach since this sudden changes of plan. 

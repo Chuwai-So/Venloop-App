@@ -1,0 +1,7 @@
+This is the final meeting that we had with our stakeholder as a round up meeting. Since the project was deemed as concluded from our external stakeholder previously, this week is mainly aiming for retrospective on how we can improve ourself in future project.
+
+After discussion, we all agree that the most damning cause for this failure is the fact that we as a whole underestimate the time we need to introduce our idea to the actual user of the applicaiton --the schools. The idea was introduce to them way too late, only couple of days before the event started. Besides this, the teacher the parents that involved with the event are already over tasked for managing all the kids in the traffic, they need more time to get used to the idea of our project. 
+
+Onto the project itself, the stakeholder is still pleased with what we presented, even showing to his collegue with got praise. From their prespective, they like the app, the functionality and the intuitive design, so is fair to say that we are still successful on delivering the project itself.
+
+All in all, this could be avoided if we as a whole stick to our previous small test scope and maybe have more time to communicate with the school. The stakeholder suggests that we can give the app a shot for the next year's A4D if possible. For the moment we ended the cooperation with venloop properly in a professional way, and this conclude the project. 
